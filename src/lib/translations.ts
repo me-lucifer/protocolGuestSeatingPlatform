@@ -137,5 +137,3 @@ export const translations = {
     timelinePresentCode: 'Arrivée',
   },
 };
-
-    
