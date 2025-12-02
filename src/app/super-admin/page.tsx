@@ -19,8 +19,11 @@ import {
     Eye,
     Pencil,
     Settings,
+    BookOpen,
+    Info,
 } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const metricCards = [
   {
@@ -160,6 +163,39 @@ export default function SuperAdminDashboard() {
               ))}
           </CardContent>
       </Card>
+
+      {/* About & Scenarios Card */}
+        <Card>
+            <CardHeader>
+                <CardTitle className="section-title flex items-center gap-2">
+                    <Info />
+                    About & Scenarios
+                </CardTitle>
+                <CardDescription>
+                    The Protocol Platform is a secure, centralized solution for managing high-stakes events with a focus on protocol, security, and efficiency.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <h4 className="font-semibold text-foreground mb-3">Example Scenarios</h4>
+                <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground mb-6">
+                    <li>
+                        <strong>State Ceremony:</strong> Manage formal events with strict adherence to national and international protocol, ensuring precedence is respected.
+                    </li>
+                    <li>
+                        <strong>Diplomatic Reception:</strong> Handle large-scale social gatherings for international guests, with complex delegation and seating requirements.
+                    </li>
+                    <li>
+                        <strong>High-Level Conference:</strong> Coordinate multi-day events with dynamic agendas, multiple venues, and secure access control for attendees.
+                    </li>
+                </ul>
+                <Button variant="outline" asChild>
+                    <Link href="#">
+                        <BookOpen />
+                        View Documentation (Coming Soon)
+                    </Link>
+                </Button>
+            </CardContent>
+        </Card>
 
       {/* Role Definitions */}
       <Card>
