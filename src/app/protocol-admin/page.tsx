@@ -89,7 +89,7 @@ export default function ProtocolAdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div id="tour-step-2" className="flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 className="page-title">Admin Dashboard</h1>
             <p className="text-muted-foreground">Overview of all platform activity.</p>
@@ -205,7 +205,7 @@ export default function ProtocolAdminDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">{event.type}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell id={event.id === 'evt-001' ? 'tour-step-3' : ''} className="text-right">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">

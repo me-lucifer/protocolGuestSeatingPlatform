@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -17,8 +18,10 @@ import {
   UserCheck,
   Ticket,
   ChevronRight,
+  Route,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTour } from '@/contexts/TourContext';
 
 const demoRoutes = [
   {
@@ -49,6 +52,12 @@ const demoRoutes = [
 
 export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
+  const { startTour } = useTour();
+
+  const handleStartTour = () => {
+    setIsOpen(false);
+    startTour();
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -70,7 +79,12 @@ export function DemoHelper() {
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 space-y-2">
-          <h3 className="mb-3 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
+            <Button className="w-full" onClick={handleStartTour}>
+                <Route />
+                Start Demo Tour
+            </Button>
+
+          <h3 className="mb-3 mt-4 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
           {demoRoutes.map((route) => (
             <Link
               key={route.href}

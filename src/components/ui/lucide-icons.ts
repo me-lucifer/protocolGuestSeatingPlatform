@@ -61,5 +61,6 @@ export {
     Hand,
     Newspaper,
     Square,
-    Filter
+    Filter,
+    Tour
 } from 'lucide-react';

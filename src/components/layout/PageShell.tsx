@@ -35,6 +35,7 @@ import { Breadcrumbs } from './Breadcrumbs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
+import { useTour } from '@/contexts/TourContext';
 
 
 type NavItem = {
@@ -109,7 +110,7 @@ function GuestNav() {
                let isActive = pathname.startsWith('/guest-invitee/invitation');
                
               return (
-                <SidebarMenuItem key={item.label}>
+                <SidebarMenuItem key={item.label} id="tour-step-4">
                   <SidebarMenuButton
                     asChild
                     isActive={isActive}
@@ -135,6 +136,7 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const { isTourActive, TourStep } = useTour();
   
   const currentNavItems = navItems[role] || [];
   
@@ -151,6 +153,7 @@ export function PageShell({
 
   return (
     <SidebarProvider>
+      {isTourActive && <TourStep />}
       <Sidebar className={cn(isMobileEmulation && 'hidden')}>
         <SidebarHeader className="p-2">
           <div className="flex items-center gap-2">
@@ -186,7 +189,7 @@ export function PageShell({
                      isActive = pathname.startsWith(item.href);
                    }
                   return (
-                    <SidebarMenuItem key={item.label}>
+                    <SidebarMenuItem key={item.label} id={item.href === '/protocol-officer' ? 'tour-step-5' : ''}>
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
@@ -235,7 +238,7 @@ export function PageShell({
             "flex-1 p-4 sm:p-6",
             isMobileEmulation && 'p-0'
             )}>
-          <div className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>
+          <div id="main-content" className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>
             {children}
           </div>
         </main>

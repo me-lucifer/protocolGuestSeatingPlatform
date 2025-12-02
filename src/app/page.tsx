@@ -1,3 +1,6 @@
+
+'use client';
+
 import Link from 'next/link';
 import { roles } from '@/lib/data';
 import {
@@ -9,11 +12,23 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useTour } from '@/contexts/TourContext';
+import { useEffect, useRef } from 'react';
 
 export default function Home() {
+  const { isTourActive, currentStep } = useTour();
+  const mainCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isTourActive && currentStep === 0 && mainCardRef.current) {
+        mainCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isTourActive, currentStep]);
+
+
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4 md:p-8">
-      <div className="w-full max-w-5xl">
+      <div id="tour-step-0" ref={mainCardRef} className="w-full max-w-5xl">
         <Card className="w-full rounded-xl shadow-2xl border-primary/10">
           <CardHeader className="text-center p-6 md:p-10">
             <h1 className="text-3xl font-bold tracking-tight text-primary font-headline md:text-4xl">
@@ -28,6 +43,7 @@ export default function Home() {
               <Link
                 href={role.href}
                 key={role.name}
+                id={role.name === 'Protocol Admin / Event Manager' ? 'tour-step-1' : ''}
                 className="block group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
               >
                 <Card className="h-full transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:border-primary/30 flex flex-col">
