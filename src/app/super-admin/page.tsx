@@ -57,16 +57,16 @@ const navCards = [
         icon: Users
     },
     {
+        title: 'Branding & Templates',
+        description: 'Customize platform appearance and email communications.',
+        href: '/super-admin/branding',
+        icon: Palette
+    },
+    {
         title: 'System Settings',
         description: 'Configure authentication, integrations, and feature flags.',
         href: '/super-admin/settings',
         icon: Shield
-    },
-    {
-        title: 'Branding & Templates',
-        description: 'Customize platform appearance and email communications.',
-        href: '#',
-        icon: Palette
     },
     {
         title: 'Audit & Logs',

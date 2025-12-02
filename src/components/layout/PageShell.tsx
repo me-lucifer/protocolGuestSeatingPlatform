@@ -25,6 +25,7 @@ import {
   Building2,
   UserCircle,
   Warehouse,
+  Palette,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +47,7 @@ const navItems: { [key: string]: NavItem[] } = {
     { href: '/super-admin', icon: Settings, label: 'Dashboard' },
     { href: '/super-admin/organizations', icon: Warehouse, label: 'Organizations' },
     { href: '/super-admin/users', icon: Users, label: 'Users & Roles' },
+    { href: '/super-admin/branding', icon: Palette, label: 'Branding' },
     { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
   ],
   'Protocol Admin / Event Manager': [
