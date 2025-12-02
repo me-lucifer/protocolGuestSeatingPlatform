@@ -17,6 +17,7 @@ import { QrCode, ArrowLeft, Home, Download, Printer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GuestTimeline } from '@/components/guest/GuestTimeline';
 
 export default function RsvpConfirmedPage() {
   const { toast } = useToast();
@@ -51,6 +52,7 @@ export default function RsvpConfirmedPage() {
     <div className="flex justify-center items-start">
       <Card className="max-w-2xl w-full text-center shadow-lg">
         <CardHeader className="p-6">
+          <GuestTimeline currentStepKey="qrcode" className="mb-4" />
           <CardTitle className="page-title">{t.rsvpConfirmedTitle}</CardTitle>
           <CardDescription>
             {t.rsvpAcceptedFor.replace('{eventName}', event.name)}

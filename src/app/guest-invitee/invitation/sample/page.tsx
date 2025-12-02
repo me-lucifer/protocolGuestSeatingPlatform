@@ -28,6 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GuestTimeline } from '@/components/guest/GuestTimeline';
 
 export default function GuestInviteeInvitationView() {
   const router = useRouter();
@@ -91,6 +92,7 @@ export default function GuestInviteeInvitationView() {
     <div className="flex justify-center items-start p-0 sm:p-4">
       <Card className="max-w-2xl w-full shadow-lg rounded-lg">
         <CardHeader className="bg-muted/30 p-6 rounded-t-lg">
+          <GuestTimeline currentStepKey="respond" className="mb-4" />
           <CardTitle className="text-3xl font-headline text-primary">
             {event.name}
           </CardTitle>

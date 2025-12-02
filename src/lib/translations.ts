@@ -53,6 +53,12 @@ export const translations = {
     presentAtEntrancePrint: 'Please present at entrance',
     eventDetails: 'Event Details',
     printablePrototypeNote: 'This printable view is part of a prototype. You can close this tab to return to the application.',
+
+    // Timeline
+    timelineInvitation: 'Invitation',
+    timelineRespond: 'Respond',
+    timelineGetCode: 'Get QR Code',
+    timelinePresentCode: 'Check-in',
   },
   fr: {
     // Guest Journey Preview
@@ -107,5 +113,11 @@ export const translations = {
     presentAtEntrancePrint: 'Veuillez présenter à l\'entrée',
     eventDetails: 'Détails de l\'événement',
     printablePrototypeNote: 'Cette vue imprimable fait partie d\'un prototype. Vous pouvez fermer cet onglet pour revenir à l\'application.',
+
+    // Timeline
+    timelineInvitation: 'Invitation',
+    timelineRespond: 'Répondre',
+    timelineGetCode: 'Code QR',
+    timelinePresentCode: 'Arrivée',
   },
 };
