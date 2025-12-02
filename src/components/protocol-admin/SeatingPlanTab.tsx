@@ -197,29 +197,46 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
 
   const assignGuestToSeat = (guestId: string, seat: SeatType) => {
     let isAlreadySeated = false;
+    let oldSeatLabel: string | undefined;
     layouts.forEach(layout => {
         layout.tables.forEach(table => {
             table.seats.forEach(s => {
                 if (s.guestId === guestId && s.id !== seat.id) {
                     isAlreadySeated = true;
+                    oldSeatLabel = s.label;
                 }
             });
         });
     });
 
     if (isAlreadySeated) {
-        toast({ title: "Assignment Failed", description: "This guest is already assigned to another seat.", variant: "destructive" });
+        toast({
+            title: "Assignment Failed",
+            description: `This guest is already assigned to seat ${oldSeatLabel}. Please clear that assignment first.`,
+            variant: "destructive"
+        });
         return false;
     }
     
-    setLayouts(prevLayouts => {
-        return prevLayouts.map(layout => {
+    // Clear any other seats this guest might be in (should not happen with the check above, but for safety)
+     setLayouts(prevLayouts => {
+        const newLayouts = prevLayouts.map(layout => {
             const newTables = layout.tables.map(table => ({
                 ...table,
                 seats: table.seats.map(s => {
-                    if (s.guestId === guestId && s.id !== seat.id) {
-                        return { ...s, guestId: null };
-                    }
+                    if (s.guestId === guestId) return { ...s, guestId: null };
+                    return s;
+                })
+            }));
+            return { ...layout, tables: newTables };
+        });
+
+        // Now assign to the new seat
+        return newLayouts.map(layout => {
+             if (layout.id !== currentLayout?.id) return layout;
+             const newTables = layout.tables.map(table => ({
+                ...table,
+                seats: table.seats.map(s => {
                     if (s.id === seat.id) {
                         return { ...s, guestId: guestId };
                     }
@@ -235,7 +252,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         allGuests[guestIndex].seatAssignment = seat.label;
     }
     
-    setGuests(prev => prev.map(g => g.id === guestId ? { ...g, seatAssignment: seat.label } : g));
+    setGuests(prev => prev.map(g => g.id === guestId ? { ...g, seatAssignment: seat.label } : (g.seatAssignment === seat.label ? { ...g, seatAssignment: null } : g) ));
 
     const guest = allGuests.find(g => g.id === guestId);
     toast({ title: "Seat Assigned", description: `${guest?.fullName} has been assigned to seat ${seat.label}.` });
