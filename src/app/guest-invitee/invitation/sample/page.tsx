@@ -36,17 +36,24 @@ export default function GuestInviteeInvitationView() {
   const { t } = useLanguage();
   const { events, guests, setGuests } = useDemoData();
 
-  const guest = useMemo(() => guests.find((g) => g.category === 'VIP'), [guests]);
+  // Handoff Note: For the demo, we are showing two different "sample" guests
+  // One is a regular VIP, the other is one who has been "removed"
+  const guest = useMemo(() => guests.find((g) => g.id === 'gst-002'), [guests]);
+  // const guest = useMemo(() => guests.find((g) => g.id === 'gst-014'), [guests]); 
+  
   const event = useMemo(() => events.find((e) => e.id === guest?.eventId), [events, guest]);
 
   useEffect(() => {
-    // Handoff Note: This is a demo-specific check to simulate an expired invitation.
+    // Handoff Note: This is a demo-specific check to simulate an expired or invalid invitation.
     // In production, this logic would likely be handled by a server or middleware
     // before the page even loads, redirecting based on the event's actual status.
     if (event?.status === 'Completed') {
       router.replace('/guest-invitee/invitation/error?reason=expired');
     }
-  }, [event, router]);
+    if (guest?.rsvpStatus === 'Removed') {
+      router.replace('/guest-invitee/invitation/error?reason=removed');
+    }
+  }, [event, guest, router]);
 
   if (!guest) {
     return (
@@ -63,7 +70,7 @@ export default function GuestInviteeInvitationView() {
     );
   }
 
-  if (!event || event.status === 'Completed') {
+  if (!event || event.status === 'Completed' || guest.rsvpStatus === 'Removed') {
     // This check prevents rendering while the redirect is happening.
     return null;
   }
@@ -188,3 +195,5 @@ export default function GuestInviteeInvitationView() {
     </div>
   );
 }
+
+    

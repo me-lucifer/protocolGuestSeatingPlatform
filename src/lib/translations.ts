@@ -58,6 +58,8 @@ export const translations = {
     invitationErrorTitle: 'Invitation Not Found',
     invitationErrorBody: 'This invitation link appears to be invalid or has expired.',
     invitationExpiredBody: 'This event has been completed and the invitation is no longer active.',
+    invitationRemovedTitle: 'Invitation No Longer Valid',
+    invitationRemovedBody: 'This invitation is no longer valid. Please contact the Protocol Office for more information.',
     invitationErrorHelper: 'If you believe this is an error, please contact the Protocol Office. You may also view a sample invitation to see how the system works.',
 
     // Timeline
@@ -124,6 +126,8 @@ export const translations = {
     invitationErrorTitle: 'Invitation non trouvée',
     invitationErrorBody: 'Ce lien d\'invitation semble invalide ou a expiré.',
     invitationExpiredBody: 'Cet événement est terminé et l\'invitation n\'est plus active.',
+    invitationRemovedTitle: 'Invitation n\'est plus valide',
+    invitationRemovedBody: 'Cette invitation n\'est plus valide. Veuillez contacter le Bureau du Protocole pour plus d\'informations.',
     invitationErrorHelper: 'Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter le Bureau du Protocole. Vous pouvez également consulter un exemple d\'invitation pour voir comment le système fonctionne.',
 
     // Timeline
@@ -133,3 +137,5 @@ export const translations = {
     timelinePresentCode: 'Arrivée',
   },
 };
+
+    

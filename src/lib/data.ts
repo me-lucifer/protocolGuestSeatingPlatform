@@ -109,7 +109,7 @@ export type Guest = {
   delegation: string;
   category: 'VIP' | 'Diplomatic' | 'Press' | 'Staff';
   rankLevel: number; // Lower number = higher rank
-  rsvpStatus: 'Not Invited' | 'Invited' | 'Accepted' | 'Declined';
+  rsvpStatus: 'Not Invited' | 'Invited' | 'Accepted' | 'Declined' | 'Removed';
   seatAssignment: string | null;
   eventId: string;
   checkInStatus: 'Checked-in' | 'Not Arrived' | 'Denied' | 'No Show';
@@ -176,7 +176,6 @@ export const initialGuests: Guest[] = [
     organization: 'World News Network',
     delegation: 'Press Corps',
     category: 'Press',
-    rankLevel: 10,
     rsvpStatus: 'Declined',
     seatAssignment: null,
     eventId: 'evt-001',
@@ -272,7 +271,6 @@ export const initialGuests: Guest[] = [
     organization: 'Associated Press',
     delegation: 'Press Corps',
     category: 'Press',
-    rankLevel: 10,
     rsvpStatus: 'Invited',
     seatAssignment: null,
     eventId: 'evt-001',
@@ -311,6 +309,22 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'r1@timesherald.com',
+    lastEmailSent: '2024-11-01',
+  },
+  {
+    id: 'gst-014',
+    fullName: 'Former Invitee',
+    title: 'Consultant',
+    organization: 'Future Concepts Inc.',
+    delegation: 'Future Concepts Inc.',
+    category: 'Diplomatic',
+    rankLevel: 8,
+    rsvpStatus: 'Removed',
+    seatAssignment: null,
+    eventId: 'evt-001',
+    checkInStatus: 'Not Arrived',
+    checkInTime: null,
+    email: 'fi@future.com',
     lastEmailSent: '2024-11-01',
   },
   // Guests for International Trade Summit (evt-002)
@@ -509,3 +523,5 @@ export const initialOrganizations: Organization[] = [
     locale: 'en-US',
   },
 ];
+
+    

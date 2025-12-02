@@ -42,7 +42,7 @@ import { AddGuestDialog } from './AddGuestDialog';
 import { useDemoData } from '@/contexts/DemoContext';
 
 const guestCategories: Guest['category'][] = ['VIP', 'Diplomatic', 'Press', 'Staff'];
-const rsvpStatuses: Guest['rsvpStatus'][] = ['Accepted', 'Declined', 'Invited', 'Not Invited'];
+const rsvpStatuses: Guest['rsvpStatus'][] = ['Accepted', 'Declined', 'Invited', 'Not Invited', 'Removed'];
 
 export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAssignSeat: (guest: Guest) => void; }) {
   const { guests: allGuests, setGuests } = useDemoData();
@@ -78,6 +78,7 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
       case 'Accepted': return 'default';
       case 'Declined': return 'destructive';
       case 'Invited': return 'secondary';
+      case 'Removed': return 'outline';
       default: return 'outline';
     }
   }
@@ -199,3 +200,5 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
     </Card>
   );
 }
+
+    

@@ -29,6 +29,13 @@ export default function InvitationErrorPage() {
                 helper: t.invitationErrorHelper,
             }
         }
+        if (reason === 'removed') {
+             return {
+                title: t.invitationRemovedTitle,
+                body: t.invitationRemovedBody,
+                helper: t.invitationErrorHelper,
+            }
+        }
         // Default error
         return {
             title: t.invitationErrorTitle,
@@ -73,3 +80,5 @@ export default function InvitationErrorPage() {
     </div>
   );
 }
+
+    
