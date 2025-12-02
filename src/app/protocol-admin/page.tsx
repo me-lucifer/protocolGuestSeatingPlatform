@@ -33,7 +33,8 @@ import {
 import { 
     PlusCircle, 
     Calendar, 
-    Send, Pencil,
+    Send,
+    Pencil,
     UserCheck, 
     CalendarCheck2,
     Search,
@@ -98,7 +99,7 @@ export default function ProtocolAdminDashboard() {
         </div>
         <Button asChild>
             <Link href="/protocol-admin/events/new">
-                <PlusCircle />
+                <PlusCircle className="mr-2 h-4 w-4" />
                 Create New Event
             </Link>
         </Button>
@@ -210,8 +211,8 @@ export default function ProtocolAdminDashboard() {
                     <TableCell id={event.id === 'evt-001' ? 'tour-step-3' : ''} className="text-right">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <MoreHorizontal />
+                                <Button variant="ghost" size="icon" aria-label={`Actions for ${event.name}`}>
+                                    <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Actions for {event.name}</span>
                                 </Button>
                             </DropdownMenuTrigger>

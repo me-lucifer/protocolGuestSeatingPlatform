@@ -1,5 +1,5 @@
 
-import { Briefcase, CheckSquare, Fingerprint, Ticket, type LucideIcon } from 'lucide-react';
+import { Briefcase, CheckSquare, Fingerprint, Ticket, type LucideIcon, LayoutDashboard, Users2 } from 'lucide-react';
 
 // Handoff Note: This file contains all the mock data used for the prototype.
 // In a production application, this data would be fetched from a backend database.
@@ -523,5 +523,3 @@ export const initialOrganizations: Organization[] = [
     locale: 'en-US',
   },
 ];
-
-    

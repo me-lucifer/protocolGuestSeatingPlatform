@@ -118,7 +118,7 @@ export default function CreateEventPage() {
         <CardFooter className="flex justify-between">
           <Button variant="outline" asChild>
             <Link href="/protocol-admin">
-              <ArrowLeft />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Cancel
             </Link>
           </Button>

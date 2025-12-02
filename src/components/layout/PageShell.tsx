@@ -28,6 +28,8 @@ import {
   Palette,
   ScrollText,
   Shield,
+  LayoutDashboard,
+  Users2
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -48,7 +50,7 @@ type NavItem = {
 
 const navItems: { [key: string]: NavItem[] } = {
   'Super Admin / IT Admin': [
-    { href: '/super-admin', icon: Settings, label: 'Dashboard' },
+    { href: '/super-admin', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/super-admin/organizations', icon: Warehouse, label: 'Organizations' },
     { href: '/super-admin/users', icon: Users, label: 'Users & Roles' },
     { href: '/super-admin/branding', icon: Palette, label: 'Branding' },
@@ -56,8 +58,8 @@ const navItems: { [key: string]: NavItem[] } = {
     { href: '/super-admin/audit', icon: ScrollText, label: 'Audit & Logs' },
   ],
   'Protocol Admin / Event Manager': [
-    { href: '/protocol-admin', icon: Calendar, label: 'Events' },
-    { href: '/protocol-admin/guests', icon: Users, label: 'Guests' },
+    { href: '/protocol-admin', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/protocol-admin/guests', icon: Users2, label: 'All Guests' },
   ],
   'Protocol Officer / Entrance Agent': [
     { href: '/protocol-officer', icon: Users, label: 'Guest Check-in' },
@@ -146,7 +148,7 @@ export function PageShell({
   const isRoleHomePage = pathname === `/super-admin` || pathname === `/protocol-admin` || pathname === `/protocol-officer` || pathname === `/guest-invitee`;
 
   const getAdjustedPath = (path: string) => {
-    if (path === '/protocol-admin/events' || path === '/protocol-admin') return '/protocol-admin';
+    if (path.startsWith('/protocol-admin/events')) return '/protocol-admin';
     return path;
   }
   
@@ -188,7 +190,7 @@ export function PageShell({
                   {currentNavItems.map((item) => {
                     let isActive = false;
                     if (role === 'Protocol Admin / Event Manager') {
-                      isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
+                      isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' : pathname.startsWith(item.href);
                     } else if (role === 'Super Admin / IT Admin') {
                       isActive = item.href === '/super-admin' ? (pathname === '/super-admin' && isRoleHomePage) : pathname.startsWith(item.href);
                     } else {

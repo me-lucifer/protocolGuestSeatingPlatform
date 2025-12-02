@@ -158,8 +158,8 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
                   <TableCell className="text-right">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <MoreHorizontal />
+                            <Button variant="ghost" size="icon" aria-label={`Actions for ${guest.fullName}`}>
+                                <MoreHorizontal className="h-4 w-4" />
                                 <span className="sr-only">Actions for {guest.fullName}</span>
                             </Button>
                         </DropdownMenuTrigger>
@@ -200,5 +200,3 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
     </Card>
   );
 }
-
-    

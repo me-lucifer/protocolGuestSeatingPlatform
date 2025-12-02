@@ -29,7 +29,7 @@ export function ImportGuestsDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <Upload />
+          <Upload className="mr-2 h-4 w-4" />
           Import Guests
         </Button>
       </DialogTrigger>
