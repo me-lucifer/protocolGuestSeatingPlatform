@@ -28,6 +28,7 @@ import {
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
+import { SeatingPlanTab } from '@/components/protocol-admin/SeatingPlanTab';
 
 function PlaceholderContent({ title, icon: Icon }: { title: string, icon: React.ElementType }) {
   return (
@@ -223,7 +224,7 @@ export default function EventDetailPage() {
             <GuestListTab eventId={id as string} />
         </TabsContent>
         <TabsContent value="seating-plan" className="mt-6">
-            <PlaceholderContent title="Seating Plan" icon={Armchair} />
+            <SeatingPlanTab eventId={id as string} />
         </TabsContent>
         <TabsContent value="invitations" className="mt-6">
             <PlaceholderContent title="Invitations &amp; RSVPs" icon={Mail} />
