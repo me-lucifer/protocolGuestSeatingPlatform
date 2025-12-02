@@ -53,5 +53,8 @@ export {
     Bell,
     History,
     AlertTriangle,
-    FileText
+    FileText,
+    Palette,
+    ScrollText,
+    Warehouse
 } from 'lucide-react';

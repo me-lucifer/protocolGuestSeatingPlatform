@@ -24,6 +24,7 @@ import {
   Users,
   Building2,
   UserCircle,
+  Warehouse,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ type NavItem = {
 const navItems: { [key: string]: NavItem[] } = {
   'Super Admin / IT Admin': [
     { href: '/super-admin', icon: Settings, label: 'Dashboard' },
+    { href: '/super-admin/organizations', icon: Warehouse, label: 'Organizations' },
     { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
   ],
   'Protocol Admin / Event Manager': [
@@ -174,7 +176,7 @@ export function PageShell({
                    if (role === 'Protocol Admin / Event Manager') {
                      isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
                    } else if (role === 'Super Admin / IT Admin') {
-                     isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
+                     isActive = item.href === '/super-admin' ? (pathname === '/super-admin' && isRoleHomePage) : pathname.startsWith(item.href);
                    } else {
                      isActive = pathname.startsWith(item.href);
                    }

@@ -14,15 +14,16 @@ import {
     Calendar,
     Palette,
     Shield,
-    ScrollText
+    ScrollText,
+    Warehouse
 } from 'lucide-react';
 import Link from 'next/link';
 
 const metricCards = [
   {
     title: 'Managed Organizations',
-    value: '1',
-    description: 'Protocol Directorate',
+    value: '3',
+    description: '1 Core + 2 Ministries',
     icon: Building,
   },
   {
@@ -40,6 +41,12 @@ const metricCards = [
 ];
 
 const navCards = [
+    {
+        title: 'Organizations & Environments',
+        description: 'Manage directorates, ministries, and their settings.',
+        href: '/super-admin/organizations',
+        icon: Warehouse
+    },
     {
         title: 'Users & Roles',
         description: 'Manage user accounts and role-based access control.',
