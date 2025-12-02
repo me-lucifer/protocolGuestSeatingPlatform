@@ -33,7 +33,7 @@ import {
 import { 
     PlusCircle, 
     Calendar, 
-    Send, 
+    Send, Pencil,
     UserCheck, 
     CalendarCheck2,
     Search,
@@ -214,9 +214,14 @@ export default function ProtocolAdminDashboard() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem>View Details</DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                  <Link href={`/protocol-admin/events/${event.id}`}>View Details</Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>Manage Guests</DropdownMenuItem>
-                                <DropdownMenuItem>Edit Event</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit Event
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </TableCell>
