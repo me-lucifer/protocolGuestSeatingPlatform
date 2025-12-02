@@ -12,10 +12,11 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell, History } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { format } from 'date-fns';
 
 function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfirm: () => void, confirmed: boolean }) {
   const router = useRouter();
@@ -72,6 +73,30 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
   );
 }
 
+function DuplicateScanResult({ guest, onReEnter }: { guest: Guest, onReEnter: () => void }) {
+  const router = useRouter();
+  
+  return (
+    <div className="flex flex-col items-center text-center">
+      <History className="w-20 h-20 text-amber-500 mb-4" />
+      <CardTitle className="text-2xl mb-2">Guest Already Checked-in</CardTitle>
+      <p className="text-lg font-semibold text-foreground">{guest.fullName}</p>
+      <p className="text-muted-foreground">
+        First checked in at: {guest.checkInTime ? format(new Date(guest.checkInTime), 'p') : 'Unknown time'}
+      </p>
+
+      <div className="w-full mt-8 space-y-2">
+        <Button size="lg" className="w-full" onClick={onReEnter}>
+          Allow Re-entry (demo)
+        </Button>
+        <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function ErrorResult({ title, message, icon: Icon }: { title: string; message: string; icon: React.ElementType }) {
   const router = useRouter();
 
@@ -97,6 +122,7 @@ export default function ScanResultPage() {
   const router = useRouter();
   const { toast } = useToast();
   const guestId = searchParams.get('guestId');
+  const isDuplicate = searchParams.get('duplicate') === 'true';
 
   const [guest, setGuest] = useState<Guest | null | undefined>(undefined);
   const [confirmed, setConfirmed] = useState(false);
@@ -104,14 +130,16 @@ export default function ScanResultPage() {
   useEffect(() => {
     const foundGuest = allGuests.find(g => g.id === guestId);
     setGuest(foundGuest || null);
-    if (foundGuest?.checkInStatus === 'Checked-in') {
-        setConfirmed(true);
-    }
   }, [guestId]);
 
 
   const handleConfirm = () => {
     if (guest) {
+        if (guest.checkInStatus === 'Checked-in') {
+            router.push(`/protocol-officer/scan-result?guestId=${guest.id}&duplicate=true`);
+            return;
+        }
+
         const guestIndex = allGuests.findIndex((g) => g.id === guest.id);
         if (guestIndex !== -1) {
             allGuests[guestIndex].checkInStatus = 'Checked-in';
@@ -122,6 +150,16 @@ export default function ScanResultPage() {
               description: `${guest.fullName} is now checked in.`,
             });
         }
+    }
+  }
+  
+  const handleReEnter = () => {
+    if (guest) {
+      toast({
+        title: "Re-entry Confirmed (Demo)",
+        description: `${guest.fullName} was allowed re-entry. This action would be logged.`,
+      });
+      router.push('/protocol-officer');
     }
   }
 
@@ -138,10 +176,8 @@ export default function ScanResultPage() {
       return <ErrorResult title="Unknown Code" message="This QR code is not valid for this event." icon={XCircle} />;
     }
     
-    // If the guest is already checked-in, but this page was reached via a new scan/lookup
-    // we show the confirmed state directly.
     if (guest.checkInStatus === 'Checked-in' && !confirmed) {
-        setConfirmed(true);
+      return <DuplicateScanResult guest={guest} onReEnter={handleReEnter} />;
     }
 
     return <SuccessResult guest={guest} onConfirm={handleConfirm} confirmed={confirmed} />;
@@ -169,5 +205,3 @@ export default function ScanResultPage() {
     </div>
   );
 }
-
-    
