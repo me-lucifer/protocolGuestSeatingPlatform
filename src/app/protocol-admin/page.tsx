@@ -60,7 +60,7 @@ export default function ProtocolAdminEventsPage() {
                 <TableCell className="hidden lg:table-cell">{event.venue}</TableCell>
                 <TableCell className="text-center">{event.guestCount}</TableCell>
                 <TableCell className="text-right">
-                  <Badge variant={getStatusVariant(event.status)}>
+                  <Badge variant={getStatusVariant(event.status)} className="capitalize">
                     {event.status}
                   </Badge>
                 </TableCell>

@@ -88,7 +88,7 @@ export default function ProtocolOfficerInterface() {
                   <TableCell className="hidden md:table-cell">{guest.organization}</TableCell>
                   <TableCell className="hidden sm:table-cell">{guest.seatAssignment || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant={guest.checkInStatus === 'Checked-in' ? 'secondary' : 'outline'}>
+                    <Badge variant={guest.checkInStatus === 'Checked-in' ? 'default' : 'secondary'} className="capitalize">
                       {guest.checkInStatus}
                     </Badge>
                   </TableCell>

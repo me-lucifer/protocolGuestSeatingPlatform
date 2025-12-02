@@ -1,4 +1,4 @@
-import { events } from '@/lib/data';
+import { events, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -60,7 +60,7 @@ export default function ProtocolAdminEventsPage() {
                 <TableCell className="text-center hidden sm:table-cell">{event.type}</TableCell>
                 <TableCell className="text-center">{event.guestCount}</TableCell>
                 <TableCell className="text-right">
-                  <Badge variant={getStatusVariant(event.status)}>
+                  <Badge variant={getStatusVariant(event.status)} className="capitalize">
                     {event.status}
                   </Badge>
                 </TableCell>

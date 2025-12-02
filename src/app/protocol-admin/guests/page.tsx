@@ -1,4 +1,4 @@
-import { guests, events } from '@/lib/data';
+import { guests, events, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { Guest } from '@/lib/data';
 
 export default function ProtocolAdminGuestsPage() {
   const getEventName = (eventId: string) => {
@@ -68,6 +67,7 @@ export default function ProtocolAdminGuestsPage() {
                 <TableCell className="text-right">
                   <Badge
                     variant={getRsvpVariant(guest.rsvpStatus)}
+                    className="capitalize"
                   >
                     {guest.rsvpStatus}
                   </Badge>
