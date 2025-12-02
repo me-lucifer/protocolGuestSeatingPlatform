@@ -21,7 +21,6 @@ import {
   Calendar,
   MapPin,
   Users,
-  BarChart,
   Armchair,
   Mail,
   ClipboardCheck,
@@ -74,13 +73,13 @@ export default function EventDetailPage() {
     }
   };
 
-  const rsvpSummary = eventGuests.reduce(
+  const rsvpSummary = useMemo(() => eventGuests.reduce(
     (acc, guest) => {
       acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
       return acc;
     },
-    {} as Record<Event['status'], number>
-  );
+    { Accepted: 0, Declined: 0, Invited: 0 } as Record<Guest['rsvpStatus'], number>
+  ), [eventGuests]);
 
   return (
     <div className="space-y-6">
