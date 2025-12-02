@@ -27,6 +27,7 @@ import {
   Warehouse,
   Palette,
   ScrollText,
+  Shield,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -153,6 +154,8 @@ export function PageShell({
   
   const isMobileEmulation = role === 'Protocol Officer / Entrance Agent';
 
+  const isAdminRole = role.includes('Admin');
+
   return (
     <div className="page-shell-container">
       <SidebarProvider>
@@ -210,6 +213,12 @@ export function PageShell({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
+            {isAdminRole && (
+              <div className="p-4 text-xs text-muted-foreground border-t border-sidebar-border space-y-2">
+                 <h4 className="font-semibold text-foreground flex items-center gap-2"><Shield size={14} /> Privacy Note (Demo)</h4>
+                 <p>Guest data is sensitive. In a production environment, this platform would adhere to strict data protection regulations (e.g., GDPR, PIPEDA) to ensure information is handled securely and responsibly.</p>
+              </div>
+            )}
             <div className="p-4 text-center text-xs text-muted-foreground">
               &copy; 2024 Protocol Platform
             </div>
