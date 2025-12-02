@@ -12,7 +12,6 @@ import {
 import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, Shirt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,9 +24,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function GuestInviteeInvitationView() {
-  const { toast } = useToast();
+  const router = useRouter();
   // For this prototype, we'll just show the details for the first VIP guest.
   const guest = guests.find((g) => g.category === 'VIP');
 
@@ -53,7 +53,7 @@ export default function GuestInviteeInvitationView() {
       <div className="flex justify-center items-start p-4">
         <Card className="max-w-2xl w-full">
           <CardHeader>
-            <CardTitle>Error</CardTitle>
+            <CardTitle>Error</_CardTitle>
           </CardHeader>
           <CardContent>
             <p>Event details could not be found for this guest.</p>
@@ -64,10 +64,13 @@ export default function GuestInviteeInvitationView() {
   }
 
   const handleDecline = () => {
-    toast({
-      title: `RSVP action (demo only)`,
-      description: `You have declined the invitation.`,
-    });
+    // In a real app, this would be an API call.
+    // For this prototype, we'll mutate the shared data directly.
+    const guestIndex = guests.findIndex((g) => g.id === guest.id);
+    if (guestIndex !== -1) {
+      guests[guestIndex].rsvpStatus = 'Declined';
+    }
+    router.push('/guest-invitee/invitation/declined');
   };
 
   return (
@@ -123,7 +126,7 @@ export default function GuestInviteeInvitationView() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-6 text-center">
-            This is a prototype for demonstration purposes. Your response will not be recorded.
+            This is a prototype for demonstration purposes. Your response will be reflected in this demo session.
           </p>
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
@@ -138,12 +141,12 @@ export default function GuestInviteeInvitationView() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Decline Invitation</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This is a prototype action. Your response will not be saved. Do you want to simulate declining?
+                  Are you sure you want to decline the invitation? This action will be reflected in the prototype session.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDecline}>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={handleDecline}>Decline</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
