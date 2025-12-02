@@ -42,6 +42,8 @@ export default function CreateEventPage() {
   const router = useRouter();
 
   const handleSave = () => {
+    // In a real app, you would collect form data and send it to an API.
+    // For this demo, we just show a toast and redirect.
     toast({
       title: 'Event Saved (Demo)',
       description: 'The new event has been created in this demo session.',
