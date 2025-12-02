@@ -143,6 +143,8 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
             description: "Check-in will be synced when you're back online.",
         });
     }
+    // Handoff Note: This navigates to a result page. In a real SPA-like mobile app,
+    // this might be a view transition rather than a full page load.
     router.push(`/protocol-officer/scan-result?guestId=${guestId}`);
   };
 
@@ -309,6 +311,9 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
   const { toast } = useToast();
 
   const handleSimulateScan = (guestId: string) => {
+    // Handoff Note: This function simulates a successful QR code scan.
+    // In production, this would be replaced with a camera library (e.g., react-qr-reader)
+    // that captures data and calls an API to validate the guest.
     if (isOffline) {
         toast({
             title: "Offline Mode (Demo)",
@@ -345,7 +350,12 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
   );
 }
 
-
+// Handoff Note: This is the main component for the Protocol Officer role.
+// It emulates a mobile app experience within a desktop browser for demonstration.
+// The state management (`useState`, `view`) is for front-end routing between simulated screens.
+// In a production native or web app, this would likely use a dedicated routing library.
+// The `isOffline` state is a simulation; real offline capability requires a service worker
+// and a library like Workbox or a custom solution for data synchronization.
 export default function ProtocolOfficerInterface() {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
@@ -357,6 +367,7 @@ export default function ProtocolOfficerInterface() {
   // This state is just to trigger re-renders on children when data changes.
   const [_, setForceUpdate] = useState(0);
   useEffect(() => {
+    // This interval simulates real-time data updates from a server.
     const interval = setInterval(() => {
         if (activeEvent) {
              setForceUpdate(v => v + 1);

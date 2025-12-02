@@ -76,6 +76,10 @@ const demoScriptSteps = [
     'Return to the Admin Day-of Operations tab to see the live effect.'
 ]
 
+// Handoff Note: This entire component is for demonstration purposes only.
+// It provides a quick way to navigate the prototype and access demo-specific features
+// like the guided tour and data reset. It should be completely removed in a
+// production build.
 export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
   const { startTour } = useTour();

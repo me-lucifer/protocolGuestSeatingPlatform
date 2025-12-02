@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -23,10 +24,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
+        {/*
+          // Handoff Note:
+          // DemoProvider and TourProvider are for demonstration purposes only.
+          // In a production environment, these would be removed.
+          // The core application structure begins inside these providers.
+        */}
         <DemoProvider>
           <TourProvider>
             {children}
             <Toaster />
+            {/* DemoHelper is a demo-only component for quick navigation and guides. */}
             <DemoHelper />
           </TourProvider>
         </DemoProvider>

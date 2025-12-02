@@ -34,13 +34,23 @@ import { DayOfOperationsTab } from '@/components/protocol-admin/DayOfOperationsT
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useDemoData } from '@/contexts/DemoContext';
 
-
+// Handoff Note: This is the main page for managing a single event.
+// It's a container for several tabs, each handling a different aspect of event management.
+// The `useDemoData` hook is for the prototype; in production, this page would fetch
+// event data from an API based on the `id` from the URL parameters (`useParams`).
+// Each tab component (`GuestListTab`, `SeatingPlanTab`, etc.) would similarly fetch
+// its own required data.
 export default function EventDetailPage() {
   const params = useParams();
   const { id } = params;
+  // Handoff Note: Using a demo context to get and manage data.
+  // Replace with a data fetching library like React Query or SWR.
   const { events, guests } = useDemoData();
 
   const [activeTab, setActiveTab] = useState('overview');
+  // Handoff Note: `guestToAssign` is a piece of local state used for the demo
+  // to pass a guest from the GuestListTab to the SeatingPlanTab to initiate assignment.
+  // A production implementation might use a more robust state management solution or URL state.
   const [guestToAssign, setGuestToAssign] = useState<Guest | null>(null);
 
   const event = useMemo(() => events.find((e) => e.id === id), [events, id]);
@@ -81,6 +91,9 @@ export default function EventDetailPage() {
     }
   };
 
+  // Handoff Note: `rsvpSummary` is calculated on the client side for the demo.
+  // In production, these aggregate values should be calculated on the backend
+  // and fetched, or calculated via a performant client-side selector if using a state management library.
   const rsvpSummary = useMemo(() => {
     if (!eventGuests) return { Accepted: 0, Declined: 0, Invited: 0 };
     return eventGuests.reduce(

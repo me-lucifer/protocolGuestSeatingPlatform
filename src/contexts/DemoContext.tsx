@@ -4,6 +4,12 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
 import { initialEvents, initialGuests, initialRoomLayouts, initialUsers, initialOrganizations, type Event, type Guest, type RoomLayout, type User, type Organization } from '@/lib/data';
 
+// Handoff Note: This entire file is for demonstration purposes.
+// It sets up a React Context to manage mock data in-memory, allowing for interactive
+// changes within a single session. In production, this would be replaced by a proper
+// data fetching and state management solution (e.g., React Query, SWR, or a Redux-like store)
+// that interacts with a backend API.
+
 // A deep copy function to avoid reference issues
 const deepCopy = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
@@ -28,6 +34,7 @@ export const DemoDataProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[]>(() => deepCopy(initialUsers));
   const [organizations, setOrganizations] = useState<Organization[]>(() => deepCopy(initialOrganizations));
 
+  // This function allows resetting the demo to its initial state.
   const resetDemoData = useCallback(() => {
     setEvents(deepCopy(initialEvents));
     setGuests(deepCopy(initialGuests));

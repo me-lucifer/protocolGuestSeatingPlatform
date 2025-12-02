@@ -1,6 +1,11 @@
 
 import { Briefcase, CheckSquare, Fingerprint, Ticket, type LucideIcon } from 'lucide-react';
 
+// Handoff Note: This file contains all the mock data used for the prototype.
+// In a production application, this data would be fetched from a backend database.
+// The types defined here (Role, Event, Guest, etc.) can serve as a starting point
+// for defining database schemas and API response structures.
+
 export type Role = {
   name: string;
   description: string;

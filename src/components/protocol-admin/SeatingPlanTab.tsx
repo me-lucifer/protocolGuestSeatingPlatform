@@ -46,6 +46,9 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Progress } from '../ui/progress';
 import { useDemoData } from '@/contexts/DemoContext';
 
+// Handoff Note: The Seat component is designed to be a flexible representation of a physical seat.
+// It's production-ready in terms of structure, but the styling and interactions can be enhanced.
+// The different variants (empty, occupied, vip, etc.) are controlled by data and can be expanded.
 function Seat({ seat, onSeatSelect, isAssignmentMode, guests }: { seat: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean, guests: Guest[] }) {
     const guest = guests.find(g => g.id === seat.guestId);
     
@@ -158,6 +161,11 @@ function SeatingLegend() {
     )
 }
 
+// Handoff Note: This component is a core part of the event management workflow.
+// The data management (`useState`, `useMemo`) is based on the demo context. In production,
+// this would be replaced with API calls to fetch and update seating data. The UI components
+// (Sheet, Combobox, etc.) are production-ready. The auto-arrange feature is a simplified
+// placeholder and would need a more sophisticated algorithm based on real protocol rules.
 export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }: { eventId: string; guestToAssign: Guest | null; onAssignmentComplete: () => void; }) {
   const { toast } = useToast();
   const { featureFlags } = useFeatureFlags();
@@ -178,6 +186,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   const isAssignmentMode = activeGuestAssignment !== null;
 
   useEffect(() => {
+    // This effect ensures the component's state is updated if the global demo data changes.
     setEventLayouts(allRoomLayouts.filter(rl => rl.eventId === eventId));
     setEventGuests(allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted'));
     if (!allRoomLayouts.find(l => l.id === selectedLayoutId)) {
@@ -188,6 +197,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   const currentLayout = useMemo(() => eventLayouts.find(l => l.id === selectedLayoutId), [eventLayouts, selectedLayoutId]);
 
   useEffect(() => {
+    // This effect is for the demo "Assign Seat" feature from the guest list.
     if (guestToAssign) {
         setActiveGuestAssignment(guestToAssign);
         setSeatFilter('empty'); // Automatically filter for empty seats
@@ -206,6 +216,8 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     let isAlreadySeated = false;
     let oldSeatLabel: string | undefined;
 
+    // Handoff Note: This is a simplified conflict check for the demo.
+    // A production system would need more robust, server-side validation to handle concurrent edits.
     allRoomLayouts.forEach(layout => {
         layout.tables.forEach(table => {
             const foundSeat = table.seats.find(s => s.guestId === guestId);
@@ -225,6 +237,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return false;
     }
     
+    // In-memory data update for the demo.
     const newLayouts = allRoomLayouts.map(layout => {
       let layoutModified = false;
       const newTables = layout.tables.map(table => {
@@ -299,6 +312,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
 
     const guestToUnseatId = selectedSeat.guestId;
 
+    // Demo-only in-memory update
     setRoomLayouts(prevLayouts => {
         return prevLayouts.map(layout => ({
             ...layout,
@@ -319,6 +333,9 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   };
 
   const handleAutoArrange = () => {
+    // Handoff Note: This is a highly simplified auto-arrange for demo purposes.
+    // A production version would require a sophisticated algorithm that considers
+    // guest rank, delegations, avoidances, and other complex protocol rules.
     const acceptedGuests = allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
     const sortedGuests = [...acceptedGuests].sort((a, b) => {
         if (a.rankLevel !== b.rankLevel) return a.rankLevel - b.rankLevel;
