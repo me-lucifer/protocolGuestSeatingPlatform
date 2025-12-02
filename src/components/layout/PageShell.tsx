@@ -42,13 +42,13 @@ const navItems: { [key: string]: NavItem[] } = {
     { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
   ],
   'Protocol Admin / Event Manager': [
-    { href: '/protocol-admin/events', icon: Calendar, label: 'Events' },
+    { href: '/protocol-admin', icon: Calendar, label: 'Events' },
     { href: '/protocol-admin/guests', icon: Users, label: 'Guests' },
   ],
   'Protocol Officer / Entrance Agent': [
     { href: '/protocol-officer', icon: Users, label: 'Guest Check-in' },
   ],
-  'Guest / Invitee': [{ href: '/guest', icon: Ticket, label: 'My Invitation' }],
+  'Guest / Invitee': [{ href: '/guest-invitee', icon: Ticket, label: 'My Invitation' }],
 };
 
 export function PageShell({
@@ -59,36 +59,19 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  // Find the base path for the current role
-  const roleBasePath = Object.values(navItems)
-    .flat()
-    .find((item) => pathname.startsWith(item.href))?.href.split('/')[1] || '';
 
   const currentNavItems = navItems[role] || [];
   
-  // Determine if the current page is the root for the role.
-  const isRoleHomePage = pathname === `/super-admin` || pathname === `/protocol-admin` || pathname === `/protocol-officer` || pathname === `/guest`;
+  const isRoleHomePage = pathname === `/super-admin` || pathname === `/protocol-admin` || pathname === `/protocol-officer` || pathname === `/guest-invitee`;
 
   const getAdjustedPath = (path: string) => {
     if (path === '/protocol-admin/events' || path === '/protocol-admin') return '/protocol-admin';
     return path;
   }
   
-  // Special handling for protocol-admin
   const adjustedPathname = getAdjustedPath(pathname);
-  const protocolAdminNavItems = [
-    { href: '/protocol-admin', icon: Calendar, label: 'Events' },
-    { href: '/protocol-admin/guests', icon: Users, label: 'Guests' },
-  ];
-
+  
   const getNavItems = () => {
-    if (role === 'Protocol Admin / Event Manager') return protocolAdminNavItems;
-    if (role === 'Super Admin / IT Admin' && (pathname === '/super-admin' || pathname === '/super-admin/settings')) {
-       return [
-        { href: '/super-admin', icon: Settings, label: 'Dashboard' },
-        { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
-      ];
-    }
     return currentNavItems;
   }
   
@@ -120,11 +103,11 @@ export function PageShell({
             {finalNavItems.map((item) => {
                let isActive = false;
                if (role === 'Protocol Admin / Event Manager') {
-                 isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' : pathname === item.href;
+                 isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
                } else if (role === 'Super Admin / IT Admin') {
-                 isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname === item.href;
+                 isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
                } else {
-                 isActive = pathname === item.href;
+                 isActive = pathname.startsWith(item.href);
                }
               return (
                 <SidebarMenuItem key={item.label}>

@@ -46,7 +46,7 @@ export const roles: Role[] = [
   {
     name: 'Guest / Invitee',
     description: 'For attendees.',
-    href: '/guest',
+    href: '/guest-invitee',
     icon: Ticket,
     keyActions: [
         'View official event invitation.',
