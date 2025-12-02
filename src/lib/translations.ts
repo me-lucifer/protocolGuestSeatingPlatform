@@ -54,6 +54,11 @@ export const translations = {
     eventDetails: 'Event Details',
     printablePrototypeNote: 'This printable view is part of a prototype. You can close this tab to return to the application.',
 
+    // Error Page
+    invitationErrorTitle: 'Invitation Not Found',
+    invitationErrorBody: 'This invitation link appears to be invalid or has expired.',
+    invitationErrorHelper: 'If you believe this is an error, please contact the Protocol Office. You may also view a sample invitation to see how the system works.',
+
     // Timeline
     timelineInvitation: 'Invitation',
     timelineRespond: 'Respond',
@@ -113,6 +118,11 @@ export const translations = {
     presentAtEntrancePrint: 'Veuillez présenter à l\'entrée',
     eventDetails: 'Détails de l\'événement',
     printablePrototypeNote: 'Cette vue imprimable fait partie d\'un prototype. Vous pouvez fermer cet onglet pour revenir à l\'application.',
+
+    // Error Page
+    invitationErrorTitle: 'Invitation non trouvée',
+    invitationErrorBody: 'Ce lien d\'invitation semble invalide ou a expiré.',
+    invitationErrorHelper: 'Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter le Bureau du Protocole. Vous pouvez également consulter un exemple d\'invitation pour voir comment le système fonctionne.',
 
     // Timeline
     timelineInvitation: 'Invitation',
