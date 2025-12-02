@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { guests as allGuests, type Guest } from '@/lib/data';
+import { guests as allGuests, events as allEvents, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star, Clock } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star, Clock, FileText, XCircle, HelpCircle } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -44,10 +44,11 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '../ui/badge';
 import { ScrollArea } from '../ui/scroll-area';
+import { useRouter } from 'next/navigation';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
-  // This state is just to trigger re-renders on children when data changes.
+  const router = useRouter();
   const [forceUpdate, setForceUpdate] = useState(0);
   const [isVipFocus, setIsVipFocus] = useState(false);
 
@@ -60,13 +61,17 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
 
   const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [eventId, forceUpdate]);
 
+  const event = useMemo(() => allEvents.find(e => e.id === eventId), [eventId]);
+
   const checkInStats = useMemo(() => {
     const expected = guests.filter(g => g.rsvpStatus === 'Accepted').length;
     const checkedIn = guests.filter(g => g.checkInStatus === 'Checked-in').length;
     const lateArrivals = guests.filter(g => g.isLate).length;
     const absent = expected - checkedIn;
     const progress = expected > 0 ? (checkedIn / expected) * 100 : 0;
-    return { expected, checkedIn, absent, progress, lateArrivals };
+    const declined = guests.filter(g => g.rsvpStatus === 'Declined').length;
+    const invited = guests.length;
+    return { expected, checkedIn, absent, progress, lateArrivals, declined, invited };
   }, [guests]);
   
   const recentCheckIns = useMemo(() => {
@@ -112,6 +117,14 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
       title: 'Demo State Reset',
       description: 'Guest check-in data for this event has been reset.',
     });
+  };
+
+  const handleCloseEvent = () => {
+    const eventIndex = allEvents.findIndex(e => e.id === eventId);
+    if (eventIndex !== -1) {
+      allEvents[eventIndex].status = 'Completed';
+    }
+    router.push(`/protocol-admin/events/${eventId}/summary`);
   };
 
   const getCheckInStatusVariant = (status: Guest['checkInStatus']) => {
@@ -320,37 +333,79 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                     <p className="text-sm text-muted-foreground">
                         <strong>Demo idea:</strong> Start here to see the admin's live view. Then, open the Protocol Officer view to simulate guest check-ins and watch this dashboard update in real-time.
                     </p>
-                    <Button asChild className="w-full">
-                        <Link href="/protocol-officer" target="_blank">
-                            <ExternalLink />
-                            Open Officer View (demo)
-                        </Link>
-                    </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="outline" className="w-full">
-                                <RotateCcw />
-                                Reset Demo State
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Confirm Reset</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This will reset all check-in data for this event. Guest statuses will be set to "Not Arrived" and recent check-in lists will be cleared. Are you sure?
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleResetState}>Confirm Reset</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="space-y-2">
+                        <Button asChild className="w-full">
+                            <Link href="/protocol-officer" target="_blank">
+                                <ExternalLink />
+                                Open Officer View (demo)
+                            </Link>
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="outline" className="w-full">
+                                    <RotateCcw />
+                                    Reset Demo State
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Confirm Reset</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will reset all check-in data for this event. Guest statuses will be set to "Not Arrived" and recent check-in lists will be cleared. Are you sure?
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleResetState}>Confirm Reset</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" className="w-full" disabled={event?.status === 'Completed'}>
+                                    <FileText />
+                                    Close Event (demo)
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Event Summary: {event?.name}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Below is the final attendance summary. Closing the event will mark it as 'Completed'.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <div className="text-sm my-4 space-y-2">
+                                     <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2"><Users/> Total Invited</span>
+                                        <span className="font-bold">{checkInStats.invited}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2"><UserCheck/> Accepted & Expected</span>
+                                        <span className="font-bold">{checkInStats.expected}</span>
+                                    </div>
+                                     <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2"><CheckCircle className="text-green-500" /> Checked In</span>
+                                        <span className="font-bold">{checkInStats.checkedIn}</span>
+                                    </div>
+                                     <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2"><UserX className="text-red-500" /> Not Arrived (Absent)</span>
+                                        <span className="font-bold">{checkInStats.absent}</span>
+                                    </div>
+                                     <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2"><XCircle/> Declined</span>
+                                        <span className="font-bold">{checkInStats.declined}</span>
+                                    </div>
+                                </div>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleCloseEvent}>Generate Summary Report (demo)</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </CardContent>
             </Card>
         </div>
     </div>
   );
 }
-
-    
