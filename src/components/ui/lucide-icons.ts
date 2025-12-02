@@ -66,7 +66,8 @@ export {
     Route,
     Zap,
     Shuffle,
-    X
+    X,
+    TimerOff
 } from 'lucide-react';
 
     

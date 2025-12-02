@@ -21,6 +21,7 @@ import {
   Route,
   ListChecks,
   RotateCcw,
+  TimerOff,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTour } from '@/contexts/TourContext';
@@ -40,6 +41,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const demoRoutes = [
   {
@@ -76,12 +78,13 @@ const demoScriptSteps = [
     'Return to the Admin Day-of Operations tab to see the live effect.'
 ]
 
-// Handoff Note: This entire component is for demonstration purposes only.
+// Handoff Note: This entire component is for demonstration purposes.
 // It provides a quick way to navigate the prototype and access demo-specific features
 // like the guided tour and data reset. It should be completely removed in a
 // production build.
 export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
   const { startTour } = useTour();
   const { isDemoMode, setIsDemoMode } = useDemo();
   const { resetDemoData } = useDemoData();
@@ -98,6 +101,11 @@ export function DemoHelper() {
         title: 'Demo Data Reset',
         description: 'All prototype data has been reset to its initial state.'
     });
+  }
+
+  const handleSimulateTimeout = () => {
+    setIsOpen(false);
+    router.push('/session-expired');
   }
   
   if (!isDemoMode) {
@@ -199,25 +207,30 @@ export function DemoHelper() {
 
             <Separator className="!my-4" />
 
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="w-full">
-                        <RotateCcw /> Reset Demo Data
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action will reset all events, guests, and seating assignments to their original state. This cannot be undone within the current session.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleReset}>Yes, reset data</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <div className="space-y-2">
+                <Button variant="outline" className="w-full" onClick={handleSimulateTimeout}>
+                    <TimerOff /> Simulate Session Timeout
+                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="w-full">
+                            <RotateCcw /> Reset Demo Data
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action will reset all events, guests, and seating assignments to their original state. This cannot be undone within the current session.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleReset}>Yes, reset data</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
 
              <div className="flex items-center justify-between rounded-lg border p-4 mt-4">
                 <div>
