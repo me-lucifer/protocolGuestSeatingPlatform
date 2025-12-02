@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell, History, Shuffle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { format } from 'date-fns';
@@ -131,7 +131,8 @@ function ErrorResult({ title, message, icon: Icon, children }: { title: string; 
   );
 }
 
-export default function ScanResultPage() {
+
+function ScanResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -259,4 +260,12 @@ export default function ScanResultPage() {
   );
 }
 
+
+export default function ScanResultPage() {
+    return (
+        <Suspense fallback={<div className="text-center text-muted-foreground p-8">Loading result...</div>}>
+            <ScanResultContent />
+        </Suspense>
+    )
+}
     
