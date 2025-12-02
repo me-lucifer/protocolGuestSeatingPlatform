@@ -12,10 +12,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { QrCode, ArrowLeft, Home } from 'lucide-react';
+import { QrCode, ArrowLeft, Home, Download, Printer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RsvpConfirmedPage() {
+  const { toast } = useToast();
   // For this prototype, we'll just show the details for the same VIP guest.
   const guest = guests.find((g) => g.category === 'VIP');
   const event = events.find((e) => e.id === guest?.eventId);
@@ -34,6 +36,13 @@ export default function RsvpConfirmedPage() {
       </div>
     );
   }
+
+  const handleDownload = () => {
+    toast({
+      title: 'Action Simulated',
+      description: 'In a real app, the QR code image would be downloaded.',
+    });
+  };
 
   return (
     <div className="flex justify-center items-start">
@@ -59,6 +68,18 @@ export default function RsvpConfirmedPage() {
             <p className="mt-4 text-muted-foreground">
               Please present this code at the event entrance for check-in.
             </p>
+            <div className="flex flex-col sm:flex-row gap-2 mt-6 w-full">
+              <Button onClick={handleDownload} variant="outline" className="w-full">
+                <Download />
+                Download QR (demo)
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/guest-invitee/invitation/printable" target="_blank">
+                    <Printer />
+                    Print Invitation (demo)
+                </Link>
+              </Button>
+            </div>
           </div>
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
