@@ -15,7 +15,7 @@ export default function Home() {
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4 md:p-8">
       <div className="w-full max-w-5xl">
         <Card className="w-full rounded-xl shadow-2xl border-primary/10">
-          <CardHeader className="text-center p-6 md:p-8">
+          <CardHeader className="text-center p-6 md:p-10">
             <h1 className="text-3xl font-bold tracking-tight text-primary font-headline md:text-4xl">
               Protocol Guest Seating Platform
             </h1>
