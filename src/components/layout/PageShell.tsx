@@ -102,7 +102,7 @@ function GuestNav() {
     }
     
     const getNavItems = () => {
-       return [{ href: '/guest-invitee/invitation/sample', icon: Ticket, label: 'My Invitation' }];
+       return [{ href: '/guest-invitee/invitation/sample-event', icon: Ticket, label: 'My Invitation' }];
     }
     
     const finalNavItems = getNavItems();

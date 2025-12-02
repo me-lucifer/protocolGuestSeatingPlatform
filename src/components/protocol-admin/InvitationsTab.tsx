@@ -70,7 +70,7 @@ export function InvitationsTab({ eventId }: { eventId: string }) {
 
   const getRsvpVariant = (status: Guest['rsvpStatus']) => {
     switch (status) {
-      case 'Accepted': return 'default';
+      case 'Accepted': return 'success';
       case 'Declined': return 'destructive';
       case 'Invited': return 'secondary';
       default: return 'outline';

@@ -46,7 +46,7 @@ const tourSteps: TourStepDefinition[] = [
     id: 'tour-step-4',
     title: 'Guest Journey',
     content: 'Now, let\'s see the guest\'s perspective. They receive an invitation, RSVP, and get their QR code for entry.',
-    path: '/guest-invitee/invitation/sample',
+    path: '/guest-invitee/invitation/sample-event',
     placement: 'bottom',
   },
   {

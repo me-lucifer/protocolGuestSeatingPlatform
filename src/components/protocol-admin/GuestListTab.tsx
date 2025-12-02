@@ -75,7 +75,7 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
 
   const getRsvpVariant = (status: Guest['rsvpStatus']) => {
     switch (status) {
-      case 'Accepted': return 'default';
+      case 'Accepted': return 'success';
       case 'Declined': return 'destructive';
       case 'Invited': return 'secondary';
       case 'Removed': return 'outline';
@@ -169,7 +169,7 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
                                 Assign Seat
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/guest-invitee/invitation/sample" target="_blank">
+                                <Link href="/guest-invitee/invitation/sample-event" target="_blank">
                                     <Ticket className="mr-2 h-4 w-4" />
                                     View Invitation (demo)
                                 </Link>

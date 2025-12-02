@@ -63,7 +63,7 @@ const demoRoutes = [
     description: 'On-site guest check-in interface.',
   },
   {
-    href: '/guest-invitee/invitation/sample',
+    href: '/guest-invitee/invitation/sample-event',
     icon: Ticket,
     label: 'Guest Invitation View',
     description: 'What the event guest sees.',

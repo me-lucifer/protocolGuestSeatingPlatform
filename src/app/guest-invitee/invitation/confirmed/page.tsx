@@ -71,7 +71,7 @@ export default function RsvpConfirmedPage() {
             <p className="font-semibold text-lg text-foreground">{guest.fullName}</p>
             <p className="text-muted-foreground">{guest.organization}</p>
             <Separator className="my-4" />
-            <Badge variant="default" className="text-base">{t.rsvpStatus}</Badge>
+            <Badge variant="success" className="text-base">{t.rsvpStatus}</Badge>
             <p className="mt-4 text-muted-foreground">
               {t.presentAtEntrance}
             </p>
@@ -91,7 +91,7 @@ export default function RsvpConfirmedPage() {
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
           <Button asChild variant="outline">
-            <Link href="/guest-invitee/invitation/sample">
+            <Link href="/guest-invitee/invitation/sample-event">
               <ArrowLeft />
               {t.viewInvitationAgain}
             </Link>

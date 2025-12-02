@@ -29,7 +29,7 @@ export default function GuestJourneyPreview() {
             {t.guestJourneyBody}
           </p>
           <Button asChild size="lg">
-            <Link href="/guest-invitee/invitation/sample">
+            <Link href="/guest-invitee/invitation/sample-event">
               {t.openSampleInvitation}
               <ArrowRight className="ml-2" />
             </Link>

@@ -99,7 +99,7 @@ export default function Home() {
                             <Link href="/protocol-admin/events/evt-001">Jump to Admin Event Demo</Link>
                         </Button>
                         <Button asChild variant="link" size="sm">
-                            <Link href="/guest-invitee/invitation/sample">Jump to Guest Invitation Demo</Link>
+                            <Link href="/guest-invitee/invitation/sample-event">Jump to Guest Invitation Demo</Link>
                         </Button>
                          <Button asChild variant="link" size="sm">
                             <Link href="/protocol-officer">Jump to Officer Check-in Demo</Link>

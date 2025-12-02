@@ -64,7 +64,7 @@ export default function InvitationErrorPage() {
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild variant="secondary">
-                <Link href="/guest-invitee/invitation/sample">
+                <Link href="/guest-invitee/invitation/sample-event">
                     <Ticket />
                     {t.openSampleInvitation}
                 </Link>
