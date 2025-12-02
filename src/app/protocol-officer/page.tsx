@@ -1,13 +1,15 @@
+
 'use client';
 
-import { useState } from 'react';
-import { guests, type Guest } from '@/lib/data';
+import { useState, useMemo } from 'react';
+import { guests as allGuests, events as allEvents, type Guest, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,11 +23,84 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Search } from 'lucide-react';
+import { CheckCircle, Search, Calendar, MapPin, ArrowLeft } from 'lucide-react';
+import { format } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
-export default function ProtocolOfficerInterface() {
+
+function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => void }) {
+  const upcomingEvents = allEvents.filter(e => e.status !== 'Completed');
+
+  const getStatusVariant = (status: Event['status']) => {
+    switch (status) {
+      case 'Live': return 'default';
+      case 'Invitations Sent': return 'secondary';
+      case 'Draft': return 'destructive';
+      default: return 'secondary';
+    }
+  };
+
+  return (
+    <Card className="border-0 shadow-none rounded-none">
+      <CardHeader className="pt-2">
+        <CardTitle className="text-xl font-bold tracking-tight">Select Event</CardTitle>
+        <CardDescription>Choose an event to manage check-in.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {upcomingEvents.map(event => (
+          <AlertDialog key={event.id}>
+            <AlertDialogTrigger asChild>
+                <Card className="w-full text-left hover:bg-accent cursor-pointer transition-colors">
+                    <CardHeader>
+                        <CardTitle className="text-lg">{event.name}</CardTitle>
+                        <div className="flex items-center justify-between">
+                            <CardDescription>{format(new Date(event.date), 'PPPP')}</CardDescription>
+                             <Badge variant={getStatusVariant(event.status)} className="capitalize">
+                                {event.status}
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>{event.venue}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Start check-in for this event?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        You are about to start managing check-ins for the event: <strong>{event.name}</strong>.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onSelectEvent(event)}>Proceed to Check-in</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+
+function CheckInInterface({ event, onBack }: { event: Event, onBack: () => void }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [guestList, setGuestList] = useState<Guest[]>(guests);
+  const [guestList, setGuestList] = useState<Guest[]>(allGuests);
   const { toast } = useToast();
 
   const handleCheckIn = (guestId: string) => {
@@ -38,6 +113,11 @@ export default function ProtocolOfficerInterface() {
       return guest;
     });
     setGuestList(updatedGuests);
+    allGuests.forEach((g, i) => {
+        if(g.id === guestId) {
+            allGuests[i].checkInStatus = 'Checked-in';
+        }
+    });
 
     toast({
       title: 'Saved (demo only)',
@@ -47,7 +127,7 @@ export default function ProtocolOfficerInterface() {
 
   const filteredGuests = guestList.filter(
     (guest) =>
-      guest.eventId === 'evt-001' && // Hard-coding to one event for this demo
+      guest.eventId === event.id &&
       (guest.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
        guest.organization.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -55,16 +135,20 @@ export default function ProtocolOfficerInterface() {
   return (
     <Card className="border-0 shadow-none rounded-none">
       <CardHeader className="pt-2">
+        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit">
+            <ArrowLeft className="mr-2" />
+            Back to Events
+        </Button>
         <CardTitle className="text-xl font-bold tracking-tight">Guest Check-in</CardTitle>
         <CardDescription>
-          Annual Diplomatic Gala 2024
+          {event.name}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="mb-4 relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search..."
+            placeholder="Search by name or organization..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -103,11 +187,21 @@ export default function ProtocolOfficerInterface() {
           </Table>
            {filteredGuests.length === 0 && (
                 <div className="text-center text-muted-foreground p-8">
-                    No guests found.
+                    No guests found for this event.
                 </div>
             )}
         </div>
       </CardContent>
     </Card>
   );
+}
+
+export default function ProtocolOfficerInterface() {
+  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
+
+  if (activeEvent) {
+    return <CheckInInterface event={activeEvent} onBack={() => setActiveEvent(null)} />;
+  }
+
+  return <EventSelection onSelectEvent={setActiveEvent} />;
 }
