@@ -21,13 +21,13 @@ import {
   Calendar,
   MapPin,
   Users,
-  Mail,
   ClipboardCheck,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
 import { SeatingPlanTab } from '@/components/protocol-admin/SeatingPlanTab';
+import { InvitationsTab } from '@/components/protocol-admin/InvitationsTab';
 
 function PlaceholderContent({ title, icon: Icon }: { title: string, icon: React.ElementType }) {
   return (
@@ -226,7 +226,7 @@ export default function EventDetailPage() {
             <SeatingPlanTab eventId={id as string} />
         </TabsContent>
         <TabsContent value="invitations" className="mt-6">
-            <PlaceholderContent title="Invitations &amp; RSVPs" icon={Mail} />
+            <InvitationsTab eventId={id as string} />
         </TabsContent>
         <TabsContent value="day-of" className="mt-6">
             <PlaceholderContent title="Day-of Operations" icon={ClipboardCheck} />
