@@ -21,7 +21,6 @@ import {
   Calendar,
   MapPin,
   Users,
-  Armchair,
   Mail,
   ClipboardCheck,
 } from 'lucide-react';
@@ -98,7 +97,7 @@ export default function EventDetailPage() {
                   {event.status}
                 </Badge>
               </div>
-              <CardDescription className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+              <CardDescription as="div" className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   <span>{format(new Date(event.date), 'PPPP p')}</span>
