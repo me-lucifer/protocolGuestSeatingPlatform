@@ -23,7 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Printer, RotateCcw, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, Square, UserPlus, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
@@ -110,8 +110,15 @@ function Seat({ seat, onSeatSelect, isAssignmentMode }: { seat: any, onSeatSelec
                 </Button>
             </TooltipTrigger>
             <TooltipContent>
-                {guest ? <p>{guest.fullName}</p> : <p>Empty Seat</p>}
-                 <p className="text-sm text-muted-foreground">Click to assign/edit</p>
+                {guest ? (
+                    <div>
+                        <p className="font-semibold">{guest.fullName}</p>
+                        <p className="text-sm text-muted-foreground">{guest.category}</p>
+                    </div>
+                ) : (
+                    <p>Empty Seat</p>
+                )}
+                 <p className="text-xs text-muted-foreground">Click to assign/edit</p>
             </TooltipContent>
         </Tooltip>
     )
