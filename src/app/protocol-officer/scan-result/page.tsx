@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell, History } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell, History, Shuffle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -98,7 +98,7 @@ function DuplicateScanResult({ guest, onReEnter }: { guest: Guest, onReEnter: ()
   );
 }
 
-function ErrorResult({ title, message, icon: Icon }: { title: string; message: string; icon: React.ElementType }) {
+function ErrorResult({ title, message, icon: Icon, children }: { title: string; message: string; icon: React.ElementType, children?: React.ReactNode }) {
   const router = useRouter();
 
   return (
@@ -107,12 +107,16 @@ function ErrorResult({ title, message, icon: Icon }: { title: string; message: s
       <CardTitle className="text-2xl mb-2">{title}</CardTitle>
       <p className="text-muted-foreground">{message}</p>
        <div className="w-full mt-6 space-y-2">
-          <Button size="lg" className="w-full" onClick={() => router.push('/protocol-officer')}>
-            Scan Again
-          </Button>
-          <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
-            Find Guest Manually
-          </Button>
+          {children || (
+            <>
+              <Button size="lg" className="w-full" onClick={() => router.push('/protocol-officer')}>
+                Scan Again
+              </Button>
+              <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
+                Find Guest Manually
+              </Button>
+            </>
+          )}
       </div>
     </div>
   );
@@ -181,6 +185,14 @@ export default function ScanResultPage() {
       router.push('/protocol-officer');
     }
   }
+  
+  const handleSwitchEvent = () => {
+      toast({
+          title: 'Switch Event (Demo)',
+          description: "In a real app, this would change the officer's active event context."
+      });
+      router.push('/protocol-officer');
+  }
 
   const renderResult = () => {
     if (guest === undefined) {
@@ -191,6 +203,17 @@ export default function ScanResultPage() {
       return <ErrorResult title="Scan Error" message="No guest information was provided." icon={AlertTriangle} />;
     }
     
+    if (guestId === 'wrong-event') {
+        return <ErrorResult title="Wrong Event" message="This QR code belongs to a different event." icon={Shuffle}>
+             <Button size="lg" className="w-full" onClick={handleSwitchEvent}>
+                Switch Event (demo)
+              </Button>
+              <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
+                Scan Again
+              </Button>
+        </ErrorResult>
+    }
+
     if (guestId === 'unknown' || !guest) {
       return <ErrorResult title="Unknown Code" message="This QR code is not valid for this event." icon={XCircle} />;
     }
@@ -224,3 +247,5 @@ export default function ScanResultPage() {
     </div>
   );
 }
+
+    

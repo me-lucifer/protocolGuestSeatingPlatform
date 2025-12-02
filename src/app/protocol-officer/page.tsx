@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical, DoorOpen } from 'lucide-react';
+import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical, DoorOpen, Shuffle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import {
@@ -344,6 +344,7 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
         <p className="text-xs text-muted-foreground mb-2">For demo purposes:</p>
         <Button size="sm" className="w-full" onClick={() => handleSimulateScan('gst-002')}>Simulate: VIP Guest</Button>
         <Button size="sm" className="w-full" variant="secondary" onClick={() => handleSimulateScan('gst-007')}>Simulate: Regular Guest</Button>
+        <Button size="sm" className="w-full" variant="outline" onClick={() => handleSimulateScan('wrong-event')}>Simulate: Wrong Event</Button>
         <Button size="sm" className="w-full" variant="destructive" onClick={() => handleSimulateScan('unknown')}>Simulate: Unknown Code</Button>
       </CardFooter>
     </Card>
@@ -479,3 +480,5 @@ export default function ProtocolOfficerInterface() {
     </div>
   )
 }
+
+    

@@ -64,5 +64,8 @@ export {
     Square,
     Filter,
     Route,
-    Zap
+    Zap,
+    Shuffle
 } from 'lucide-react';
+
+    
