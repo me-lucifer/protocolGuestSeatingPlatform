@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { guests as allGuests, type Guest } from '@/lib/data';
 import {
   Card,
@@ -28,11 +29,12 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, UserPlus, Upload, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Search, UserPlus, Upload, MoreHorizontal, Pencil, Trash2, Ticket } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ImportGuestsDialog } from './ImportGuestsDialog';
@@ -157,6 +159,13 @@ export function GuestListTab({ eventId }: { eventId: string }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <Link href="/guest-invitee/invitation/sample" target="_blank">
+                                    <Ticket className="mr-2 h-4 w-4" />
+                                    View Invitation (demo)
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 <Pencil className="mr-2 h-4 w-4" />
                                 Edit Guest
