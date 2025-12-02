@@ -63,7 +63,7 @@ export default function PrintableSeatingPlanPage() {
         {`
           @page { size: auto; margin: 20mm; }
           body { -webkit-print-color-adjust: exact; }
-          .no-print { display: none; }
+          .no-print { display: none !important; }
         `}
       </style>
       <div className="max-w-4xl mx-auto">
@@ -71,7 +71,7 @@ export default function PrintableSeatingPlanPage() {
           <CardHeader className="text-center space-y-2">
             <CardDescription className="text-lg">Seating Plan</CardDescription>
             <CardTitle className="text-4xl font-headline text-primary">{event.name}</CardTitle>
-             <p className="text-sm text-muted-foreground pt-2">
+             <p className="text-sm text-muted-foreground pt-2 no-print">
                 This is a prototype print preview. You can close this tab to return to the application.
               </p>
           </CardHeader>

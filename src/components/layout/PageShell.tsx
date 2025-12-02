@@ -154,99 +154,101 @@ export function PageShell({
   const isMobileEmulation = role === 'Protocol Officer / Entrance Agent';
 
   return (
-    <SidebarProvider>
-      {isTourActive && <TourStep />}
-      <Sidebar className={cn(isMobileEmulation && 'hidden')}>
-        <SidebarHeader className="p-2">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-primary" />
-              <h2 className="text-lg font-semibold font-headline">Protocol</h2>
-            </Link>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild variant="ghost">
-                <Link href="/">
-                  <ArrowLeft />
-                  {role === 'Guest / Invitee' ? <GuestBackButtonText /> : 'Back to Roles'}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            {role === 'Guest / Invitee' ? (
-                <GuestNav />
-            ) : (
-                <>
-                <Separator className="my-2" />
-                {currentNavItems.map((item) => {
-                   let isActive = false;
-                   if (role === 'Protocol Admin / Event Manager') {
-                     isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
-                   } else if (role === 'Super Admin / IT Admin') {
-                     isActive = item.href === '/super-admin' ? (pathname === '/super-admin' && isRoleHomePage) : pathname.startsWith(item.href);
-                   } else {
-                     isActive = pathname.startsWith(item.href);
-                   }
-                  return (
-                    <SidebarMenuItem key={item.label} id={item.href === '/protocol-officer' ? 'tour-step-5' : ''}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                      >
-                        <Link href={item.href}>
-                          <item.icon />
-                          {item.label}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )
-                })}
-                </>
-            )}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-          <div className="p-4 text-center text-xs text-muted-foreground">
-            &copy; 2024 Protocol Platform
-          </div>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <header className={cn(
-            "sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6",
-            isMobileEmulation && "hidden"
-        )}>
-          <SidebarTrigger className="md:hidden" />
-          <div className="flex-1">
-             <Breadcrumbs />
-          </div>
-          <div className="flex items-center gap-4 ml-auto">
-            {role === 'Guest / Invitee' && <LanguageToggle />}
-            {isDemoMode && <Badge variant="destructive">DEMO</Badge>}
-            <Badge variant="outline" className="hidden sm:flex text-sm">
-              {role}
-            </Badge>
-            <Avatar className="h-9 w-9">
-              <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User avatar" />
-              <AvatarFallback>
-                <UserCircle />
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </header>
-        <main className={cn(
-            "flex-1 p-4 sm:p-6",
-            isMobileEmulation && 'p-0'
-            )}>
-          <div id="main-content" className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>
-            {children}
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="page-shell-container">
+      <SidebarProvider>
+        {isTourActive && <TourStep />}
+        <Sidebar className={cn(isMobileEmulation && 'hidden')}>
+          <SidebarHeader className="p-2">
+            <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-primary" />
+                <h2 className="text-lg font-semibold font-headline">Protocol</h2>
+              </Link>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild variant="ghost">
+                  <Link href="/">
+                    <ArrowLeft />
+                    {role === 'Guest / Invitee' ? <GuestBackButtonText /> : 'Back to Roles'}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              {role === 'Guest / Invitee' ? (
+                  <GuestNav />
+              ) : (
+                  <>
+                  <Separator className="my-2" />
+                  {currentNavItems.map((item) => {
+                    let isActive = false;
+                    if (role === 'Protocol Admin / Event Manager') {
+                      isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
+                    } else if (role === 'Super Admin / IT Admin') {
+                      isActive = item.href === '/super-admin' ? (pathname === '/super-admin' && isRoleHomePage) : pathname.startsWith(item.href);
+                    } else {
+                      isActive = pathname.startsWith(item.href);
+                    }
+                    return (
+                      <SidebarMenuItem key={item.label} id={item.href === '/protocol-officer' ? 'tour-step-5' : ''}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                        >
+                          <Link href={item.href}>
+                            <item.icon />
+                            {item.label}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  })}
+                  </>
+              )}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+            <div className="p-4 text-center text-xs text-muted-foreground">
+              &copy; 2024 Protocol Platform
+            </div>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarInset>
+          <header className={cn(
+              "sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6",
+              isMobileEmulation && "hidden"
+          )}>
+            <SidebarTrigger className="md:hidden" />
+            <div className="flex-1">
+              <Breadcrumbs />
+            </div>
+            <div className="flex items-center gap-4 ml-auto">
+              {role === 'Guest / Invitee' && <LanguageToggle />}
+              {isDemoMode && <Badge variant="destructive">DEMO</Badge>}
+              <Badge variant="outline" className="hidden sm:flex text-sm">
+                {role}
+              </Badge>
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User avatar" />
+                <AvatarFallback>
+                  <UserCircle />
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </header>
+          <main className={cn(
+              "flex-1 p-4 sm:p-6",
+              isMobileEmulation && 'p-0'
+              )}>
+            <div id="main-content" className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>
+              {children}
+            </div>
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
 
