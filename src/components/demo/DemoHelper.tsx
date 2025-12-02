@@ -22,6 +22,7 @@ import {
   ListChecks,
   RotateCcw,
   TimerOff,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTour } from '@/contexts/TourContext';
@@ -158,7 +159,7 @@ export function DemoHelper() {
           <span className="sr-only">Open Demo Helper</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md">
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
         <SheetHeader className="text-left">
           <SheetTitle>Protocol Platform Demo</SheetTitle>
           <SheetDescription>
@@ -169,6 +170,12 @@ export function DemoHelper() {
             <Button className="w-full" onClick={handleStartTour}>
                 <Route />
                 Start Guided Tour
+            </Button>
+            <Button variant="outline" asChild className="w-full">
+                <Link href="/demo-instructions">
+                    <BookOpen />
+                    View Presenter Notes
+                </Link>
             </Button>
 
             <Separator className="!my-4" />
