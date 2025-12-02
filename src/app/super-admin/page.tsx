@@ -28,6 +28,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useDemo } from '@/contexts/DemoContext';
 
 const metricCards = [
   {
@@ -116,6 +117,7 @@ const roleDefinitions = [
 ]
 
 export default function SuperAdminDashboard() {
+  const { isDemoMode } = useDemo();
   const [showDemoTips, setShowDemoTips] = useState(true);
 
   return (
@@ -129,7 +131,7 @@ export default function SuperAdminDashboard() {
         </CardHeader>
       </Card>
       
-      {showDemoTips && (
+      {isDemoMode && showDemoTips && (
         <Alert>
           <Lightbulb className="h-4 w-4" />
           <AlertTitle>Demo Tips for Super Admin</AlertTitle>

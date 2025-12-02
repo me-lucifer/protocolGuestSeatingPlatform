@@ -36,6 +36,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { useTour } from '@/contexts/TourContext';
+import { useDemo } from '@/contexts/DemoContext';
 
 
 type NavItem = {
@@ -137,6 +138,7 @@ export function PageShell({
 }) {
   const pathname = usePathname();
   const { isTourActive, TourStep } = useTour();
+  const { isDemoMode } = useDemo();
   
   const currentNavItems = navItems[role] || [];
   
@@ -223,6 +225,7 @@ export function PageShell({
           </div>
           <div className="flex items-center gap-4 ml-auto">
             {role === 'Guest / Invitee' && <LanguageToggle />}
+            {isDemoMode && <Badge variant="destructive">DEMO</Badge>}
             <Badge variant="outline" className="hidden sm:flex text-sm">
               {role}
             </Badge>

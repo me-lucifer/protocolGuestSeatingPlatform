@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTour } from '@/contexts/TourContext';
+import { useDemo } from '@/contexts/DemoContext';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 
 const demoRoutes = [
   {
@@ -53,10 +56,49 @@ const demoRoutes = [
 export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
   const { startTour } = useTour();
+  const { isDemoMode, setIsDemoMode } = useDemo();
 
   const handleStartTour = () => {
     setIsOpen(false);
     startTour();
+  }
+  
+  if (!isDemoMode) {
+    return (
+       <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+            <Button
+            variant="outline"
+            size="icon"
+            className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg border-2 border-primary/20 bg-background/80 backdrop-blur-md hover:bg-accent"
+            >
+            <LifeBuoy className="h-6 w-6 text-primary" />
+            <span className="sr-only">Open Demo Helper</span>
+            </Button>
+        </SheetTrigger>
+         <SheetContent className="w-full sm:max-w-md">
+            <SheetHeader className="text-left">
+                <SheetTitle>Demo Helper</SheetTitle>
+                <SheetDescription>
+                    Enable demo mode to access helpers and navigation shortcuts.
+                </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6 flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="demo-mode-switch" className="font-semibold">Enable Demo Mode</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Shows helpers and guides for the demo.
+                  </p>
+                </div>
+                <Switch
+                    id="demo-mode-switch"
+                    checked={isDemoMode}
+                    onCheckedChange={setIsDemoMode}
+                />
+            </div>
+         </SheetContent>
+       </Sheet>
+    )
   }
 
   return (
@@ -84,7 +126,18 @@ export function DemoHelper() {
                 Start Demo Tour
             </Button>
 
-          <h3 className="mb-3 mt-4 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
+            <div className="!mt-6 flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="demo-mode-switch-panel" className="font-semibold">Demo Mode</Label>
+                </div>
+                <Switch
+                    id="demo-mode-switch-panel"
+                    checked={isDemoMode}
+                    onCheckedChange={setIsDemoMode}
+                />
+            </div>
+
+          <h3 className="!mt-6 mb-3 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
           {demoRoutes.map((route) => (
             <Link
               key={route.href}
