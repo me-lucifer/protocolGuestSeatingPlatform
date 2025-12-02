@@ -25,7 +25,7 @@ import {
   Info
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
 import { SeatingPlanTab } from '@/components/protocol-admin/SeatingPlanTab';
 import { InvitationsTab } from '@/components/protocol-admin/InvitationsTab';
@@ -37,11 +37,23 @@ export default function EventDetailPage() {
   const params = useParams();
   const { id } = params;
 
+  const [activeTab, setActiveTab] = useState('overview');
+  const [guestToAssign, setGuestToAssign] = useState<Guest | null>(null);
+
   const event = events.find((e) => e.id === id);
 
   const eventGuests = useMemo(() => {
     return guests.filter((g) => g.eventId === id);
   }, [id]);
+
+  const handleStartAssignment = (guest: Guest) => {
+    setGuestToAssign(guest);
+    setActiveTab('seating-plan');
+  };
+
+  const handleClearAssignment = () => {
+    setGuestToAssign(null);
+  };
 
   if (!event) {
     return (
@@ -116,7 +128,7 @@ export default function EventDetailPage() {
         </AlertDescription>
       </Alert>
 
-      <Tabs defaultValue="overview">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="guest-list">Guest List</TabsTrigger>
@@ -220,10 +232,10 @@ export default function EventDetailPage() {
         </TabsContent>
 
         <TabsContent value="guest-list" className="mt-6">
-            <GuestListTab eventId={id as string} />
+            <GuestListTab eventId={id as string} onAssignSeat={handleStartAssignment} />
         </TabsContent>
         <TabsContent value="seating-plan" className="mt-6">
-            <SeatingPlanTab eventId={id as string} />
+            <SeatingPlanTab eventId={id as string} guestToAssign={guestToAssign} onAssignmentComplete={handleClearAssignment} />
         </TabsContent>
         <TabsContent value="invitations" className="mt-6">
             <InvitationsTab eventId={id as string} />

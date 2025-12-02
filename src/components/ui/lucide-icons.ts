@@ -57,5 +57,6 @@ export {
     Palette,
     ScrollText,
     Warehouse,
-    BookOpen
+    BookOpen,
+    Hand
 } from 'lucide-react';

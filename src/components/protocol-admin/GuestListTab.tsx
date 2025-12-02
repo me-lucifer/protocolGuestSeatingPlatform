@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, UserPlus, Upload, MoreHorizontal, Pencil, Trash2, Ticket } from 'lucide-react';
+import { Search, UserPlus, Upload, MoreHorizontal, Pencil, Trash2, Ticket, Armchair } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,7 +43,7 @@ import { AddGuestDialog } from './AddGuestDialog';
 const guestCategories: Guest['category'][] = ['VIP', 'Diplomatic', 'Press', 'Staff'];
 const rsvpStatuses: Guest['rsvpStatus'][] = ['Accepted', 'Declined', 'Invited', 'Not Invited'];
 
-export function GuestListTab({ eventId }: { eventId: string }) {
+export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAssignSeat: (guest: Guest) => void; }) {
   const [guests, setGuests] = useState(() => allGuests.filter(g => g.eventId === eventId));
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -159,6 +159,10 @@ export function GuestListTab({ eventId }: { eventId: string }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onAssignSeat(guest)} disabled={guest.rsvpStatus !== 'Accepted'}>
+                                <Armchair className="mr-2 h-4 w-4" />
+                                Assign Seat
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link href="/guest-invitee/invitation/sample" target="_blank">
                                     <Ticket className="mr-2 h-4 w-4" />
