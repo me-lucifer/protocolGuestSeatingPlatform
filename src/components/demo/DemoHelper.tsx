@@ -19,7 +19,6 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Separator } from '../ui/separator';
 
 const demoRoutes = [
   {
@@ -41,7 +40,7 @@ const demoRoutes = [
     description: 'On-site guest check-in interface.',
   },
   {
-    href: '/guest-invitee',
+    href: '/guest-invitee/invitation/sample',
     icon: Ticket,
     label: 'Guest Invitation View',
     description: 'What the event guest sees.',

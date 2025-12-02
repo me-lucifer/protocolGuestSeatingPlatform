@@ -72,6 +72,9 @@ export function PageShell({
   const adjustedPathname = getAdjustedPath(pathname);
   
   const getNavItems = () => {
+    if (role === 'Guest / Invitee') {
+      return [{ href: '/guest-invitee/invitation/sample', icon: Ticket, label: 'My Invitation' }];
+    }
     return currentNavItems;
   }
   
@@ -106,7 +109,10 @@ export function PageShell({
                  isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
                } else if (role === 'Super Admin / IT Admin') {
                  isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
-               } else {
+               } else if (role === 'Guest / Invitee') {
+                 isActive = pathname.startsWith(item.href);
+               }
+               else {
                  isActive = pathname.startsWith(item.href);
                }
               return (
