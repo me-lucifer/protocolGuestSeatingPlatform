@@ -28,6 +28,17 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Label } from '../ui/label';
 import { Combobox } from '../ui/combobox';
 import { Badge } from '../ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const getInitialLayout = (eventId: string) => roomLayouts.find(rl => rl.eventId === eventId);
 const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
@@ -87,7 +98,7 @@ function SeatingTable({ table, onSeatSelect, isAssignmentMode }: { table: any, o
 export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }: { eventId: string; guestToAssign: Guest | null; onAssignmentComplete: () => void; }) {
   const { toast } = useToast();
   const { featureFlags } = useFeatureFlags();
-  const [layout, setLayout] = useState<RoomLayout | undefined>(() => getInitialLayout(eventId));
+  const [layout, setLayout] = useState<RoomLayout | undefined>(() => JSON.parse(JSON.stringify(getInitialLayout(eventId))));
   const [guests] = useState(() => getInitialGuests(eventId));
   
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -139,6 +150,12 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return { ...prevLayout, tables: newTables };
     });
 
+    // Update the master data for cross-component consistency
+    const guestIndex = allGuests.findIndex(g => g.id === guestId);
+    if(guestIndex !== -1) {
+        allGuests[guestIndex].seatAssignment = seat.label;
+    }
+
     const guest = allGuests.find(g => g.id === guestId);
     toast({ title: "Seat Assigned", description: `${guest?.fullName} has been assigned to seat ${seat.label}.` });
     return true;
@@ -186,7 +203,13 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return { ...prevLayout, tables: newTables };
     });
 
-    toast({ title: "Seat Cleared", description: `Seat ${selectedSeat.label} is now empty.` });
+    const guest = allGuests.find(g => g.id === selectedSeat.guestId);
+    const guestIndex = allGuests.findIndex(g => g.id === selectedSeat.guestId);
+    if(guestIndex !== -1) {
+        allGuests[guestIndex].seatAssignment = null;
+    }
+
+    toast({ title: "Seat Cleared", description: `${guest?.fullName || 'Guest'} has been unseated from ${selectedSeat.label}.` });
     setIsPanelOpen(false);
   };
 
@@ -195,6 +218,58 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
           title: 'Action Simulated',
           description: `In a real app, this would ${action}.`,
       })
+  }
+
+  const handleAutoArrange = () => {
+    if (!layout) return;
+
+    const acceptedGuests = allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
+    
+    // Sort by rank, then alphabetically
+    const sortedGuests = [...acceptedGuests].sort((a, b) => {
+        if (a.rankLevel !== b.rankLevel) {
+            return a.rankLevel - b.rankLevel;
+        }
+        return a.fullName.localeCompare(b.fullName);
+    });
+
+    let guestIndex = 0;
+    const newLayout = JSON.parse(JSON.stringify(layout)); // Deep clone
+
+    // Unseat everyone first
+    newLayout.tables.forEach((table: TableType) => {
+        table.seats.forEach(seat => seat.guestId = null);
+    });
+    
+    const assignGuest = (seat: SeatType) => {
+        if (guestIndex < sortedGuests.length) {
+            const guestToSeat = sortedGuests[guestIndex];
+            seat.guestId = guestToSeat.id;
+            const guestMasterIndex = allGuests.findIndex(g => g.id === guestToSeat.id);
+            if (guestMasterIndex !== -1) allGuests[guestMasterIndex].seatAssignment = seat.label;
+            guestIndex++;
+        }
+    }
+
+    // Assign to Head Table first
+    const headTable = newLayout.tables.find((t: TableType) => t.name === 'Head Table');
+    if (headTable) {
+        headTable.seats.forEach(assignGuest);
+    }
+    
+    // Assign to other tables
+    newLayout.tables.forEach((table: TableType) => {
+        if (table.name !== 'Head Table') {
+            table.seats.forEach(assignGuest);
+        }
+    });
+
+    setLayout(newLayout);
+
+    toast({
+        title: 'Auto-arrange Complete (Demo)',
+        description: 'Guests have been assigned to seats based on rank.',
+    });
   }
 
   const guestOptions = guests.map(g => ({
@@ -224,17 +299,35 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         {roomAreas.map(area => <SelectItem key={area} value={area}>{area}</SelectItem>)}
                     </SelectContent>
                 </Select>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="secondary" onClick={() => handleDemoClick('auto-arrange seats based on protocol rules')}>
-                            <Wand2 />
-                            Auto-arrange (demo)
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Automatically assign seats based on guest rank and delegation.</p>
-                    </TooltipContent>
-                </Tooltip>
+                <AlertDialog>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="secondary">
+                                    <Wand2 />
+                                    Auto-arrange (demo)
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Automatically assign seats based on guest rank and delegation.</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Confirm Auto-arrange</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will automatically assign guests to seats based on a simplified ranking. Highest-ranked guests will be placed at the Head Table first.
+                                <br/><br/>
+                                This is a prototype action. Existing assignments will be overridden.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleAutoArrange}>Run Auto-arrange</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                  <Button variant="outline" onClick={() => handleDemoClick('reset the seating plan')}>
                     <RotateCcw />
                     Reset
