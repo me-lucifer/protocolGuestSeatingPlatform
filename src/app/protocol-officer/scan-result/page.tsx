@@ -49,7 +49,7 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
       
       <div className="w-full mt-6 space-y-2">
         {confirmed ? (
-             <Button className="w-full" size="lg" onClick={() => router.back()}>
+             <Button className="w-full" size="lg" onClick={() => router.push('/protocol-officer')}>
                 Scan Next Guest
             </Button>
         ) : (
@@ -92,6 +92,7 @@ export default function ScanResultPage() {
         const guestIndex = allGuests.findIndex((g) => g.id === guest.id);
         if (guestIndex !== -1) {
             allGuests[guestIndex].checkInStatus = 'Checked-in';
+            allGuests[guestIndex].checkInTime = new Date().toISOString();
             setConfirmed(true);
             toast({
               title: "Check-in Confirmed",
@@ -115,7 +116,8 @@ export default function ScanResultPage() {
     }
 
     if (guest.checkInStatus === 'Checked-in' && !confirmed) {
-        return <ErrorResult title="Already Checked In" message={`${guest.fullName} has already been checked in.`} icon={AlertTriangle} />;
+        // Allow re-confirmation to update timestamp, but show a different state
+        return <SuccessResult guest={guest} onConfirm={handleConfirm} confirmed={true} />;
     }
 
     return <SuccessResult guest={guest} onConfirm={handleConfirm} confirmed={confirmed} />;

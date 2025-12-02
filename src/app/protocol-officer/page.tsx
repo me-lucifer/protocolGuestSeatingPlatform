@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { guests as allGuests, events as allEvents, type Guest, type Event } from '@/lib/data';
 import {
   Card,
@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Search, MapPin, ArrowLeft, QrCode, UserSearch, Users, UserCheck, Clock, XCircle, AlertTriangle, Armchair } from 'lucide-react';
+import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import {
@@ -37,6 +37,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 
 function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => void }) {
@@ -198,10 +200,10 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
     
     const recentCheckIns = useMemo(() => {
         return allGuests
-            .filter(g => g.eventId === event.id && g.checkInStatus === 'Checked-in')
-            .sort((a,b) => a.fullName.localeCompare(b.fullName)) // deterministic for demo
-            .slice(0, 3);
-    }, [event.id]);
+            .filter(g => g.eventId === event.id && g.checkInStatus === 'Checked-in' && g.checkInTime)
+            .sort((a,b) => new Date(b.checkInTime!).getTime() - new Date(a.checkInTime!).getTime())
+            .slice(0, 10);
+    }, [event.id, allGuests]);
 
 
     return (
@@ -252,23 +254,31 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
                 </CardContent>
             </Card>
 
-            <div className="mt-auto bg-muted/50 p-3">
+            <div className="mt-auto bg-muted/50 p-3 flex flex-col">
                 <h3 className="text-sm font-semibold mb-2 px-1">Recent Check-ins</h3>
-                <div className="space-y-2">
-                    {recentCheckIns.length > 0 ? (
-                        recentCheckIns.map(guest => (
-                            <div key={guest.id} className="flex items-center justify-between bg-background p-2 rounded-md text-xs">
-                                <div className="font-medium">{guest.fullName}</div>
-                                <div className="text-muted-foreground flex items-center">
-                                    <Clock className="mr-1 h-3 w-3" />
-                                    <span>{format(new Date(), 'HH:mm')}</span>
+                <ScrollArea className="h-48">
+                    <div className="space-y-2 pr-4">
+                        {recentCheckIns.length > 0 ? (
+                            recentCheckIns.map(guest => (
+                                <div key={guest.id} className={cn("flex items-center justify-between bg-background p-2 rounded-md text-xs", guest.category === 'VIP' && "border-l-4 border-yellow-400")}>
+                                    <div>
+                                        <div className="font-medium flex items-center gap-1.5">
+                                            {guest.category === 'VIP' && <Star className="h-3 w-3 text-yellow-500" />}
+                                            {guest.fullName}
+                                        </div>
+                                        <Badge variant="outline" className="mt-1">{guest.category}</Badge>
+                                    </div>
+                                    <div className="text-muted-foreground flex items-center">
+                                        <Clock className="mr-1 h-3 w-3" />
+                                        <span>{format(new Date(guest.checkInTime!), 'HH:mm')}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-xs text-muted-foreground p-2">No check-ins yet.</p>
-                    )}
-                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-xs text-muted-foreground p-2">No check-ins yet.</p>
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
         </div>
     );
@@ -314,7 +324,19 @@ export default function ProtocolOfficerInterface() {
   const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
   
   // This state is just to trigger re-renders on children when data changes.
-  const [guestList, setGuestList] = useState<Guest[]>(allGuests);
+  // The router navigation in scan-result page will cause a re-render here.
+  const [_, setForceUpdate] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+        // This is a simple way to force re-renders in the dashboard for the demo
+        // In a real app, you'd use a state management library or subscriptions
+        if (activeEvent) {
+             setForceUpdate(v => v + 1);
+        }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [activeEvent]);
+
 
   const handleSelectEvent = (event: Event) => {
     setActiveEvent(event);

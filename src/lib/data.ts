@@ -107,6 +107,7 @@ export type Guest = {
   seatAssignment: string | null;
   eventId: string;
   checkInStatus: 'Checked-in' | 'Pending';
+  checkInTime: string | null;
   email: string;
   lastEmailSent: string | null;
 };
@@ -125,6 +126,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T1-A3',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'j.pike@freedonia.gov',
     lastEmailSent: '2024-11-01',
   },
@@ -140,6 +142,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T1-A1',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
+    checkInTime: '2024-12-15T19:05:00',
     email: 'j.smith@gov.host',
     lastEmailSent: '2024-11-01',
   },
@@ -155,6 +158,7 @@ export const guests: Guest[] = [
     seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'e.white@ghc.org',
     lastEmailSent: '2024-11-01',
   },
@@ -170,6 +174,7 @@ export const guests: Guest[] = [
     seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 's.green@wnn.com',
     lastEmailSent: '2024-11-01',
   },
@@ -185,6 +190,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T1-A2',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'a.black@dod.gov.host',
     lastEmailSent: '2024-11-01',
   },
@@ -200,6 +206,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T5-B2',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'm.garcia@costaguana.gov',
     lastEmailSent: '2024-11-01',
   },
@@ -215,6 +222,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T5-B1',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'c.wei@shangala.gov',
     lastEmailSent: '2024-11-01',
   },
@@ -230,6 +238,7 @@ export const guests: Guest[] = [
     seatAssignment: 'STAFF-1',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
+    checkInTime: '2024-12-15T18:30:00',
     email: 'd.miller@protocol.gov.host',
     lastEmailSent: null,
   },
@@ -245,6 +254,7 @@ export const guests: Guest[] = [
     seatAssignment: 'T2-C1',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'ceo@globalpetro.com',
     lastEmailSent: '2024-11-01',
   },
@@ -260,6 +270,7 @@ export const guests: Guest[] = [
     seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'p.dubois@ap.org',
     lastEmailSent: '2024-11-01',
   },
@@ -276,6 +287,7 @@ export const guests: Guest[] = [
     seatAssignment: 'C5-12',
     eventId: 'evt-002',
     checkInStatus: 'Pending',
+    checkInTime: null,
     email: 'r.brown@itc.com',
     lastEmailSent: '2024-10-15',
   },
