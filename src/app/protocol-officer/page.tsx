@@ -53,11 +53,11 @@ export default function ProtocolOfficerInterface() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="page-title">Guest Check-in: Annual Diplomatic Gala 2024</CardTitle>
+    <Card className="border-0 shadow-none rounded-none">
+      <CardHeader className="pt-2">
+        <CardTitle className="text-xl font-bold tracking-tight">Guest Check-in</CardTitle>
         <CardDescription>
-          Search for guests by name or organization to check them in.
+          Annual Diplomatic Gala 2024
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -75,37 +75,37 @@ export default function ProtocolOfficerInterface() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead className="hidden md:table-cell">Organization</TableHead>
-                <TableHead className="hidden sm:table-cell">Seat</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Seat</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredGuests.map((guest) => (
                 <TableRow key={guest.id}>
-                  <TableCell className="font-medium whitespace-nowrap">{guest.fullName}</TableCell>
-                  <TableCell className="hidden md:table-cell whitespace-nowrap">{guest.organization}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{guest.seatAssignment || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Badge variant={guest.checkInStatus === 'Checked-in' ? 'default' : 'secondary'} className="capitalize">
-                      {guest.checkInStatus}
-                    </Badge>
+                  <TableCell className="font-medium whitespace-nowrap">
+                    <div>{guest.fullName}</div>
+                    <div className="text-xs text-muted-foreground">{guest.organization}</div>
                   </TableCell>
+                  <TableCell className="font-mono">{guest.seatAssignment || 'N/A'}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       size="sm"
                       onClick={() => handleCheckIn(guest.id)}
                       disabled={guest.checkInStatus === 'Checked-in'}
                     >
-                      <CheckCircle className="mr-0 sm:mr-2 h-4 w-4" />
-                      <span className="hidden sm:inline">Check In</span>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      {guest.checkInStatus === 'Checked-in' ? 'Checked-in' : 'Check In'}
                     </Button>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+           {filteredGuests.length === 0 && (
+                <div className="text-center text-muted-foreground p-8">
+                    No guests found.
+                </div>
+            )}
         </div>
       </CardContent>
     </Card>

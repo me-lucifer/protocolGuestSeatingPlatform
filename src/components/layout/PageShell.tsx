@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Breadcrumbs } from './Breadcrumbs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 
 type NavItem = {
@@ -138,10 +139,12 @@ export function PageShell({
   }
   
   const adjustedPathname = getAdjustedPath(pathname);
+  
+  const isMobileEmulation = role === 'Protocol Officer / Entrance Agent';
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar className={cn(isMobileEmulation && 'hidden')}>
         <SidebarHeader className="p-2">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
@@ -200,7 +203,10 @@ export function PageShell({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6">
+        <header className={cn(
+            "sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6",
+            isMobileEmulation && "hidden"
+        )}>
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1">
              <Breadcrumbs />
@@ -218,8 +224,11 @@ export function PageShell({
             </Avatar>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-7xl">
+        <main className={cn(
+            "flex-1 p-4 sm:p-6",
+            isMobileEmulation && 'p-0'
+            )}>
+          <div className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>
             {children}
           </div>
         </main>
