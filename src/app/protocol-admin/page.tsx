@@ -212,7 +212,7 @@ export default function ProtocolAdminDashboard() {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
                                     <MoreHorizontal />
-                                    <span className="sr-only">Actions</span>
+                                    <span className="sr-only">Actions for {event.name}</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">

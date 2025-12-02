@@ -160,7 +160,7 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <MoreHorizontal />
-                                <span className="sr-only">Actions</span>
+                                <span className="sr-only">Actions for {guest.fullName}</span>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

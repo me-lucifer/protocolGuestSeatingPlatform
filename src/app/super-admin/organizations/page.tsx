@@ -193,7 +193,7 @@ export default function OrganizationsPage() {
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => handleEditClick(org)}>
                       <Pencil className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
+                      <span className="sr-only">Edit {org.name}</span>
                     </Button>
                   </TableCell>
                 </TableRow>

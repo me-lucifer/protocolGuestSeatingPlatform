@@ -158,7 +158,7 @@ export default function UsersPage() {
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <MoreHorizontal />
-                                <span className="sr-only">Actions</span>
+                                <span className="sr-only">Actions for {user.name}</span>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
