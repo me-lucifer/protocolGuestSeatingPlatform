@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { guests as allGuests, type Guest } from '@/lib/data';
 import {
@@ -19,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { UserCheck, Users, UserX, ExternalLink } from 'lucide-react';
@@ -31,7 +30,16 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
-  const [guests, setGuests] = useState(() => allGuests.filter(g => g.eventId === eventId));
+  // This state is just to trigger re-renders on children when data changes.
+  const [_, setForceUpdate] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setForceUpdate(v => v + 1);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [eventId, _]);
 
   const checkInStats = useMemo(() => {
     const expected = guests.filter(g => g.rsvpStatus === 'Accepted').length;
@@ -43,14 +51,25 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   
   const recentCheckIns = useMemo(() => {
     return guests
-      .filter(g => g.checkInStatus === 'Checked-in')
-      .sort((a,b) => a.fullName.localeCompare(b.fullName)) // Deterministic sort for demo
+      .filter(g => g.checkInStatus === 'Checked-in' && g.checkInTime)
+      .sort((a,b) => new Date(b.checkInTime!).getTime() - new Date(a.checkInTime!).getTime())
       .slice(0, 5);
   }, [guests]);
 
   const chartData = [
-    { name: 'Status', checkedIn: checkInStats.checkedIn, expected: checkInStats.expected },
+    { name: 'Status', checkedIn: checkInStats.checkedIn, absent: checkInStats.absent },
   ];
+  
+  const chartConfig = {
+    checkedIn: {
+      label: "Checked-in",
+      color: "hsl(var(--chart-2))",
+    },
+    absent: {
+      label: "Absent",
+      color: "hsl(var(--muted))",
+    },
+  } satisfies import('@/components/ui/chart').ChartConfig;
 
   return (
     <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
@@ -58,7 +77,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
             <Card>
                 <CardHeader>
                     <CardTitle className="section-title">Live Check-in Dashboard</CardTitle>
-                    <CardDescription>Monitor guest arrivals in real-time.</CardDescription>
+                    <CardDescription>Monitor guest arrivals in real-time. Data refreshes for demo purposes.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid gap-4 md:grid-cols-3">
@@ -99,15 +118,33 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                         <Progress value={checkInStats.progress} />
                     </div>
 
-                    <div className="h-48">
-                      <ChartContainer config={{}}>
-                        <BarChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                          <CartesianGrid vertical={false} />
-                          <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
-                          <YAxis />
-                          <ChartTooltip content={<ChartTooltipContent />} />
-                          <Bar dataKey="checkedIn" fill="var(--color-chart-2)" radius={4} name="Checked-in" />
-                          <Bar dataKey="expected" fill="var(--color-chart-1)" radius={4} name="Expected" />
+                     <div className="h-48">
+                      <ChartContainer config={chartConfig}>
+                        <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: -20, right: 20 }}>
+                           <YAxis
+                            dataKey="name"
+                            type="category"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={false}
+                          />
+                          <XAxis dataKey="expected" type="number" hide />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="line" />}
+                          />
+                          <Bar
+                            dataKey="checkedIn"
+                            stackId="a"
+                            fill="var(--color-checkedIn)"
+                            radius={[4, 0, 0, 4]}
+                          />
+                          <Bar
+                            dataKey="absent"
+                            stackId="a"
+                            fill="var(--color-absent)"
+                            radius={[0, 4, 4, 0]}
+                          />
                         </BarChart>
                       </ChartContainer>
                     </div>
@@ -137,7 +174,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                                         <div className="font-medium">{guest.fullName}</div>
                                         <div className="text-xs text-muted-foreground">{guest.organization}</div>
                                     </TableCell>
-                                    <TableCell className="font-mono">{guest.seatAssignment}</TableCell>
+                                    <TableCell className="font-mono">{guest.seatAssignment || 'N/A'}</TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
@@ -157,7 +194,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                         Launch the dedicated interface for on-site staff to manage guest arrivals.
                     </p>
                     <Button asChild className="w-full">
-                        <Link href="/protocol-officer">
+                        <Link href="/protocol-officer" target="_blank">
                             <ExternalLink />
                             Open Protocol Officer View
                         </Link>
