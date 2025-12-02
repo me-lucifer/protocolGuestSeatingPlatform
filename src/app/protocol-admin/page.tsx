@@ -16,8 +16,23 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import type { Event } from '@/lib/data';
 
 export default function ProtocolAdminEventsPage() {
+
+  const getStatusVariant = (status: Event['status']) => {
+    switch (status) {
+      case 'Live':
+        return 'default';
+      case 'Invitations Sent':
+        return 'secondary';
+      case 'Completed':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -32,7 +47,7 @@ export default function ProtocolAdminEventsPage() {
             <TableRow>
               <TableHead>Event Name</TableHead>
               <TableHead className="hidden md:table-cell">Date</TableHead>
-              <TableHead className="hidden lg:table-cell">Location</TableHead>
+              <TableHead className="hidden lg:table-cell">Venue</TableHead>
               <TableHead className="text-center">Guests</TableHead>
               <TableHead className="text-right">Status</TableHead>
             </TableRow>
@@ -42,10 +57,10 @@ export default function ProtocolAdminEventsPage() {
               <TableRow key={event.id}>
                 <TableCell className="font-medium">{event.name}</TableCell>
                 <TableCell className="hidden md:table-cell">{format(new Date(event.date), 'PPP')}</TableCell>
-                <TableCell className="hidden lg:table-cell">{event.location}</TableCell>
+                <TableCell className="hidden lg:table-cell">{event.venue}</TableCell>
                 <TableCell className="text-center">{event.guestCount}</TableCell>
                 <TableCell className="text-right">
-                  <Badge variant={event.status === 'Upcoming' ? 'default' : 'secondary'}>
+                  <Badge variant={getStatusVariant(event.status)}>
                     {event.status}
                   </Badge>
                 </TableCell>

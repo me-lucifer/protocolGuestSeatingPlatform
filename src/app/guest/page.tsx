@@ -55,7 +55,7 @@ export default function GuestView() {
               <MapPin className="h-5 w-5 mr-4 mt-1 text-primary" />
               <div>
                 <p className="font-semibold text-foreground">Venue</p>
-                <p>{event.location}</p>
+                <p>{event.venue}</p>
               </div>
             </div>
           </div>
@@ -66,14 +66,14 @@ export default function GuestView() {
               <Building className="h-5 w-5 mr-4 mt-1 text-primary" />
               <div>
                 <p className="font-semibold text-foreground">Invitee</p>
-                <p>{guest.name}, {guest.organization}</p>
+                <p>{guest.fullName}, {guest.organization}</p>
               </div>
             </div>
             <div className="flex items-start">
               <Armchair className="h-5 w-5 mr-4 mt-1 text-primary" />
               <div>
                 <p className="font-semibold text-foreground">Assigned Seat</p>
-                <p className="text-lg font-bold text-foreground">{guest.seat || 'To be assigned'}</p>
+                <p className="text-lg font-bold text-foreground">{guest.seatAssignment || 'To be assigned'}</p>
               </div>
             </div>
           </div>

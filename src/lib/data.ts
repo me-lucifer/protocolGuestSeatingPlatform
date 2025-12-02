@@ -1,5 +1,4 @@
-import { format } from 'date-fns';
-import { Briefcase, CalendarCheck, CheckSquare, Fingerprint, Settings, Ticket, Users, type LucideIcon } from 'lucide-react';
+import { Briefcase, CheckSquare, Fingerprint, Ticket, type LucideIcon } from 'lucide-react';
 
 export type Role = {
   name: string;
@@ -60,9 +59,10 @@ export type Event = {
   id: string;
   name: string;
   date: string;
-  location: string;
+  venue: string;
+  status: 'Draft' | 'Invitations Sent' | 'Live' | 'Completed';
+  type: 'State ceremony' | 'Diplomatic reception' | 'Conference';
   guestCount: number;
-  status: 'Upcoming' | 'Past' | 'Draft';
 };
 
 export const events: Event[] = [
@@ -70,91 +70,246 @@ export const events: Event[] = [
     id: 'evt-001',
     name: 'Annual Diplomatic Gala 2024',
     date: '2024-12-15T19:00:00',
-    location: 'Grand Ballroom, The Capital Hotel',
+    venue: 'Grand Ballroom, The Capital Hotel',
+    status: 'Invitations Sent',
+    type: 'Diplomatic reception',
     guestCount: 250,
-    status: 'Upcoming',
   },
   {
     id: 'evt-002',
     name: 'International Trade Summit',
     date: '2024-11-20T09:00:00',
-    location: 'Exhibition Centre, Hall A',
+    venue: 'Exhibition Centre, Hall A',
+    status: 'Live',
+    type: 'Conference',
     guestCount: 500,
-    status: 'Upcoming',
   },
   {
     id: 'evt-003',
     name: 'National Day Celebration',
     date: '2024-10-01T18:00:00',
-    location: 'Presidential Palace Gardens',
+    venue: 'Presidential Palace Gardens',
+    status: 'Completed',
+    type: 'State ceremony',
     guestCount: 150,
-    status: 'Past',
   },
 ];
 
 export type Guest = {
   id: string;
-  name: string;
+  fullName: string;
+  title: string;
   organization: string;
-  rsvpStatus: 'Confirmed' | 'Pending' | 'Declined';
-  seat: string | null;
+  delegation: string;
+  category: 'VIP' | 'Diplomatic' | 'Press' | 'Staff';
+  rankLevel: number; // Lower number = higher rank
+  rsvpStatus: 'Not Invited' | 'Invited' | 'Accepted' | 'Declined';
+  seatAssignment: string | null;
   eventId: string;
   checkInStatus: 'Checked-in' | 'Pending';
 };
 
 export const guests: Guest[] = [
+  // Guests for Annual Diplomatic Gala 2024 (evt-001)
   {
     id: 'gst-001',
-    name: 'Ambassador John Doe',
+    fullName: 'Ambassador Johnathan Pike',
+    title: 'Ambassador of Freedonia',
     organization: 'Embassy of Freedonia',
-    rsvpStatus: 'Confirmed',
-    seat: 'T1-A3',
+    delegation: 'Freedonia',
+    category: 'Diplomatic',
+    rankLevel: 2,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T1-A3',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
   },
   {
     id: 'gst-002',
-    name: 'Minister Jane Smith',
-    organization: 'Ministry of Foreign Affairs',
-    rsvpStatus: 'Confirmed',
-    seat: 'T1-A1',
+    fullName: 'Minister Jane Smith',
+    title: 'Minister of Foreign Affairs',
+    organization: 'Host Nation Government',
+    delegation: 'Host Nation',
+    category: 'VIP',
+    rankLevel: 1,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T1-A1',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
   },
   {
     id: 'gst-003',
-    name: 'Dr. Emily White',
+    fullName: 'Dr. Emily White',
+    title: 'Director',
     organization: 'Global Health Council',
-    rsvpStatus: 'Pending',
-    seat: null,
+    delegation: 'Global Health Council',
+    category: 'VIP',
+    rankLevel: 4,
+    rsvpStatus: 'Invited',
+    seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Pending',
   },
   {
-    id: 'gst-004',
-    name: 'Mr. Robert Brown',
-    organization: 'International Trade Corp',
-    rsvpStatus: 'Confirmed',
-    seat: 'C5-12',
-    eventId: 'evt-002',
-    checkInStatus: 'Pending',
-  },
-  {
     id: 'gst-005',
-    name: 'Ms. Sarah Green',
-    organization: 'World Aid Foundation',
+    fullName: 'Ms. Sarah Green',
+    title: 'Journalist',
+    organization: 'World News Network',
+    delegation: 'Press Corps',
+    category: 'Press',
+    rankLevel: 10,
     rsvpStatus: 'Declined',
-    seat: null,
+    seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Pending',
   },
   {
     id: 'gst-006',
-    name: 'General Alan Black',
+    fullName: 'General Alan Black',
+    title: 'Chief of Defense Staff',
     organization: 'Department of Defense',
-    rsvpStatus: 'Confirmed',
-    seat: 'T1-A2',
+    delegation: 'Host Nation',
+    category: 'VIP',
+    rankLevel: 2,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T1-A2',
     eventId: 'evt-001',
     checkInStatus: 'Pending',
   },
+  {
+    id: 'gst-007',
+    fullName: 'Maria Garcia',
+    title: 'Cultural Attaché',
+    organization: 'Embassy of Costaguana',
+    delegation: 'Costaguana',
+    category: 'Diplomatic',
+    rankLevel: 7,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T5-B2',
+    eventId: 'evt-001',
+    checkInStatus: 'Pending',
+  },
+  {
+    id: 'gst-008',
+    fullName: 'Chen Wei',
+    title: 'Economic Counselor',
+    organization: 'Embassy of Shangala',
+    delegation: 'Shangala',
+    category: 'Diplomatic',
+    rankLevel: 6,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T5-B1',
+    eventId: 'evt-001',
+    checkInStatus: 'Pending',
+  },
+  {
+    id: 'gst-009',
+    fullName: 'David Miller',
+    title: 'Event Coordinator',
+    organization: 'Protocol Office',
+    delegation: 'Staff',
+    category: 'Staff',
+    rankLevel: 11,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'STAFF-1',
+    eventId: 'evt-001',
+    checkInStatus: 'Checked-in',
+  },
+  {
+    id: 'gst-010',
+    fullName: 'Fatima Al-Jamil',
+    title: 'CEO',
+    organization: 'Global PetroCorp',
+    delegation: 'Global PetroCorp',
+    category: 'VIP',
+    rankLevel: 3,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'T2-C1',
+    eventId: 'evt-001',
+    checkInStatus: 'Pending',
+  },
+  {
+    id: 'gst-011',
+    fullName: 'Pierre Dubois',
+    title: 'Photographer',
+    organization: 'Associated Press',
+    delegation: 'Press Corps',
+    category: 'Press',
+    rankLevel: 10,
+    rsvpStatus: 'Invited',
+    seatAssignment: null,
+    eventId: 'evt-001',
+    checkInStatus: 'Pending',
+  },
+  // Guests for International Trade Summit (evt-002)
+  {
+    id: 'gst-004',
+    fullName: 'Mr. Robert Brown',
+    title: 'CEO',
+    organization: 'International Trade Corp',
+    delegation: 'International Trade Corp',
+    category: 'VIP',
+    rankLevel: 3,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'C5-12',
+    eventId: 'evt-002',
+    checkInStatus: 'Pending',
+  },
 ];
+
+
+export type Seat = {
+  id: string;
+  label: string; // e.g. "A1", "A2"
+  guestId: string | null;
+};
+
+export type Table = {
+  id: string;
+  name: string; // e.g. "Table 1", "Head Table"
+  seats: Seat[];
+};
+
+export type RoomLayout = {
+  id: string;
+  name: string;
+  eventId: string;
+  tables: Table[];
+};
+
+export const roomLayouts: RoomLayout[] = [
+    {
+        id: 'layout-001',
+        name: 'Grand Ballroom Layout',
+        eventId: 'evt-001',
+        tables: [
+            {
+                id: 'table-1',
+                name: 'Head Table',
+                seats: [
+                    { id: 'seat-1a1', label: 'T1-A1', guestId: 'gst-002' },
+                    { id: 'seat-1a2', label: 'T1-A2', guestId: 'gst-006' },
+                    { id: 'seat-1a3', label: 'T1-A3', guestId: 'gst-001' },
+                    { id: 'seat-1a4', label: 'T1-A4', guestId: null },
+                ]
+            },
+            {
+                id: 'table-2',
+                name: 'Table 2',
+                seats: [
+                    { id: 'seat-2c1', label: 'T2-C1', guestId: 'gst-010' },
+                    { id: 'seat-2c2', label: 'T2-C2', guestId: null },
+                    { id: 'seat-2c3', label: 'T2-C3', guestId: null },
+                ]
+            },
+            {
+                id: 'table-5',
+                name: 'Table 5',
+                seats: [
+                    { id: 'seat-5b1', label: 'T5-B1', guestId: 'gst-008' },
+                    { id: 'seat-5b2', label: 'T5-B2', guestId: 'gst-007' },
+                ]
+            }
+        ]
+    }
+]

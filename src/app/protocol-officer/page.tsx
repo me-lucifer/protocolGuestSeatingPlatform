@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { guests } from '@/lib/data';
+import { guests, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -25,14 +25,14 @@ import { CheckCircle, Search } from 'lucide-react';
 
 export default function ProtocolOfficerInterface() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [guestList, setGuestList] = useState(guests);
+  const [guestList, setGuestList] = useState<Guest[]>(guests);
   const { toast } = useToast();
 
   const handleCheckIn = (guestId: string) => {
     let guestName = '';
     const updatedGuests = guestList.map((guest) => {
       if (guest.id === guestId) {
-        guestName = guest.name;
+        guestName = guest.fullName;
         return { ...guest, checkInStatus: 'Checked-in' as const };
       }
       return guest;
@@ -48,7 +48,7 @@ export default function ProtocolOfficerInterface() {
   const filteredGuests = guestList.filter(
     (guest) =>
       guest.eventId === 'evt-001' && // Hard-coding to one event for this demo
-      (guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (guest.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
        guest.organization.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
@@ -84,9 +84,9 @@ export default function ProtocolOfficerInterface() {
             <TableBody>
               {filteredGuests.map((guest) => (
                 <TableRow key={guest.id}>
-                  <TableCell className="font-medium">{guest.name}</TableCell>
+                  <TableCell className="font-medium">{guest.fullName}</TableCell>
                   <TableCell className="hidden md:table-cell">{guest.organization}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{guest.seat || 'N/A'}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{guest.seatAssignment || 'N/A'}</TableCell>
                   <TableCell>
                     <Badge variant={guest.checkInStatus === 'Checked-in' ? 'secondary' : 'outline'}>
                       {guest.checkInStatus}
