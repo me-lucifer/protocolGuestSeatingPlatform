@@ -21,7 +21,7 @@ export default function ProtocolAdminEventsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Event Management</CardTitle>
+        <CardTitle className="page-title">Event Management</CardTitle>
         <CardDescription>
           Overview of all configured events for the platform.
         </CardDescription>

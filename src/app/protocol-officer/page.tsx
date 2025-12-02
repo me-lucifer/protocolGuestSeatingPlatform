@@ -55,7 +55,7 @@ export default function ProtocolOfficerInterface() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Guest Check-in: Annual Diplomatic Gala 2024</CardTitle>
+        <CardTitle className="page-title">Guest Check-in: Annual Diplomatic Gala 2024</CardTitle>
         <CardDescription>
           Search for guests by name or organization to check them in.
         </CardDescription>

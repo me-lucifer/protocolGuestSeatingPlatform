@@ -82,3 +82,11 @@
     @apply bg-background text-foreground;
   }
 }
+@layer components {
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-foreground md:text-3xl;
+  }
+  .section-title {
+    @apply text-xl font-semibold text-foreground;
+  }
+}

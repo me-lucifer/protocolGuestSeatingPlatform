@@ -24,7 +24,7 @@ export default function ProtocolAdminGuestsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Guest Management</CardTitle>
+        <CardTitle className="page-title">Guest Management</CardTitle>
         <CardDescription>
           Master list of all guests across all events.
         </CardDescription>

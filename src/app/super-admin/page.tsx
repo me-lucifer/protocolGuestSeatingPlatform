@@ -10,14 +10,14 @@ export default function SuperAdminDashboard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Super Admin Dashboard</CardTitle>
+        <CardTitle className="page-title">Super Admin Dashboard</CardTitle>
         <CardDescription>
           Platform-wide settings and administrative tools.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-center text-muted-foreground p-8">
-          <h3 className="text-lg font-semibold">Welcome, Administrator</h3>
+          <h3 className="text-lg font-semibold section-title">Welcome, Administrator</h3>
           <p className="mt-2">
             This is a prototype. Functionality for managing platform settings, users, and roles would be available here.
           </p>

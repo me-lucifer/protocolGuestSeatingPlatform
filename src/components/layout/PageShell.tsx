@@ -22,9 +22,13 @@ import {
   Ticket,
   Users,
   Building2,
+  UserCircle,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Breadcrumbs } from './Breadcrumbs';
+
 
 type NavItem = {
   href: string;
@@ -34,7 +38,8 @@ type NavItem = {
 
 const navItems: { [key: string]: NavItem[] } = {
   'Super Admin / IT Admin': [
-    { href: '/super-admin', icon: Settings, label: 'Settings' },
+    { href: '/super-admin', icon: Settings, label: 'Dashboard' },
+    { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
   ],
   'Protocol Admin / Event Manager': [
     { href: '/protocol-admin/events', icon: Calendar, label: 'Events' },
@@ -54,7 +59,41 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  // Find the base path for the current role
+  const roleBasePath = Object.values(navItems)
+    .flat()
+    .find((item) => pathname.startsWith(item.href))?.href.split('/')[1] || '';
+
   const currentNavItems = navItems[role] || [];
+  
+  // Determine if the current page is the root for the role.
+  const isRoleHomePage = pathname === `/super-admin` || pathname === `/protocol-admin` || pathname === `/protocol-officer` || pathname === `/guest`;
+
+  const getAdjustedPath = (path: string) => {
+    if (path === '/protocol-admin/events' || path === '/protocol-admin') return '/protocol-admin';
+    return path;
+  }
+  
+  // Special handling for protocol-admin
+  const adjustedPathname = getAdjustedPath(pathname);
+  const protocolAdminNavItems = [
+    { href: '/protocol-admin', icon: Calendar, label: 'Events' },
+    { href: '/protocol-admin/guests', icon: Users, label: 'Guests' },
+  ];
+
+  const getNavItems = () => {
+    if (role === 'Protocol Admin / Event Manager') return protocolAdminNavItems;
+    if (role === 'Super Admin / IT Admin' && (pathname === '/super-admin' || pathname === '/super-admin/settings')) {
+       return [
+        { href: '/super-admin', icon: Settings, label: 'Dashboard' },
+        { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
+      ];
+    }
+    return currentNavItems;
+  }
+  
+  const finalNavItems = getNavItems();
+
 
   return (
     <SidebarProvider>
@@ -78,19 +117,29 @@ export function PageShell({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <Separator className="my-2" />
-            {currentNavItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    {item.label}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {finalNavItems.map((item) => {
+               let isActive = false;
+               if (role === 'Protocol Admin / Event Manager') {
+                 isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' : pathname === item.href;
+               } else if (role === 'Super Admin / IT Admin') {
+                 isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname === item.href;
+               } else {
+                 isActive = pathname === item.href;
+               }
+              return (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      {item.label}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -100,15 +149,28 @@ export function PageShell({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6">
           <SidebarTrigger className="md:hidden" />
-          <div className="flex items-center gap-2 ml-auto">
-            <Badge variant="outline" className="text-sm">
+          <div className="flex-1">
+             <Breadcrumbs />
+          </div>
+          <div className="flex items-center gap-4 ml-auto">
+            <Badge variant="outline" className="hidden sm:flex text-sm">
               {role}
             </Badge>
+            <Avatar className="h-9 w-9">
+              <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User avatar" />
+              <AvatarFallback>
+                <UserCircle />
+              </AvatarFallback>
+            </Avatar>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-6">
+          <div className="mx-auto w-full max-w-7xl">
+            {children}
+          </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

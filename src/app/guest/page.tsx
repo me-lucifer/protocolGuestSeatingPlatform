@@ -60,7 +60,7 @@ export default function GuestView() {
             </div>
           </div>
           <Separator className="my-6" />
-          <h3 className="text-xl font-semibold mb-4 text-foreground">Your Details</h3>
+          <h3 className="text-xl font-semibold mb-4 text-foreground section-title">Your Details</h3>
           <div className="space-y-6 text-muted-foreground">
             <div className="flex items-start">
               <Building className="h-5 w-5 mr-4 mt-1 text-primary" />

@@ -15,7 +15,7 @@ export const roles: Role[] = [
   {
     name: 'Protocol Admin / Event Manager',
     description: 'Create and manage events, oversee guest lists, and configure seating arrangements.',
-    href: '/protocol-admin/events',
+    href: '/protocol-admin',
   },
   {
     name: 'Protocol Officer / Entrance Agent',
