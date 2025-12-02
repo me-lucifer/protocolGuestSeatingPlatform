@@ -91,7 +91,7 @@ export default function GuestInviteeInvitationView() {
     <div className="flex justify-center items-start p-0 sm:p-4">
       <Card className="max-w-2xl w-full shadow-lg rounded-lg">
         <CardHeader className="bg-muted/30 p-6 rounded-t-lg">
-          <GuestTimeline currentStepKey="respond" className="mb-4" />
+          <GuestTimeline currentStepKey="respond" className="mb-6" />
           <CardTitle className="text-3xl font-headline text-primary">
             {event.name}
           </CardTitle>
@@ -163,7 +163,7 @@ export default function GuestInviteeInvitationView() {
             {t.prototypeNote}
           </p>
         </CardContent>
-        <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col items-center justify-center gap-6 sm:flex-row">
             <div className="flex-1 w-full text-center">
                 <Button size="lg" className="w-full sm:w-auto" onClick={handleAccept} disabled={rsvpStatus === 'Declined'}>
                     {t.confirmAttendance}

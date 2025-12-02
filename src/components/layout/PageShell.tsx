@@ -163,7 +163,7 @@ export function PageShell({
       <SidebarProvider>
         {isTourActive && <TourStep />}
         <Sidebar className={cn(isMobileEmulation && 'hidden')}>
-          <SidebarHeader className="p-2">
+          <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
               <Link href="/" className="flex items-center gap-2">
                 <Building2 className="w-6 h-6 text-primary" />
@@ -228,7 +228,7 @@ export function PageShell({
         </Sidebar>
         <SidebarInset>
           <header className={cn(
-              "sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6",
+              "sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-6 backdrop-blur-sm",
               isMobileEmulation && "hidden"
           )}>
             <SidebarTrigger className="md:hidden" />
@@ -250,7 +250,7 @@ export function PageShell({
             </div>
           </header>
           <main className={cn(
-              "flex-1 p-4 sm:p-6",
+              "flex-1 p-6",
               isMobileEmulation && 'p-0'
               )}>
             <div id="main-content" className={cn("mx-auto w-full max-w-7xl", isMobileEmulation && 'max-w-full h-full')}>

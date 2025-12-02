@@ -91,11 +91,11 @@ export default function ProtocolAdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div id="tour-step-2" className="flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 className="page-title">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Overview of all platform activity.</p>
+            <p className="mt-1 text-muted-foreground">Overview of all platform activity.</p>
         </div>
         <Button asChild>
             <Link href="/protocol-admin/events/new">
@@ -154,7 +154,7 @@ export default function ProtocolAdminDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-2 mb-4">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input

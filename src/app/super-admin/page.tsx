@@ -121,7 +121,7 @@ export default function SuperAdminDashboard() {
   const [showDemoTips, setShowDemoTips] = useState(true);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Card>
         <CardHeader>
           <CardTitle className="page-title">Super Admin Dashboard</CardTitle>
@@ -172,7 +172,7 @@ export default function SuperAdminDashboard() {
               <CardTitle className="section-title">Administration Modules</CardTitle>
               <CardDescription>Access key modules for platform management.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
+          <CardContent className="grid gap-6 md:grid-cols-2">
               {navCards.map(card => (
                   <Link href={card.href} key={card.title} className="block group">
                     <Card className="h-full hover:bg-accent hover:border-primary/20 transition-colors">
@@ -240,7 +240,7 @@ export default function SuperAdminDashboard() {
                         <CardTitle className="text-lg">{role.name}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ul className="space-y-3 text-sm">
+                        <ul className="space-y-4 text-sm">
                             {role.permissions.map(p => (
                                 <li key={p.module} className="flex justify-between">
                                     <span className="text-foreground">{p.module}</span>
