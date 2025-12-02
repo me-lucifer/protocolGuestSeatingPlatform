@@ -1,4 +1,8 @@
+
+'use client';
+
 import { PageShell } from '@/components/layout/PageShell';
+import { FeatureFlagsProvider } from '@/contexts/FeatureFlagsContext';
 
 export default function SuperAdminLayout({
   children,
@@ -6,8 +10,10 @@ export default function SuperAdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <PageShell role="Super Admin / IT Admin">
-      {children}
-    </PageShell>
+    <FeatureFlagsProvider>
+      <PageShell role="Super Admin / IT Admin">
+        {children}
+      </PageShell>
+    </FeatureFlagsProvider>
   );
 }

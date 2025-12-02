@@ -19,9 +19,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, RotateCcw, Wand2, User } from 'lucide-react';
+import { Printer, RotateCcw, Wand2, User, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const getGuestById = (guestId: string | null): Guest | null => {
   if (!guestId) return null;
@@ -63,6 +65,7 @@ function SeatingTable({ table }: { table: any }) {
 
 export function SeatingPlanTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
+  const { featureFlags } = useFeatureFlags();
   const [selectedLayout, setSelectedLayout] = useState<RoomLayout | undefined>(() =>
     roomLayouts.find(rl => rl.eventId === eventId)
   );
@@ -116,6 +119,16 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
         </div>
       </CardHeader>
       <CardContent>
+         {!featureFlags.enable3DPreview && (
+            <Alert variant="destructive" className="mb-4">
+              <Info className="h-4 w-4" />
+              <AlertTitle>3D Preview Disabled</AlertTitle>
+              <AlertDescription>
+                The experimental 3D preview feature is currently disabled by a Super Admin.
+              </AlertDescription>
+            </Alert>
+          )}
+
          <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
             {selectedLayout ? (
                 selectedLayout.tables.map(table => (

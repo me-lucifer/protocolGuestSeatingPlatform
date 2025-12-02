@@ -1,4 +1,8 @@
+
+'use client';
+
 import { PageShell } from '@/components/layout/PageShell';
+import { FeatureFlagsProvider } from '@/contexts/FeatureFlagsContext';
 
 export default function ProtocolAdminLayout({
   children,
@@ -6,8 +10,10 @@ export default function ProtocolAdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <PageShell role="Protocol Admin / Event Manager">
-      {children}
-    </PageShell>
+    <FeatureFlagsProvider>
+        <PageShell role="Protocol Admin / Event Manager">
+            {children}
+        </PageShell>
+    </FeatureFlagsProvider>
   );
 }

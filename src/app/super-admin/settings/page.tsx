@@ -1,13 +1,27 @@
 
+'use client';
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ClientButton from "./client-button";
-import { Shield, FileClock, Languages } from "lucide-react";
+import { Shield, FileClock, Languages, ToggleRight } from "lucide-react";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { featureFlags, setFeatureFlag } = useFeatureFlags();
+  const { toast } = useToast();
+
+  const handleFlagToggle = (flag: keyof typeof featureFlags, value: boolean) => {
+    setFeatureFlag(flag, value);
+    toast({
+      title: 'Feature Flag Updated (Demo)',
+      description: `"${flag}" has been ${value ? 'enabled' : 'disabled'}.`
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -58,6 +72,48 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">
                   Minimum 12 characters, including uppercase, lowercase, number, and symbol.
                 </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="section-title flex items-center gap-2"><ToggleRight /> Feature Flags</CardTitle>
+              <CardDescription>Enable or disable features across the platform.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="ff-2d-seating" className="font-semibold">Enable 2D Seating Plan</Label>
+                  <p className="text-sm text-muted-foreground">Core seating arrangement interface.</p>
+                </div>
+                <Switch 
+                  id="ff-2d-seating"
+                  checked={featureFlags.enable2DSeating}
+                  onCheckedChange={(value) => handleFlagToggle('enable2DSeating', value)}
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="ff-3d-preview" className="font-semibold">Enable Experimental 3D Preview</Label>
+                  <p className="text-sm text-muted-foreground">Adds a 3D visualization to the seating plan.</p>
+                </div>
+                <Switch 
+                  id="ff-3d-preview"
+                  checked={featureFlags.enable3DPreview}
+                  onCheckedChange={(value) => handleFlagToggle('enable3DPreview', value)}
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="ff-multi-org" className="font-semibold">Enable Multi-Organization Mode</Label>
+                  <p className="text-sm text-muted-foreground">Allow multiple ministries to manage their own events.</p>
+                </div>
+                 <Switch 
+                  id="ff-multi-org"
+                  checked={featureFlags.enableMultiOrg}
+                  onCheckedChange={(value) => handleFlagToggle('enableMultiOrg', value)}
+                />
               </div>
             </CardContent>
           </Card>
