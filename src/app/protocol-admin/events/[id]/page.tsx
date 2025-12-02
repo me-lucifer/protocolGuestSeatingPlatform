@@ -22,7 +22,8 @@ import {
   MapPin,
   Users,
   ClipboardCheck,
-  Info
+  Info,
+  Ticket
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useMemo, useState, useEffect } from 'react';
@@ -97,10 +98,14 @@ export default function EventDetailPage() {
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <CardTitle className="page-title">{event.name}</CardTitle>
                 <Badge variant={getStatusVariant(event.status)} className="capitalize">
                   {event.status}
+                </Badge>
+                <Badge variant="outline" className="hidden sm:flex">
+                    <Ticket className="mr-2 h-4 w-4" />
+                    Scenario: {event.type}
                 </Badge>
               </div>
               <CardDescription as="div" className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
