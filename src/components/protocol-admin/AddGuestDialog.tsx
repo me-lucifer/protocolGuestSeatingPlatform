@@ -61,7 +61,10 @@ export function AddGuestDialog({ onAddGuest }: AddGuestProps) {
       rankLevel: 10, // Default rank
       rsvpStatus: 'Invited',
       seatAssignment: null,
-      checkInStatus: 'Pending',
+      checkInStatus: 'Not Arrived',
+      checkInTime: null,
+      email: `${fullName.toLowerCase().replace(/\s/g, '.')}@example.com`,
+      lastEmailSent: null
     });
 
     toast({

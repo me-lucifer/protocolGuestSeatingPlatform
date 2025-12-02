@@ -106,7 +106,7 @@ export type Guest = {
   rsvpStatus: 'Not Invited' | 'Invited' | 'Accepted' | 'Declined';
   seatAssignment: string | null;
   eventId: string;
-  checkInStatus: 'Checked-in' | 'Pending';
+  checkInStatus: 'Checked-in' | 'Not Arrived' | 'Denied' | 'No Show';
   checkInTime: string | null;
   email: string;
   lastEmailSent: string | null;
@@ -125,7 +125,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'T1-A3',
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'j.pike@freedonia.gov',
     lastEmailSent: '2024-11-01',
@@ -157,7 +157,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Invited',
     seatAssignment: null,
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'e.white@ghc.org',
     lastEmailSent: '2024-11-01',
@@ -173,7 +173,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Declined',
     seatAssignment: null,
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 's.green@wnn.com',
     lastEmailSent: '2024-11-01',
@@ -189,7 +189,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'T1-A2',
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'a.black@dod.gov.host',
     lastEmailSent: '2024-11-01',
@@ -205,7 +205,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'T5-B2',
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'm.garcia@costaguana.gov',
     lastEmailSent: '2024-11-01',
@@ -221,7 +221,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'T5-B1',
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'c.wei@shangala.gov',
     lastEmailSent: '2024-11-01',
@@ -253,7 +253,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'T2-C1',
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'ceo@globalpetro.com',
     lastEmailSent: '2024-11-01',
@@ -269,7 +269,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Invited',
     seatAssignment: null,
     eventId: 'evt-001',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'p.dubois@ap.org',
     lastEmailSent: '2024-11-01',
@@ -286,7 +286,7 @@ export const guests: Guest[] = [
     rsvpStatus: 'Accepted',
     seatAssignment: 'C5-12',
     eventId: 'evt-002',
-    checkInStatus: 'Pending',
+    checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'r.brown@itc.com',
     lastEmailSent: '2024-10-15',
