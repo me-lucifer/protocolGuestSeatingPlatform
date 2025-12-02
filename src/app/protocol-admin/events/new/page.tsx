@@ -35,15 +35,18 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function CreateEventPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSave = () => {
     toast({
       title: 'Event Saved (Demo)',
       description: 'The new event has been created in this demo session.',
     });
+    router.push('/protocol-admin');
   };
 
   return (
@@ -52,7 +55,7 @@ export default function CreateEventPage() {
         <CardHeader>
           <CardTitle className="page-title">Create New Event</CardTitle>
           <CardDescription>
-            Fill in the details below to set up a new event.
+            Fill in the details below to set up a new event. This is a demo and data will not be permanently saved.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
