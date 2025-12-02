@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -30,12 +31,13 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
       <p className="text-muted-foreground">{guest.organization}</p>
       <Badge variant="outline" className="mt-4">{guest.category}</Badge>
       
-      {confirmed && guest.category === 'VIP' && (
-        <Alert className="mt-6 text-left border-yellow-400 bg-yellow-50">
-            <Bell className="h-4 w-4 text-yellow-600" />
-            <AlertTitle className="text-yellow-800">VIP Guest Checked-in (demo)</AlertTitle>
-            <AlertDescription className="text-yellow-700">
-                In a real app, this could trigger a notification to the head of protocol.
+      {confirmed && (
+        <Alert variant="success" className="mt-6 text-left">
+            <CheckCircle className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>
+                {guest.fullName} is now checked in.
+                {guest.category === 'VIP' && " VIP arrival has been noted."}
             </AlertDescription>
         </Alert>
       )}
@@ -82,9 +84,13 @@ function DuplicateScanResult({ guest, onReEnter }: { guest: Guest, onReEnter: ()
       <History className="w-20 h-20 text-amber-500 mb-4" />
       <CardTitle className="text-2xl mb-2">Guest Already Checked-in</CardTitle>
       <p className="text-lg font-semibold text-foreground">{guest.fullName}</p>
-      <p className="text-muted-foreground">
-        First checked in at: {guest.checkInTime ? format(new Date(guest.checkInTime), 'p') : 'Unknown time'}
-      </p>
+       <Alert variant="warning" className="mt-4 text-left">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Duplicate Scan</AlertTitle>
+            <AlertDescription>
+                First checked in at: {guest.checkInTime ? format(new Date(guest.checkInTime), 'p') : 'Unknown time'}.
+            </AlertDescription>
+        </Alert>
 
       <div className="w-full mt-8 space-y-2">
         <Button size="lg" className="w-full" onClick={onReEnter}>
@@ -105,15 +111,18 @@ function ErrorResult({ title, message, icon: Icon, children }: { title: string; 
     <div className="flex flex-col items-center text-center">
       <Icon className="w-20 h-20 text-destructive mb-4" />
       <CardTitle className="text-2xl mb-2">{title}</CardTitle>
-      <p className="text-muted-foreground">{message}</p>
+       <Alert variant="destructive" className="mt-4 text-left">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>{title}</AlertTitle>
+            <AlertDescription>
+                {message}
+            </AlertDescription>
+        </Alert>
        <div className="w-full mt-6 space-y-2">
           {children || (
             <>
               <Button size="lg" className="w-full" onClick={() => router.push('/protocol-officer')}>
                 Scan Again
-              </Button>
-              <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
-                Find Guest Manually
               </Button>
             </>
           )}
@@ -128,18 +137,22 @@ export default function ScanResultPage() {
   const { toast } = useToast();
   const { guests: allGuests, events: allEvents, setGuests } = useDemoData();
   const guestId = searchParams.get('guestId');
-  const isDuplicate = searchParams.get('duplicate') === 'true';
 
   const [guest, setGuest] = useState<Guest | null | undefined>(undefined);
   const [event, setEvent] = useState<Event | null | undefined>(undefined);
   const [confirmed, setConfirmed] = useState(false);
+  const [isDuplicate, setIsDuplicate] = useState(false);
 
   useEffect(() => {
     const foundGuest = allGuests.find(g => g.id === guestId);
     setGuest(foundGuest || null);
+
     if (foundGuest) {
         const foundEvent = allEvents.find(e => e.id === foundGuest.eventId);
         setEvent(foundEvent || null);
+        if (foundGuest.checkInStatus === 'Checked-in') {
+            setIsDuplicate(true);
+        }
     }
   }, [guestId, allGuests, allEvents]);
 
@@ -147,7 +160,7 @@ export default function ScanResultPage() {
   const handleConfirm = () => {
     if (guest && event) {
         if (guest.checkInStatus === 'Checked-in') {
-            router.push(`/protocol-officer/scan-result?guestId=${guest.id}&duplicate=true`);
+            setIsDuplicate(true);
             return;
         }
 
@@ -169,10 +182,6 @@ export default function ScanResultPage() {
         });
 
         setConfirmed(true);
-        toast({
-            title: "Check-in Confirmed",
-            description: `${guest.fullName} is now checked in.`,
-        });
     }
   }
   
@@ -181,6 +190,7 @@ export default function ScanResultPage() {
       toast({
         title: "Re-entry Confirmed (Demo)",
         description: `${guest.fullName} was allowed re-entry. This action would be logged.`,
+        variant: "warning"
       });
       router.push('/protocol-officer');
     }
@@ -189,7 +199,8 @@ export default function ScanResultPage() {
   const handleSwitchEvent = () => {
       toast({
           title: 'Switch Event (Demo)',
-          description: "In a real app, this would change the officer's active event context."
+          description: "In a real app, this would change the officer's active event context.",
+          variant: 'warning',
       });
       router.push('/protocol-officer');
   }
@@ -218,7 +229,7 @@ export default function ScanResultPage() {
       return <ErrorResult title="Unknown Code" message="This QR code is not valid for this event." icon={XCircle} />;
     }
     
-    if (guest.checkInStatus === 'Checked-in' && !confirmed) {
+    if (isDuplicate && !confirmed) {
       return <DuplicateScanResult guest={guest} onReEnter={handleReEnter} />;
     }
 

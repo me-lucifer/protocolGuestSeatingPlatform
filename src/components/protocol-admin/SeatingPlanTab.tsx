@@ -467,7 +467,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         <AlertDialogHeader>
                             <AlertDialogTitle>Confirm Auto-arrange</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will automatically assign guests to seats based on a simplified ranking. This is a prototype action. Existing assignments will be overridden.
+                                This will automatically assign guests to seats based on a simplified ranking. This is a prototype action. Existing assignments may be overridden.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -486,7 +486,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
       </CardHeader>
       <CardContent className="space-y-6">
         {seatingStats.isOverCapacity && (
-            <Alert variant="destructive">
+            <Alert variant="warning">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Over Capacity Warning</AlertTitle>
               <AlertDescription>
@@ -642,3 +642,5 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     </TooltipProvider>
   );
 }
+
+    
