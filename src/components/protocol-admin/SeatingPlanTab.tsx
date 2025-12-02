@@ -98,8 +98,8 @@ function Seat({ seat, onSeatSelect, isAssignmentMode, guests }: { seat: any, onS
                         {guest ? (
                             <>
                                 {getIconForCategory(guest.category)}
-                                <p className="text-xs font-medium leading-tight text-foreground line-clamp-2 mt-1">{guest.fullName}</p>
-                                <p className="text-[10px] text-muted-foreground line-clamp-1">{guest.organization}</p>
+                                <p className="text-xs font-medium leading-tight text-foreground line-clamp-2 mt-1 break-words">{guest.fullName}</p>
+                                <p className="text-[10px] text-muted-foreground line-clamp-1 break-words">{guest.organization}</p>
                             </>
                         ) : (
                              <>
