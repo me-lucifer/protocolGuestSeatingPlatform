@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock } from 'lucide-react';
+import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import {
@@ -39,6 +39,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu';
 
 
 function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => void }) {
@@ -101,9 +108,10 @@ function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => vo
 }
 
 
-function ManualCheckIn({ event, onBack }: { event: Event, onBack: () => void }) {
+function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () => void, isOffline: boolean }) {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
   
   // Use the global list and filter by eventId
   const localGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
@@ -124,6 +132,12 @@ function ManualCheckIn({ event, onBack }: { event: Event, onBack: () => void }) 
   };
 
   const handleGuestSelect = (guestId: string) => {
+    if (isOffline) {
+        toast({
+            title: "Offline Mode (Demo)",
+            description: "Check-in will be synced when you're back online.",
+        });
+    }
     router.push(`/protocol-officer/scan-result?guestId=${guestId}`);
   };
 
@@ -284,10 +298,17 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
     );
 }
 
-function QRScanner({ onBack }: { onBack: () => void }) {
+function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boolean }) {
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSimulateScan = (guestId: string) => {
+    if (isOffline) {
+        toast({
+            title: "Offline Mode (Demo)",
+            description: "Scan data captured. Will sync when online.",
+        });
+    }
     router.push(`/protocol-officer/scan-result?guestId=${guestId}`);
   };
 
@@ -322,20 +343,28 @@ function QRScanner({ onBack }: { onBack: () => void }) {
 export default function ProtocolOfficerInterface() {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
+  const [isOffline, setIsOffline] = useState(false);
+  const { toast } = useToast();
   
   // This state is just to trigger re-renders on children when data changes.
-  // The router navigation in scan-result page will cause a re-render here.
   const [_, setForceUpdate] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
-        // This is a simple way to force re-renders in the dashboard for the demo
-        // In a real app, you'd use a state management library or subscriptions
         if (activeEvent) {
              setForceUpdate(v => v + 1);
         }
     }, 2000);
     return () => clearInterval(interval);
   }, [activeEvent]);
+
+  useEffect(() => {
+    if (isOffline) {
+        toast({
+            title: "Offline Mode Enabled (Demo)",
+            description: "Actions will be synced when connection is restored.",
+        });
+    }
+  }, [isOffline, toast]);
 
 
   const handleSelectEvent = (event: Event) => {
@@ -360,21 +389,69 @@ export default function ProtocolOfficerInterface() {
       setView('dashboard');
   }
 
-  if (activeEvent) {
+  const getHeaderTitle = () => {
+    if (!activeEvent) return "Protocol Officer";
     switch(view) {
-        case 'dashboard':
-            return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
-        case 'manual_checkin':
-            return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} />;
-        case 'qr_scanner':
-            return <QRScanner onBack={handleBackToDashboard} />;
-        default:
-             setView('dashboard');
-             return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
+        case 'dashboard': return "Check-in";
+        case 'manual_checkin': return "Manual Search";
+        case 'qr_scanner': return "QR Scanner";
+        default: return "Protocol Officer";
     }
   }
 
-  return <EventSelection onSelectEvent={handleSelectEvent} />;
-}
+  const renderContent = () => {
+      if (activeEvent) {
+        switch(view) {
+            case 'dashboard':
+                return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
+            case 'manual_checkin':
+                return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} isOffline={isOffline} />;
+            case 'qr_scanner':
+                return <QRScanner onBack={handleBackToDashboard} isOffline={isOffline} />;
+            default:
+                 setView('dashboard');
+                 return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
+        }
+    }
+    return <EventSelection onSelectEvent={handleSelectEvent} />;
+  }
 
-    
+  return (
+    <div className="relative mx-auto h-[75vh] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
+        <div className="absolute inset-x-0 top-0 z-10 h-6 w-full rounded-t-lg bg-neutral-800">
+            <div className="absolute left-1/2 top-2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-600"></div>
+        </div>
+        <header className="flex h-14 items-center justify-between gap-2 border-b bg-background px-3 pt-6">
+            <div className="flex items-center gap-2 font-semibold">
+                {isOffline && <WifiOff className="h-4 w-4 text-muted-foreground" />}
+                {getHeaderTitle()}
+            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuCheckboxItem
+                        checked={isOffline}
+                        onCheckedChange={setIsOffline}
+                    >
+                        Offline demo mode
+                    </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </header>
+
+        {isOffline && (
+            <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-800 text-xs text-center p-1.5 animate-pulse">
+                Connection unstable (demo) - actions will be synced when online.
+            </div>
+        )}
+
+        <div className="h-full w-full overflow-y-auto">
+            {renderContent()}
+        </div>
+    </div>
+  )
+}

@@ -84,6 +84,9 @@ export default function ScanResultPage() {
   useEffect(() => {
     const foundGuest = allGuests.find(g => g.id === guestId);
     setGuest(foundGuest || null);
+    if (foundGuest?.checkInStatus === 'Checked-in') {
+        setConfirmed(true);
+    }
   }, [guestId]);
 
 
@@ -114,18 +117,22 @@ export default function ScanResultPage() {
     if (guestId === 'unknown' || !guest) {
       return <ErrorResult title="Unknown Code" message="This QR code is not valid for this event." icon={XCircle} />;
     }
-
+    
+    // If the guest is already checked-in, but this page was reached via a new scan/lookup
+    // we show the confirmed state directly.
     if (guest.checkInStatus === 'Checked-in' && !confirmed) {
-        // Allow re-confirmation to update timestamp, but show a different state
-        return <SuccessResult guest={guest} onConfirm={handleConfirm} confirmed={true} />;
+        setConfirmed(true);
     }
 
     return <SuccessResult guest={guest} onConfirm={handleConfirm} confirmed={confirmed} />;
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <Card className="border-0 shadow-none rounded-none flex-1">
+    <div className="relative mx-auto h-[75vh] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
+       <div className="absolute inset-x-0 top-0 z-10 h-6 w-full rounded-t-lg bg-neutral-800">
+            <div className="absolute left-1/2 top-2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-600"></div>
+        </div>
+      <Card className="border-0 shadow-none rounded-none flex-1 mt-6">
         <CardHeader className="pt-2">
             <CardTitle className="text-xl font-bold tracking-tight">Scan Result</CardTitle>
         </CardHeader>
