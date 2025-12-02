@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
@@ -22,8 +23,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Search, MapPin, ArrowLeft, QrCode, UserSearch, Users, UserCheck, Clock } from 'lucide-react';
+import { CheckCircle, Search, MapPin, ArrowLeft, QrCode, UserSearch, Users, UserCheck, Clock, XCircle, AlertTriangle, Armchair } from 'lucide-react';
 import { format } from 'date-fns';
+import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -196,9 +198,7 @@ function ManualCheckIn({ event, onBack, setGuestList }: { event: Event, onBack: 
   );
 }
 
-function CheckInDashboard({ event, onBack, onShowManual, setGuestList }: { event: Event, onBack: () => void, onShowManual: () => void, setGuestList: React.Dispatch<React.SetStateAction<Guest[]>> }) {
-    const { toast } = useToast();
-
+function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event: Event, onBack: () => void, onShowManual: () => void, onStartScan: () => void}) {
     const eventGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
 
     const stats = useMemo(() => {
@@ -218,13 +218,6 @@ function CheckInDashboard({ event, onBack, onShowManual, setGuestList }: { event
             .slice(0, 3);
     }, [event.id]);
 
-    const handleStartScan = () => {
-        toast({
-            title: "Scanner not implemented",
-            description: "In a real app, this would open the camera to scan QR codes.",
-            variant: "default",
-        });
-    }
 
     return (
         <div className="flex flex-col h-full">
@@ -262,7 +255,7 @@ function CheckInDashboard({ event, onBack, onShowManual, setGuestList }: { event
                     </div>
 
                     <div className="space-y-3">
-                        <Button size="lg" className="w-full h-16 text-lg" onClick={handleStartScan}>
+                        <Button size="lg" className="w-full h-16 text-lg" onClick={onStartScan}>
                             <QrCode className="mr-4" />
                             Start Scanning QR
                         </Button>
@@ -296,10 +289,44 @@ function CheckInDashboard({ event, onBack, onShowManual, setGuestList }: { event
     );
 }
 
+function QRScanner({ onBack }: { onBack: () => void }) {
+  const router = useRouter();
+
+  const handleSimulateScan = (guestId: string) => {
+    router.push(`/protocol-officer/scan-result?guestId=${guestId}`);
+  };
+
+  return (
+    <Card className="border-0 shadow-none rounded-none h-full flex flex-col">
+      <CardHeader className="pt-2">
+        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit">
+            <ArrowLeft className="mr-2" />
+            Back to Dashboard
+        </Button>
+        <CardTitle className="text-xl font-bold tracking-tight">Scan QR Code</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col items-center justify-center">
+        <div className="w-64 h-64 bg-muted border-4 border-dashed rounded-lg flex items-center justify-center animate-pulse">
+           <QrCode className="h-16 w-16 text-muted-foreground" />
+        </div>
+        <p className="mt-4 text-center text-muted-foreground">
+          Point the guest’s QR code at the camera (simulated).
+        </p>
+      </CardContent>
+      <CardFooter className="flex flex-col gap-2">
+        <p className="text-xs text-muted-foreground mb-2">For demo purposes:</p>
+        <Button className="w-full" onClick={() => handleSimulateScan('gst-002')}>Simulate scan: VIP guest</Button>
+        <Button className="w-full" variant="secondary" onClick={() => handleSimulateScan('gst-007')}>Simulate scan: Regular guest</Button>
+        <Button className="w-full" variant="destructive" onClick={() => handleSimulateScan('unknown')}>Simulate scan: Unknown code</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
 
 export default function ProtocolOfficerInterface() {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
-  const [view, setView] = useState<'dashboard' | 'manual_checkin'>('dashboard');
+  const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
   
   // This state is passed down to children to update the "global" mock data
   const [guestList, setGuestList] = useState<Guest[]>(allGuests);
@@ -311,10 +338,15 @@ export default function ProtocolOfficerInterface() {
 
   const handleBackToEvents = () => {
     setActiveEvent(null);
+    setView('event_selection');
   }
   
   const handleShowManual = () => {
     setView('manual_checkin');
+  }
+  
+  const handleStartScan = () => {
+      setView('qr_scanner');
   }
 
   const handleBackToDashboard = () => {
@@ -322,10 +354,17 @@ export default function ProtocolOfficerInterface() {
   }
 
   if (activeEvent) {
-    if (view === 'manual_checkin') {
-      return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} setGuestList={setGuestList} />;
+    switch(view) {
+        case 'dashboard':
+            return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} setGuestList={setGuestList} />;
+        case 'manual_checkin':
+            return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} setGuestList={setGuestList} />;
+        case 'qr_scanner':
+            return <QRScanner onBack={handleBackToDashboard} />;
+        default:
+             setView('dashboard');
+             return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} setGuestList={setGuestList} />;
     }
-    return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} setGuestList={setGuestList} />;
   }
 
   return <EventSelection onSelectEvent={handleSelectEvent} />;
