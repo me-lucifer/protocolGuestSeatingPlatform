@@ -19,12 +19,14 @@ import {
   Ticket,
   ChevronRight,
   Route,
+  ListChecks,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTour } from '@/contexts/TourContext';
 import { useDemo } from '@/contexts/DemoContext';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
+import { Separator } from '../ui/separator';
 
 const demoRoutes = [
   {
@@ -52,6 +54,14 @@ const demoRoutes = [
     description: 'What the event guest sees.',
   },
 ];
+
+const demoScriptSteps = [
+    'Choose Protocol Admin and open the main demo event.',
+    'Show the guest list and then the seating plan.',
+    'Switch to the Guest journey to RSVP.',
+    'Switch to the Officer mobile view to perform a check-in.',
+    'Return to the Admin Day-of Operations tab to see the live effect.'
+]
 
 export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,18 +127,54 @@ export function DemoHelper() {
         <SheetHeader className="text-left">
           <SheetTitle>Protocol Platform Demo</SheetTitle>
           <SheetDescription>
-            This is an interactive prototype. Use the links below to quickly navigate between the different user roles and key screens.
+            This is an interactive prototype. Use the links and script below to guide your demonstration.
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 space-y-2">
             <Button className="w-full" onClick={handleStartTour}>
                 <Route />
-                Start Demo Tour
+                Start Guided Tour
             </Button>
 
-            <div className="!mt-6 flex items-center justify-between rounded-lg border p-4">
+            <Separator className="!my-4" />
+            
+             <h3 className="mb-3 text-sm font-medium text-muted-foreground flex items-center gap-2"><ListChecks /> Demo Script Outline</h3>
+            <ol className="space-y-2 text-sm text-foreground list-decimal list-inside">
+                {demoScriptSteps.map((step, index) => (
+                    <li key={index} className="text-muted-foreground">{step}</li>
+                ))}
+            </ol>
+
+            <Separator className="!my-4" />
+
+            <h3 className="mb-3 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
+            {demoRoutes.map((route) => (
+                <Link
+                key={route.href}
+                href={route.href}
+                onClick={() => setIsOpen(false)}
+                className="block rounded-lg p-3 transition-colors hover:bg-accent"
+                >
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                    <div className="rounded-md bg-muted p-2">
+                        <route.icon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                        <p className="font-semibold text-foreground">{route.label}</p>
+                        <p className="text-sm text-muted-foreground">{route.description}</p>
+                    </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </div>
+                </Link>
+            ))}
+
+            <Separator className="!my-4" />
+
+             <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
-                  <Label htmlFor="demo-mode-switch-panel" className="font-semibold">Demo Mode</Label>
+                  <Label htmlFor="demo-mode-switch-panel" className="font-semibold">Demo Mode Active</Label>
                 </div>
                 <Switch
                     id="demo-mode-switch-panel"
@@ -137,28 +183,6 @@ export function DemoHelper() {
                 />
             </div>
 
-          <h3 className="!mt-6 mb-3 text-sm font-medium text-muted-foreground">Quick Navigation</h3>
-          {demoRoutes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              onClick={() => setIsOpen(false)}
-              className="block rounded-lg p-3 transition-colors hover:bg-accent"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-md bg-muted p-2">
-                    <route.icon className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">{route.label}</p>
-                    <p className="text-sm text-muted-foreground">{route.description}</p>
-                  </div>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </Link>
-          ))}
         </div>
       </SheetContent>
     </Sheet>
