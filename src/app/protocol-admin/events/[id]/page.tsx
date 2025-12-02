@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { events, guests, type Event } from '@/lib/data';
+import { events, guests, type Event, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
+import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
 
 function PlaceholderContent({ title, icon: Icon }: { title: string, icon: React.ElementType }) {
   return (
@@ -73,13 +74,16 @@ export default function EventDetailPage() {
     }
   };
 
-  const rsvpSummary = useMemo(() => eventGuests.reduce(
-    (acc, guest) => {
-      acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
-      return acc;
-    },
-    { Accepted: 0, Declined: 0, Invited: 0 } as Record<Guest['rsvpStatus'], number>
-  ), [eventGuests]);
+  const rsvpSummary = useMemo(() => {
+    if (!eventGuests) return { Accepted: 0, Declined: 0, Invited: 0 };
+    return eventGuests.reduce(
+      (acc, guest) => {
+        acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
+        return acc;
+      },
+      { Accepted: 0, Declined: 0, Invited: 0 } as Record<Guest['rsvpStatus'], number>
+    )
+  }, [eventGuests]);
 
   return (
     <div className="space-y-6">
@@ -122,54 +126,101 @@ export default function EventDetailPage() {
         </TabsList>
         
         <TabsContent value="overview" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="section-title">Event Overview</CardTitle>
-              <CardDescription>Key statistics for this event.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Total Guests</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="section-title">Event Overview</CardTitle>
+                <CardDescription>Key statistics and timeline for this event.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-sm font-medium">Total Guests</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{eventGuests.length}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-sm font-medium">Accepted</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{rsvpSummary['Accepted'] || 0}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{rsvpSummary['Invited'] || 0}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-sm font-medium">Declined</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{rsvpSummary['Declined'] || 0}</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <div>
+                    <h3 className="text-base font-semibold text-foreground mb-2">Protocol Notes</h3>
+                    <p className="text-sm text-muted-foreground">
+                        This event involves multiple Heads of State. Seating precedence must be strictly followed. The press area is limited and requires special credentials. All dietary restrictions must be confirmed with the respective embassies two weeks prior to the event.
+                    </p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="section-title">Event Timeline</CardTitle>
+                    <CardDescription>Current stage of the event.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{eventGuests.length}</div>
+                    <ul className="space-y-4">
+                        <li className="flex items-center gap-3">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"><ClipboardCheck className="h-4 w-4" /></div>
+                            <span className="font-medium text-foreground">Draft Created</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"><ClipboardCheck className="h-4 w-4" /></div>
+                            <span className="font-medium text-foreground">Guest List Imported</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"><ClipboardCheck className="h-4 w-4" /></div>
+                            <span className="font-medium text-foreground">Invitations Sent</span>
+                        </li>
+                         <li className="flex items-center gap-3">
+                            <div className="relative flex h-6 w-6 items-center justify-center">
+                                <span className="absolute h-4 w-4 rounded-full bg-primary/30" />
+                                <span className="relative block h-2 w-2 rounded-full bg-primary" />
+                            </div>
+                            <span className="font-medium text-primary">RSVPs in Progress</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                           <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-muted-foreground/30" />
+                            <span className="text-muted-foreground">Seating Finalized</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                           <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-muted-foreground/30" />
+                            <span className="text-muted-foreground">Event Live</span>
+                        </li>
+                    </ul>
                 </CardContent>
-              </Card>
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Accepted</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{rsvpSummary['Accepted'] || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Pending</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{rsvpSummary['Invited'] || 0}</div>
-                </CardContent>
-              </Card>
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Declined</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{rsvpSummary['Declined'] || 0}</div>
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="guest-list" className="mt-6">
-            <PlaceholderContent title="Guest List" icon={Users} />
+            <GuestListTab eventId={id as string} />
         </TabsContent>
         <TabsContent value="seating-plan" className="mt-6">
             <PlaceholderContent title="Seating Plan" icon={Armchair} />
