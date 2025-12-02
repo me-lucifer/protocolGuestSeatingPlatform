@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import Link from 'next/link';
 
 export default function GuestInviteeInvitationView() {
   const { toast } = useToast();
@@ -62,10 +63,10 @@ export default function GuestInviteeInvitationView() {
     );
   }
 
-  const handleRsvp = (status: 'Accepted' | 'Declined') => {
+  const handleDecline = () => {
     toast({
       title: `RSVP action (demo only)`,
-      description: `You have ${status.toLowerCase()} the invitation.`,
+      description: `You have declined the invitation.`,
     });
   };
 
@@ -126,23 +127,9 @@ export default function GuestInviteeInvitationView() {
           </p>
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button size="lg" className="w-full sm:w-auto">Confirm Attendance</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirm Attendance</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This is a prototype action. No confirmation will be sent. Do you want to simulate this action?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => handleRsvp('Accepted')}>Continue</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button size="lg" className="w-full sm:w-auto" asChild>
+            <Link href="/guest-invitee/invitation/confirmed">Confirm Attendance</Link>
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="lg" variant="secondary" className="w-full sm:w-auto">Decline Invitation</Button>
@@ -156,7 +143,7 @@ export default function GuestInviteeInvitationView() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => handleRsvp('Declined')}>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={handleDecline}>Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
