@@ -50,7 +50,7 @@ const navCards = [
     {
         title: 'Users & Roles',
         description: 'Manage user accounts and role-based access control.',
-        href: '#',
+        href: '/super-admin/users',
         icon: Users
     },
     {

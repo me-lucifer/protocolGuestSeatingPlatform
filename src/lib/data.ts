@@ -1,3 +1,4 @@
+
 import { Briefcase, CheckSquare, Fingerprint, Ticket, type LucideIcon } from 'lucide-react';
 
 export type Role = {
@@ -349,4 +350,57 @@ export const roomLayouts: RoomLayout[] = [
             }
         ]
     }
-]
+];
+
+export type UserRole = 'Super Admin' | 'Protocol Admin' | 'Protocol Officer';
+export type UserStatus = 'Active' | 'Disabled';
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    organization: string;
+    status: UserStatus;
+}
+
+export const users: User[] = [
+    {
+        id: 'usr-001',
+        name: 'Alice Wonder',
+        email: 'alice.wonder@protocol.gov',
+        role: 'Super Admin',
+        organization: 'State Protocol Directorate',
+        status: 'Active',
+    },
+    {
+        id: 'usr-002',
+        name: 'Bob Builder',
+        email: 'bob.builder@protocol.gov',
+        role: 'Protocol Admin',
+        organization: 'State Protocol Directorate',
+        status: 'Active',
+    },
+    {
+        id: 'usr-003',
+        name: 'Charlie Chaplin',
+        email: 'charlie.chaplin@protocol.gov',
+        role: 'Protocol Officer',
+        organization: 'State Protocol Directorate',
+        status: 'Active',
+    },
+    {
+        id: 'usr-004',
+        name: 'Diana Prince',
+        email: 'diana.prince@mfa.gov',
+        role: 'Protocol Admin',
+        organization: 'Ministry of Foreign Affairs',
+        status: 'Disabled',
+    },
+];
+
+export const organizations = [
+  { name: 'State Protocol Directorate' },
+  { name: 'Ministry of Foreign Affairs' },
+  { name: 'Ministry of Innovation & Technology' },
+];

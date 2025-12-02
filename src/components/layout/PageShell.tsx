@@ -45,6 +45,7 @@ const navItems: { [key: string]: NavItem[] } = {
   'Super Admin / IT Admin': [
     { href: '/super-admin', icon: Settings, label: 'Dashboard' },
     { href: '/super-admin/organizations', icon: Warehouse, label: 'Organizations' },
+    { href: '/super-admin/users', icon: Users, label: 'Users & Roles' },
     { href: '/super-admin/settings', icon: Settings, label: 'Settings' },
   ],
   'Protocol Admin / Event Manager': [
