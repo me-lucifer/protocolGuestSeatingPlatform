@@ -49,11 +49,11 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
       
       <div className="w-full mt-6 space-y-2">
         {confirmed ? (
-             <Button className="w-full" size="lg" onClick={() => router.push('/protocol-officer')}>
+             <Button size="lg" className="w-full" onClick={() => router.push('/protocol-officer')}>
                 Scan Next Guest
             </Button>
         ) : (
-            <Button className="w-full" size="lg" onClick={onConfirm}>
+            <Button size="lg" className="w-full" onClick={onConfirm}>
                 Confirm Check-in
             </Button>
         )}
@@ -128,11 +128,11 @@ export default function ScanResultPage() {
   };
 
   return (
-    <div className="relative mx-auto h-[75vh] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
+    <div className="relative mx-auto h-[80vh] max-h-[800px] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
        <div className="absolute inset-x-0 top-0 z-10 h-6 w-full rounded-t-lg bg-neutral-800">
             <div className="absolute left-1/2 top-2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-600"></div>
         </div>
-      <Card className="border-0 shadow-none rounded-none flex-1 mt-6">
+      <Card className="border-0 shadow-none rounded-none flex-1 mt-6 bg-transparent">
         <CardHeader className="pt-2">
             <CardTitle className="text-xl font-bold tracking-tight">Scan Result</CardTitle>
         </CardHeader>
@@ -140,8 +140,8 @@ export default function ScanResultPage() {
           {renderResult()}
         </CardContent>
       </Card>
-      <CardFooter className="mt-auto p-4">
-        <Button className="w-full" size="lg" variant="secondary" onClick={() => router.push('/protocol-officer')}>
+      <CardFooter className="mt-auto p-4 border-t bg-muted/30">
+        <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
             <ArrowLeft className="mr-2" />
             Back to Dashboard
         </Button>
@@ -149,3 +149,5 @@ export default function ScanResultPage() {
     </div>
   );
 }
+
+    

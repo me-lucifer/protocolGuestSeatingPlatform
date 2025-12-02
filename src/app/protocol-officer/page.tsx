@@ -43,7 +43,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
     DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 
@@ -61,7 +60,7 @@ function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => vo
   };
 
   return (
-    <Card className="border-0 shadow-none rounded-none">
+    <Card className="border-0 shadow-none rounded-none bg-transparent">
       <CardHeader className="pt-2">
         <CardTitle className="text-xl font-bold tracking-tight">Select Event</CardTitle>
         <CardDescription>Choose an event to manage check-in.</CardDescription>
@@ -113,7 +112,6 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
   const router = useRouter();
   const { toast } = useToast();
   
-  // Use the global list and filter by eventId
   const localGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
 
   const filteredGuests = localGuests.filter(
@@ -142,9 +140,9 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
   };
 
   return (
-    <Card className="border-0 shadow-none rounded-none">
+    <Card className="border-0 shadow-none rounded-none bg-transparent">
       <CardHeader className="pt-2">
-        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit">
+        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit h-auto">
             <ArrowLeft className="mr-2" />
             Back to Dashboard
         </Button>
@@ -168,7 +166,7 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
             <TableHeader>
               <TableRow>
                 <TableHead>Guest</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,7 +177,7 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
                     <div className="text-xs text-muted-foreground">{guest.organization}</div>
                     <Badge variant="outline" className="mt-1">{guest.category}</Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <Badge variant={getStatusVariant(guest.checkInStatus)}>
                       {guest.checkInStatus}
                     </Badge>
@@ -221,10 +219,10 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
 
 
     return (
-        <div className="flex flex-col h-full">
-            <Card className="border-0 shadow-none rounded-none">
+        <div className="flex flex-col h-full bg-muted/20">
+            <Card className="border-0 shadow-none rounded-none bg-transparent">
                  <CardHeader className="pt-2">
-                    <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit">
+                    <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit h-auto">
                         <ArrowLeft className="mr-2" />
                         Back to Events
                     </Button>
@@ -258,7 +256,7 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
                     <div className="space-y-3">
                         <Button size="lg" className="w-full h-16 text-lg" onClick={onStartScan}>
                             <QrCode className="mr-4" />
-                            Start Scanning QR
+                            Start Scanning
                         </Button>
                         <Button size="lg" variant="secondary" className="w-full" onClick={onShowManual}>
                             <UserSearch />
@@ -268,13 +266,13 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
                 </CardContent>
             </Card>
 
-            <div className="mt-auto bg-muted/50 p-3 flex flex-col">
+            <div className="mt-auto bg-background p-3 flex flex-col border-t">
                 <h3 className="text-sm font-semibold mb-2 px-1">Recent Check-ins</h3>
                 <ScrollArea className="h-48">
                     <div className="space-y-2 pr-4">
                         {recentCheckIns.length > 0 ? (
                             recentCheckIns.map(guest => (
-                                <div key={guest.id} className={cn("flex items-center justify-between bg-background p-2 rounded-md text-xs", guest.category === 'VIP' && "border-l-4 border-yellow-400")}>
+                                <div key={guest.id} className={cn("flex items-center justify-between bg-muted/50 p-2 rounded-md text-xs", guest.category === 'VIP' && "border-l-4 border-yellow-400")}>
                                     <div>
                                         <div className="font-medium flex items-center gap-1.5">
                                             {guest.category === 'VIP' && <Star className="h-3 w-3 text-yellow-500" />}
@@ -313,9 +311,9 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
   };
 
   return (
-    <Card className="border-0 shadow-none rounded-none h-full flex flex-col">
+    <Card className="border-0 shadow-none rounded-none h-full flex flex-col bg-transparent">
       <CardHeader className="pt-2">
-        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit">
+        <Button variant="ghost" size="sm" onClick={onBack} className="justify-start pl-0 mb-2 w-fit h-auto">
             <ArrowLeft className="mr-2" />
             Back to Dashboard
         </Button>
@@ -326,14 +324,14 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
            <QrCode className="h-16 w-16 text-muted-foreground" />
         </div>
         <p className="mt-4 text-center text-muted-foreground">
-          Point the guest’s QR code at the camera (simulated).
+          Point the camera at a guest's QR code.
         </p>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <p className="text-xs text-muted-foreground mb-2">For demo purposes:</p>
-        <Button className="w-full" onClick={() => handleSimulateScan('gst-002')}>Simulate scan: VIP guest</Button>
-        <Button className="w-full" variant="secondary" onClick={() => handleSimulateScan('gst-007')}>Simulate scan: Regular guest</Button>
-        <Button className="w-full" variant="destructive" onClick={() => handleSimulateScan('unknown')}>Simulate scan: Unknown code</Button>
+        <Button size="sm" className="w-full" onClick={() => handleSimulateScan('gst-002')}>Simulate: VIP Guest</Button>
+        <Button size="sm" className="w-full" variant="secondary" onClick={() => handleSimulateScan('gst-007')}>Simulate: Regular Guest</Button>
+        <Button size="sm" className="w-full" variant="destructive" onClick={() => handleSimulateScan('unknown')}>Simulate: Unknown Code</Button>
       </CardFooter>
     </Card>
   );
@@ -390,13 +388,8 @@ export default function ProtocolOfficerInterface() {
   }
 
   const getHeaderTitle = () => {
-    if (!activeEvent) return "Protocol Officer";
-    switch(view) {
-        case 'dashboard': return "Check-in";
-        case 'manual_checkin': return "Manual Search";
-        case 'qr_scanner': return "QR Scanner";
-        default: return "Protocol Officer";
-    }
+    if (!activeEvent) return "Select Event";
+    return activeEvent.name;
   }
 
   const renderContent = () => {
@@ -417,19 +410,20 @@ export default function ProtocolOfficerInterface() {
   }
 
   return (
-    <div className="relative mx-auto h-[75vh] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
+    <div className="relative mx-auto h-[80vh] max-h-[800px] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
         <div className="absolute inset-x-0 top-0 z-10 h-6 w-full rounded-t-lg bg-neutral-800">
             <div className="absolute left-1/2 top-2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-600"></div>
         </div>
-        <header className="flex h-14 items-center justify-between gap-2 border-b bg-background px-3 pt-6">
-            <div className="flex items-center gap-2 font-semibold">
-                {isOffline && <WifiOff className="h-4 w-4 text-muted-foreground" />}
-                {getHeaderTitle()}
+        <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-muted/60 px-3 pt-6">
+            <div className="flex items-center gap-2 font-semibold text-foreground">
+                {isOffline && <WifiOff className="h-4 w-4 text-muted-foreground animate-pulse" />}
+                <p className="truncate">{getHeaderTitle()}</p>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreVertical />
+                        <span className="sr-only">Options</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -445,7 +439,7 @@ export default function ProtocolOfficerInterface() {
 
         {isOffline && (
             <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-800 text-xs text-center p-1.5 animate-pulse">
-                Connection unstable (demo) - actions will be synced when online.
+                Connection unstable - actions will be synced when online.
             </div>
         )}
 
@@ -455,3 +449,5 @@ export default function ProtocolOfficerInterface() {
     </div>
   )
 }
+
+    
