@@ -58,5 +58,7 @@ export {
     ScrollText,
     Warehouse,
     BookOpen,
-    Hand
+    Hand,
+    Newspaper,
+    Square
 } from 'lucide-react';

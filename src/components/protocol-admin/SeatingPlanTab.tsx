@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, RotateCcw, Wand2, User, Info, X, Hand } from 'lucide-react';
+import { Printer, RotateCcw, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, Square } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 const getInitialLayout = (eventId: string) => roomLayouts.find(rl => rl.eventId === eventId);
 const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
@@ -48,27 +49,57 @@ function Seat({ seat, onSeatSelect, isAssignmentMode }: { seat: any, onSeatSelec
     
     const canAssign = isAssignmentMode && !guest;
 
+    const getSeatVariant = () => {
+        if (canAssign) return 'assignable';
+        if (!guest) return 'empty';
+        if (guest.category === 'VIP') return 'vip';
+        if (guest.category === 'Press' || guest.category === 'Staff') return 'staff-press';
+        return 'occupied';
+    }
+
+    const seatVariant = getSeatVariant();
+
+    const seatStyles = {
+        'empty': 'bg-background hover:bg-accent/80',
+        'occupied': 'bg-secondary/50 hover:bg-secondary',
+        'vip': 'bg-yellow-100/50 border-yellow-400 hover:bg-yellow-100/80 shadow-md',
+        'staff-press': 'bg-blue-100/30 border-blue-300 hover:bg-blue-100/60',
+        'assignable': 'bg-primary/10 border-primary animate-pulse hover:bg-primary/20',
+    }
+
+    const getIconForCategory = (category?: Guest['category']) => {
+        if (!category) return canAssign ? <Hand className="w-5 h-5 text-primary" /> : <User className="w-5 h-5" />;
+        switch(category) {
+            case 'VIP': return <Star className="w-5 h-5 text-yellow-600" />;
+            case 'Press': return <Newspaper className="w-5 h-5" />;
+            case 'Staff': return <Briefcase className="w-5 h-5" />;
+            default: return <User className="w-5 h-5" />;
+        }
+    }
+
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <Button 
                     variant="outline" 
-                    className="h-auto p-2 flex flex-col items-center justify-center text-center w-24 h-24 relative shadow-sm hover:bg-accent/80"
+                    className={cn(
+                        "h-auto p-2 flex flex-col items-center justify-center text-center w-24 h-24 relative shadow-sm transition-all",
+                        seatStyles[seatVariant]
+                    )}
                     onClick={() => onSeatSelect(seat)}
-                    data-state={canAssign ? 'assignable' : ''}
                 >
                     <div className="absolute top-1 left-1 text-xs font-mono text-muted-foreground">{seat.label}</div>
                     <div className="flex flex-col items-center justify-center">
                         {guest ? (
                             <>
-                                <User className="w-5 h-5 mb-1" />
-                                <p className="text-xs font-medium leading-tight text-foreground line-clamp-2">{guest.fullName}</p>
+                                {getIconForCategory(guest.category)}
+                                <p className="text-xs font-medium leading-tight text-foreground line-clamp-2 mt-1">{guest.fullName}</p>
                                 <p className="text-[10px] text-muted-foreground line-clamp-1">{guest.organization}</p>
                             </>
                         ) : (
                              <>
-                                {canAssign && <Hand className="w-5 h-5 mb-1 text-primary animate-pulse" />}
-                                <p className="text-xs text-muted-foreground">{canAssign ? 'Click to assign' : 'Empty'}</p>
+                                {getIconForCategory()}
+                                <p className="text-xs text-muted-foreground mt-1">{canAssign ? 'Click to assign' : 'Empty'}</p>
                             </>
                         )}
                     </div>
@@ -94,6 +125,29 @@ function SeatingTable({ table, onSeatSelect, isAssignmentMode }: { table: any, o
         </div>
     );
 }
+
+const legendItems = [
+    { label: 'Empty', colorClass: 'bg-background border-border' },
+    { label: 'Occupied', colorClass: 'bg-secondary/50 border-border' },
+    { label: 'VIP', colorClass: 'bg-yellow-100/50 border-yellow-400' },
+    { label: 'Staff/Press', colorClass: 'bg-blue-100/30 border-blue-300' },
+    { label: 'Assignable', colorClass: 'bg-primary/10 border-primary' },
+]
+
+function SeatingLegend() {
+    return (
+        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center mb-4 text-xs">
+            <span className="font-semibold text-muted-foreground">Legend:</span>
+            {legendItems.map(item => (
+                <div key={item.label} className="flex items-center gap-2">
+                    <div className={cn("w-4 h-4 rounded border", item.colorClass)} />
+                    <span>{item.label}</span>
+                </div>
+            ))}
+        </div>
+    )
+}
+
 
 export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }: { eventId: string; guestToAssign: Guest | null; onAssignmentComplete: () => void; }) {
   const { toast } = useToast();
@@ -359,6 +413,8 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
               </AlertDescription>
             </Alert>
           )}
+          
+        <SeatingLegend />
 
          <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
             {layout ? (
