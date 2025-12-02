@@ -22,6 +22,7 @@ import {
   MapPin,
   Users,
   ClipboardCheck,
+  Info
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
@@ -29,6 +30,8 @@ import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
 import { SeatingPlanTab } from '@/components/protocol-admin/SeatingPlanTab';
 import { InvitationsTab } from '@/components/protocol-admin/InvitationsTab';
 import { DayOfOperationsTab } from '@/components/protocol-admin/DayOfOperationsTab';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -104,6 +107,14 @@ export default function EventDetailPage() {
           </div>
         </CardHeader>
       </Card>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertTitle>Event Management Hub</AlertTitle>
+        <AlertDescription>
+           Use the tabs to manage this event: <strong>Overview</strong> for stats, <strong>Guest List</strong> for attendees, <strong>Seating Plan</strong> for arrangement, <strong>Invitations</strong> for RSVPs, and <strong>Day-of Operations</strong> for live monitoring.
+        </AlertDescription>
+      </Alert>
 
       <Tabs defaultValue="overview">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { roomLayouts, guests as allGuests, type Guest, type RoomLayout } from '@/lib/data';
 import {
   Card,
@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Printer, RotateCcw, Wand2, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const getGuestById = (guestId: string | null): Guest | null => {
   if (!guestId) return null;
@@ -92,10 +93,17 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
                         {roomAreas.map(area => <SelectItem key={area} value={area}>{area}</SelectItem>)}
                     </SelectContent>
                 </Select>
-                <Button variant="secondary" onClick={() => handleDemoClick('auto-arrange seats based on protocol rules')}>
-                    <Wand2 />
-                    Auto-arrange (demo)
-                </Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="secondary" onClick={() => handleDemoClick('auto-arrange seats based on protocol rules')}>
+                            <Wand2 />
+                            Auto-arrange (demo)
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Automatically assign seats based on guest rank and delegation.</p>
+                    </TooltipContent>
+                </Tooltip>
                  <Button variant="outline" onClick={() => handleDemoClick('reset the seating plan')}>
                     <RotateCcw />
                     Reset

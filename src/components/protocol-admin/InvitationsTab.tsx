@@ -21,7 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { Send, MailWarning, User, Eye, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 import {
   AlertDialog,
@@ -34,6 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function InvitationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
@@ -118,7 +119,14 @@ export function InvitationsTab({ eventId }: { eventId: string }) {
 
         <div className="flex flex-wrap gap-2">
             <AlertDialog>
-                <AlertDialogTrigger asChild><Button><Send />Send Invitations (demo)</Button></AlertDialogTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild><Button><Send />Send Invitations (demo)</Button></AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>This is a simulated action for the prototype.</p>
+                    </TooltipContent>
+                </Tooltip>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Simulate Sending Invitations</AlertDialogTitle>
@@ -131,7 +139,14 @@ export function InvitationsTab({ eventId }: { eventId: string }) {
                 </AlertDialogContent>
             </AlertDialog>
             <AlertDialog>
-                <AlertDialogTrigger asChild><Button variant="secondary"><MailWarning />Send Reminders (demo)</Button></AlertDialogTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild><Button variant="secondary"><MailWarning />Send Reminders (demo)</Button></AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>This is a simulated action for the prototype.</p>
+                    </TooltipContent>
+                </Tooltip>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Simulate Sending Reminders</AlertDialogTitle>
