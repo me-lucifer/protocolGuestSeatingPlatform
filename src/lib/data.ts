@@ -79,7 +79,7 @@ export const initialEvents: Event[] = [
     venue: 'Grand Ballroom, The Capital Hotel',
     status: 'Invitations Sent',
     type: 'Diplomatic reception',
-    guestCount: 250,
+    guestCount: 14,
   },
   {
     id: 'evt-002',
@@ -88,7 +88,7 @@ export const initialEvents: Event[] = [
     venue: 'Exhibition Centre, Hall A',
     status: 'Live',
     type: 'Conference',
-    guestCount: 500,
+    guestCount: 1,
   },
   {
     id: 'evt-003',
@@ -97,7 +97,7 @@ export const initialEvents: Event[] = [
     venue: 'Presidential Palace Gardens',
     status: 'Completed',
     type: 'State ceremony',
-    guestCount: 150,
+    guestCount: 0,
   },
 ];
 
@@ -135,7 +135,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'j.pike@freedonia.gov',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-002',
@@ -149,9 +149,9 @@ export const initialGuests: Guest[] = [
     seatAssignment: 'T1-A1',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
-    checkInTime: '2024-12-15T19:05:00',
+    checkInTime: '2024-12-15T19:05:00Z',
     email: 'j.smith@gov.host',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-003',
@@ -167,7 +167,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'e.white@ghc.org',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-005',
@@ -176,13 +176,14 @@ export const initialGuests: Guest[] = [
     organization: 'World News Network',
     delegation: 'Press Corps',
     category: 'Press',
+    rankLevel: 10,
     rsvpStatus: 'Declined',
     seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 's.green@wnn.com',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-006',
@@ -198,7 +199,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'a.black@dod.gov.host',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-007',
@@ -214,7 +215,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'm.garcia@costaguana.gov',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-008',
@@ -224,13 +225,13 @@ export const initialGuests: Guest[] = [
     delegation: 'Shangala',
     category: 'Diplomatic',
     rankLevel: 6,
-    rsvpStatus: 'Accepted',
-    seatAssignment: 'T5-B1',
+    rsvpStatus: 'Invited',
+    seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'c.wei@shangala.gov',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-009',
@@ -244,7 +245,7 @@ export const initialGuests: Guest[] = [
     seatAssignment: 'STAFF-1',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
-    checkInTime: '2024-12-15T18:30:00',
+    checkInTime: '2024-12-15T18:30:00Z',
     email: 'd.miller@protocol.gov.host',
     lastEmailSent: null,
   },
@@ -262,7 +263,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'ceo@globalpetro.com',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-011',
@@ -271,13 +272,14 @@ export const initialGuests: Guest[] = [
     organization: 'Associated Press',
     delegation: 'Press Corps',
     category: 'Press',
+    rankLevel: 10,
     rsvpStatus: 'Invited',
     seatAssignment: null,
     eventId: 'evt-001',
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'p.dubois@ap.org',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-012',
@@ -291,7 +293,7 @@ export const initialGuests: Guest[] = [
     seatAssignment: 'STAFF-2',
     eventId: 'evt-001',
     checkInStatus: 'Checked-in',
-    checkInTime: '2024-12-15T18:00:00',
+    checkInTime: '2024-12-15T18:00:00Z',
     email: 'sec.lead@gov.host',
     lastEmailSent: null,
   },
@@ -309,7 +311,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'r1@timesherald.com',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   {
     id: 'gst-014',
@@ -325,7 +327,23 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'fi@future.com',
-    lastEmailSent: '2024-11-01',
+    lastEmailSent: '2024-11-01T10:00:00Z',
+  },
+  {
+    id: 'gst-015',
+    fullName: 'Kenji Tanaka',
+    title: 'Trade Attaché',
+    organization: 'Embassy of Nikonia',
+    delegation: 'Nikonia',
+    category: 'Diplomatic',
+    rankLevel: 7,
+    rsvpStatus: 'Invited',
+    seatAssignment: null,
+    eventId: 'evt-001',
+    checkInStatus: 'Not Arrived',
+    checkInTime: null,
+    email: 'k.tanaka@nikonia.gov',
+    lastEmailSent: '2024-11-01T10:00:00Z',
   },
   // Guests for International Trade Summit (evt-002)
   {
@@ -342,7 +360,7 @@ export const initialGuests: Guest[] = [
     checkInStatus: 'Not Arrived',
     checkInTime: null,
     email: 'r.brown@itc.com',
-    lastEmailSent: '2024-10-15',
+    lastEmailSent: '2024-10-15T10:00:00Z',
   },
 ];
 
@@ -388,14 +406,17 @@ export const initialRoomLayouts: RoomLayout[] = [
                     { id: 'seat-2c1', label: 'T2-C1', guestId: 'gst-010' },
                     { id: 'seat-2c2', label: 'T2-C2', guestId: null },
                     { id: 'seat-2c3', label: 'T2-C3', guestId: null },
+                    { id: 'seat-2c4', label: 'T2-C4', guestId: null },
                 ]
             },
             {
                 id: 'table-5',
                 name: 'Table 5',
                 seats: [
-                    { id: 'seat-5b1', label: 'T5-B1', guestId: 'gst-008' },
+                    { id: 'seat-5b1', label: 'T5-B1', guestId: null },
                     { id: 'seat-5b2', label: 'T5-B2', guestId: 'gst-007' },
+                    { id: 'seat-5b3', label: 'T5-B3', guestId: null },
+                    { id: 'seat-5b4', label: 'T5-B4', guestId: null },
                 ]
             }
         ]
@@ -427,6 +448,20 @@ export const initialRoomLayouts: RoomLayout[] = [
                     { id: 'seat-pa1', label: 'PA-R1-S1', guestId: 'gst-013' },
                     { id: 'seat-pa2', label: 'PA-R1-S2', guestId: null },
                     { id: 'seat-pa3', label: 'PA-R1-S3', guestId: null },
+                ]
+            }
+        ]
+    },
+     {
+        id: 'layout-004',
+        name: 'Main Conference Floor',
+        eventId: 'evt-002',
+        tables: [
+            {
+                id: 'table-c-1',
+                name: 'Row C',
+                seats: [
+                    { id: 'seat-c5-12', label: 'C5-12', guestId: 'gst-004' },
                 ]
             }
         ]
