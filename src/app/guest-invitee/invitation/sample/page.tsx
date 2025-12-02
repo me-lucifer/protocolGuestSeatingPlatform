@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { format } from 'date-fns';
-import { MapPin, Calendar, Clock, Shirt } from 'lucide-react';
+import { MapPin, Calendar, Clock, Shirt, Mail, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -63,6 +64,14 @@ export default function GuestInviteeInvitationView() {
     );
   }
 
+  const handleAccept = () => {
+    const guestIndex = guests.findIndex((g) => g.id === guest.id);
+    if (guestIndex !== -1) {
+      guests[guestIndex].rsvpStatus = 'Accepted';
+    }
+    router.push('/guest-invitee/invitation/confirmed');
+  };
+
   const handleDecline = () => {
     // In a real app, this would be an API call.
     // For this prototype, we'll mutate the shared data directly.
@@ -72,6 +81,8 @@ export default function GuestInviteeInvitationView() {
     }
     router.push('/guest-invitee/invitation/declined');
   };
+
+  const rsvpStatus = guest.rsvpStatus;
 
   return (
     <div className="flex justify-center items-start p-0 sm:p-4">
@@ -85,6 +96,18 @@ export default function GuestInviteeInvitationView() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
+          {rsvpStatus !== 'Invited' && (
+            <Alert variant={rsvpStatus === 'Declined' ? 'destructive' : 'default'} className="mb-6">
+              <Info className="h-4 w-4" />
+              <AlertTitle>You have already responded</AlertTitle>
+              <AlertDescription>
+                {rsvpStatus === 'Accepted'
+                  ? 'Your attendance has been confirmed.'
+                  : 'You have declined this invitation.'}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="mb-6">
             <p className="font-semibold text-lg text-foreground">
               Dear {guest.title} {guest.fullName.split(' ').slice(-1)},
@@ -125,17 +148,25 @@ export default function GuestInviteeInvitationView() {
               </div>
             </div>
           </div>
+           {rsvpStatus === 'Declined' && (
+             <div className="mt-6 text-center">
+                <p className="text-sm text-muted-foreground">If your availability has changed, please contact the Protocol Office.</p>
+                <Button variant="link" asChild className="mt-1">
+                    <Link href="mailto:protocol-office@example.com"><Mail /> Contact Protocol</Link>
+                </Button>
+            </div>
+           )}
           <p className="text-xs text-muted-foreground mt-6 text-center">
             This is a prototype for demonstration purposes. Your response will be reflected in this demo session.
           </p>
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
-          <Button size="lg" className="w-full sm:w-auto" asChild>
-            <Link href="/guest-invitee/invitation/confirmed">Confirm Attendance</Link>
+          <Button size="lg" className="w-full sm:w-auto" onClick={handleAccept} disabled={rsvpStatus === 'Declined'}>
+            Confirm Attendance
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="lg" variant="secondary" className="w-full sm:w-auto">Decline Invitation</Button>
+              <Button size="lg" variant="secondary" className="w-full sm:w-auto" disabled={rsvpStatus === 'Accepted'}>Decline Invitation</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
