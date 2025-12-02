@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle, User, Building2, Armchair, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfirm: () => void, confirmed: boolean }) {
   const router = useRouter();
@@ -32,7 +33,17 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
               <CardTitle className="text-lg flex items-center gap-2"><Armchair /> Seating Assignment</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-primary font-mono text-center">{guest.seatAssignment || 'N/A'}</p>
+            {guest.seatAssignment ? (
+                <p className="text-4xl font-bold text-primary font-mono text-center">{guest.seatAssignment}</p>
+            ) : (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>No Seat Assigned</AlertTitle>
+                    <AlertDescription>
+                        Please contact the Protocol Admin for assistance.
+                    </AlertDescription>
+                </Alert>
+            )}
           </CardContent>
       </Card>
       
