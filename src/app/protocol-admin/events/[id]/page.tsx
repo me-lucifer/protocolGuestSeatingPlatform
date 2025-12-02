@@ -34,6 +34,70 @@ import { InvitationsTab } from '@/components/protocol-admin/InvitationsTab';
 import { DayOfOperationsTab } from '@/components/protocol-admin/DayOfOperationsTab';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useDemoData } from '@/contexts/DemoContext';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Handoff Note:
+// This page uses a simulated loading state (`useState` and `useEffect` with a timeout)
+// to demonstrate skeleton loading. In a production app, this would be replaced with a
+// proper data fetching library (e.g., React Query, SWR) where the `isLoading` state
+// would be managed by the library.
+function EventDetailSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <Skeleton className="h-9 w-3/4 mb-2" />
+              <Skeleton className="h-5 w-1/2" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-24" />
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+      <Skeleton className="h-12 w-full" />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <Skeleton className="h-7 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-4" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-8 w-12" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-5 flex-1" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 
 // Handoff Note: This is the main page for managing a single event.
 // It's a container for several tabs, each handling a different aspect of event management.
@@ -47,12 +111,19 @@ export default function EventDetailPage() {
   // Handoff Note: Using a demo context to get and manage data.
   // Replace with a data fetching library like React Query or SWR.
   const { events, guests } = useDemoData();
+  const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState('overview');
   // Handoff Note: `guestToAssign` is a piece of local state used for the demo
   // to pass a guest from the GuestListTab to the SeatingPlanTab to initiate assignment.
   // A production implementation might use a more robust state management solution or URL state.
   const [guestToAssign, setGuestToAssign] = useState<Guest | null>(null);
+
+  useEffect(() => {
+    // Simulate data fetching for demo purposes
+    const timer = setTimeout(() => setLoading(false), 750);
+    return () => clearTimeout(timer);
+  }, []);
 
   const event = useMemo(() => events.find((e) => e.id === id), [events, id]);
 
@@ -77,6 +148,10 @@ export default function EventDetailPage() {
   const handleClearAssignment = () => {
     setGuestToAssign(null);
   };
+  
+  if (loading) {
+    return <EventDetailSkeleton />;
+  }
 
   if (!event) {
     return (
@@ -287,3 +362,5 @@ export default function EventDetailPage() {
     </div>
   );
 }
+
+    
