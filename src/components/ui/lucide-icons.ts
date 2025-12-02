@@ -62,5 +62,6 @@ export {
     Newspaper,
     Square,
     Filter,
-    Tour
+    Route,
+    Zap
 } from 'lucide-react';

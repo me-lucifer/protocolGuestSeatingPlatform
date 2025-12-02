@@ -7,16 +7,20 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 import { useTour } from '@/contexts/TourContext';
 import { useEffect, useRef } from 'react';
+import { useDemo } from '@/contexts/DemoContext';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   const { isTourActive, currentStep } = useTour();
+  const { isDemoMode } = useDemo();
   const mainCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,6 +84,31 @@ export default function Home() {
               </Link>
             ))}
           </CardContent>
+
+          {isDemoMode && (
+            <>
+                <Separator />
+                <CardFooter className="p-4 bg-muted/30">
+                   <div className="w-full">
+                     <h3 className="mb-3 text-sm font-semibold text-center text-muted-foreground flex items-center justify-center gap-2">
+                        <Zap className="h-4 w-4" />
+                        Quick Demo Shortcuts
+                    </h3>
+                    <div className="flex flex-wrap justify-center gap-2">
+                        <Button asChild variant="link" size="sm">
+                            <Link href="/protocol-admin/events/evt-001">Jump to Admin Event Demo</Link>
+                        </Button>
+                        <Button asChild variant="link" size="sm">
+                            <Link href="/guest-invitee/invitation/sample">Jump to Guest Invitation Demo</Link>
+                        </Button>
+                         <Button asChild variant="link" size="sm">
+                            <Link href="/protocol-officer">Jump to Officer Check-in Demo</Link>
+                        </Button>
+                    </div>
+                   </div>
+                </CardFooter>
+            </>
+          )}
         </Card>
       </div>
     </main>
