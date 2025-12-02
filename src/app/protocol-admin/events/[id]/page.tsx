@@ -137,7 +137,7 @@ export default function EventDetailPage() {
           <TabsTrigger value="day-of">Day-of Operations</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="overview" className="mt-6">
+        <TabsContent value="overview" className="mt-6 data-[state=active]:animate-fade-in">
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">
               <CardHeader>
@@ -231,16 +231,16 @@ export default function EventDetailPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="guest-list" className="mt-6">
+        <TabsContent value="guest-list" className="mt-6 data-[state=active]:animate-fade-in">
             <GuestListTab eventId={id as string} onAssignSeat={handleStartAssignment} />
         </TabsContent>
-        <TabsContent value="seating-plan" className="mt-6">
+        <TabsContent value="seating-plan" className="mt-6 data-[state=active]:animate-fade-in">
             <SeatingPlanTab eventId={id as string} guestToAssign={guestToAssign} onAssignmentComplete={handleClearAssignment} />
         </TabsContent>
-        <TabsContent value="invitations" className="mt-6">
+        <TabsContent value="invitations" className="mt-6 data-[state=active]:animate-fade-in">
             <InvitationsTab eventId={id as string} />
         </TabsContent>
-        <TabsContent value="day-of" className="mt-6">
+        <TabsContent value="day-of" className="mt-6 data-[state=active]:animate-fade-in">
             <DayOfOperationsTab eventId={id as string} />
         </TabsContent>
       </Tabs>

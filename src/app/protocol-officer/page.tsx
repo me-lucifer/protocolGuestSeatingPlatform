@@ -401,17 +401,17 @@ export default function ProtocolOfficerInterface() {
       if (activeEvent) {
         switch(view) {
             case 'dashboard':
-                return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
+                return <div className="animate-fade-in"><CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} /></div>;
             case 'manual_checkin':
-                return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} isOffline={isOffline} />;
+                return <div className="animate-fade-in"><ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} isOffline={isOffline} /></div>;
             case 'qr_scanner':
-                return <QRScanner onBack={handleBackToDashboard} isOffline={isOffline} />;
+                return <div className="animate-fade-in"><QRScanner onBack={handleBackToDashboard} isOffline={isOffline} /></div>;
             default:
                  setView('dashboard');
-                 return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
+                 return <div className="animate-fade-in"><CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} /></div>;
         }
     }
-    return <EventSelection onSelectEvent={handleSelectEvent} />;
+    return <div className="animate-fade-in"><EventSelection onSelectEvent={handleSelectEvent} /></div>;
   }
 
   return (
