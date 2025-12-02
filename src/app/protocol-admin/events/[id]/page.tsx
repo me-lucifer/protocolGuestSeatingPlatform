@@ -60,6 +60,15 @@ export default function EventDetailPage() {
     return guests.filter((g) => g.eventId === id);
   }, [guests, id]);
 
+  useEffect(() => {
+    // Handoff Note: This is a demo-specific check to simulate an expired or invalid invitation.
+    // In production, this logic would likely be handled by a server or middleware
+    // before the page even loads, redirecting based on the event's actual status.
+    if (event?.status === 'Completed') {
+      // Logic for admin is to show archived view, no redirect needed here.
+    }
+  }, [event]);
+
   const handleStartAssignment = (guest: Guest) => {
     setGuestToAssign(guest);
     setActiveTab('seating-plan');
@@ -102,7 +111,7 @@ export default function EventDetailPage() {
         acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
         return acc;
       },
-      { Accepted: 0, Declined: 0, Invited: 0 } as Record<Guest['rsvpStatus'], number>
+      { Accepted: 0, Declined: 0, Invited: 0, 'Not Invited': 0, 'Removed': 0 } as Record<Guest['rsvpStatus'], number>
     )
   }, [eventGuests]);
 
@@ -154,7 +163,7 @@ export default function EventDetailPage() {
           <Info className="h-4 w-4" />
           <AlertTitle>Event Management Hub</AlertTitle>
           <AlertDescription>
-            Use the tabs to manage this event: <strong>Overview</strong> for stats, <strong>Guest List</strong> for attendees, <strong>Seating Plan</strong> for arrangement, <strong>Invitations</strong> for RSVPs, and <strong>Day-of Operations</strong> for live monitoring.
+            Use the tabs to manage this event: <strong>Overview</strong> for stats, <strong>Guest List</strong> for attendees, <strong>Seating Plan</strong> for arrangement, <strong>Invitations &amp; RSVPs</strong>, and <strong>Day-of Operations</strong> for live monitoring.
           </AlertDescription>
         </Alert>
       )}
