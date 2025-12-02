@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical } from 'lucide-react';
+import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical, DoorOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import {
@@ -44,6 +44,10 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
     DropdownMenuCheckboxItem,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
 
@@ -342,6 +346,7 @@ export default function ProtocolOfficerInterface() {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
   const [isOffline, setIsOffline] = useState(false);
+  const [entrance, setEntrance] = useState('A');
   const { toast } = useToast();
   
   // This state is just to trigger re-renders on children when data changes.
@@ -410,6 +415,7 @@ export default function ProtocolOfficerInterface() {
   }
 
   return (
+    // This layout is optimized for a demo video on a desktop but emulates a phone UI.
     <div className="relative mx-auto h-[80vh] max-h-[800px] w-full max-w-sm overflow-hidden rounded-2xl border-8 border-neutral-800 bg-background shadow-2xl flex flex-col">
         <div className="absolute inset-x-0 top-0 z-10 h-6 w-full rounded-t-lg bg-neutral-800">
             <div className="absolute left-1/2 top-2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-600"></div>
@@ -417,7 +423,8 @@ export default function ProtocolOfficerInterface() {
         <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-muted/60 px-3 pt-6">
             <div className="flex items-center gap-2 font-semibold text-foreground">
                 {isOffline && <WifiOff className="h-4 w-4 text-muted-foreground animate-pulse" />}
-                <p className="truncate">{getHeaderTitle()}</p>
+                 <DoorOpen className="h-4 w-4 text-muted-foreground" />
+                <p className="truncate">{activeEvent ? `Entrance ${entrance}` : 'Select Event'}</p>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -427,6 +434,13 @@ export default function ProtocolOfficerInterface() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                     <DropdownMenuLabel>Officer Options</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup value={entrance} onValueChange={setEntrance}>
+                        <DropdownMenuRadioItem value="A">Entrance A</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="B">Entrance B</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuCheckboxItem
                         checked={isOffline}
                         onCheckedChange={setIsOffline}

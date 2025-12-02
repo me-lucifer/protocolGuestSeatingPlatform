@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink, RotateCcw } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -210,6 +210,24 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                             )}
                         </TableBody>
                     </Table>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <CardTitle className="section-title">Active Officers (demo)</CardTitle>
+                    <CardDescription>Simulated list of on-site staff.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-3 text-sm">
+                        <li className="flex items-center justify-between">
+                            <span className="flex items-center gap-2 text-foreground"><MonitorSmartphone /> Officer at Entrance A</span>
+                            <Badge variant="secondary">Online</Badge>
+                        </li>
+                        <li className="flex items-center justify-between">
+                             <span className="flex items-center gap-2 text-foreground"><MonitorSmartphone /> Officer at Entrance B</span>
+                            <Badge variant="secondary">Online</Badge>
+                        </li>
+                    </ul>
                 </CardContent>
             </Card>
             <Card>
