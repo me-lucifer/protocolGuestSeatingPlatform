@@ -21,17 +21,30 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
+  const { toast } = useToast();
   // This state is just to trigger re-renders on children when data changes.
-  const [_, setForceUpdate] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
         setForceUpdate(v => v + 1);
@@ -39,7 +52,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
     return () => clearInterval(interval);
   }, []);
 
-  const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [eventId, _]);
+  const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [eventId, forceUpdate]);
 
   const checkInStats = useMemo(() => {
     const expected = guests.filter(g => g.rsvpStatus === 'Accepted').length;
@@ -70,6 +83,20 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
       color: "hsl(var(--muted))",
     },
   } satisfies import('@/components/ui/chart').ChartConfig;
+
+  const handleResetState = () => {
+    allGuests.forEach((guest, index) => {
+      if (guest.eventId === eventId) {
+        allGuests[index].checkInStatus = 'Not Arrived';
+        allGuests[index].checkInTime = null;
+      }
+    });
+    setForceUpdate(v => v + 1);
+    toast({
+      title: 'Demo State Reset',
+      description: 'Guest check-in data for this event has been reset.',
+    });
+  };
 
   return (
     <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
@@ -189,9 +216,9 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                 <CardHeader>
                     <CardTitle className="section-title">Demo Scenario Helper</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                        <strong>Demo idea:</strong> Start here to see the admin's live view. Then, open the Protocol Officer view in a new tab to simulate guest check-ins and watch this dashboard update in real-time.
+                <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                        <strong>Demo idea:</strong> Start here to see the admin's live view. Then, open the Protocol Officer view to simulate guest check-ins and watch this dashboard update in real-time.
                     </p>
                     <Button asChild className="w-full">
                         <Link href="/protocol-officer" target="_blank">
@@ -199,6 +226,26 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                             Open Officer View (demo)
                         </Link>
                     </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                                <RotateCcw />
+                                Reset Demo State
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Confirm Reset</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will reset all check-in data for this event. Guest statuses will be set to "Not Arrived" and recent check-in lists will be cleared. Are you sure?
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleResetState}>Confirm Reset</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </CardContent>
             </Card>
         </div>
