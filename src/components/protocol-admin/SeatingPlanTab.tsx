@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { roomLayouts, guests as allGuests, type Guest, type RoomLayout } from '@/lib/data';
+import { allGuests, roomLayouts, type Guest, type RoomLayout, type Seat as SeatType, type Table as TableType } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -19,44 +19,58 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, RotateCcw, Wand2, User, Info } from 'lucide-react';
+import { Printer, RotateCcw, Wand2, User, Info, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
+import { Label } from '../ui/label';
+import { Combobox } from '../ui/combobox';
+import { Badge } from '../ui/badge';
 
-const getGuestById = (guestId: string | null): Guest | null => {
-  if (!guestId) return null;
-  return allGuests.find(g => g.id === guestId) || null;
-}
+const getInitialLayout = (eventId: string) => roomLayouts.find(rl => rl.eventId === eventId);
+const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
 
-function Seat({ seat, guest }: { seat: any, guest: Guest | null }) {
+function Seat({ seat, onSeatSelect }: { seat: any, onSeatSelect: (seat: any) => void }) {
+    const guest = allGuests.find(g => g.id === seat.guestId);
     return (
-        <Button variant="outline" className="h-auto p-2 flex flex-col items-center justify-center text-center w-24 h-24 relative shadow-sm hover:bg-accent/80">
-            <div className="absolute top-1 left-1 text-xs font-mono text-muted-foreground">{seat.label}</div>
-            <div className="flex flex-col items-center justify-center">
-                {guest ? (
-                    <>
-                        <User className="w-5 h-5 mb-1" />
-                        <p className="text-xs font-medium leading-tight text-foreground line-clamp-2">{guest.fullName}</p>
-                        <p className="text-[10px] text-muted-foreground line-clamp-1">{guest.organization}</p>
-                    </>
-                ) : (
-                    <p className="text-xs text-muted-foreground">Empty</p>
-                )}
-            </div>
-        </Button>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button 
+                    variant="outline" 
+                    className="h-auto p-2 flex flex-col items-center justify-center text-center w-24 h-24 relative shadow-sm hover:bg-accent/80"
+                    onClick={() => onSeatSelect(seat)}
+                >
+                    <div className="absolute top-1 left-1 text-xs font-mono text-muted-foreground">{seat.label}</div>
+                    <div className="flex flex-col items-center justify-center">
+                        {guest ? (
+                            <>
+                                <User className="w-5 h-5 mb-1" />
+                                <p className="text-xs font-medium leading-tight text-foreground line-clamp-2">{guest.fullName}</p>
+                                <p className="text-[10px] text-muted-foreground line-clamp-1">{guest.organization}</p>
+                            </>
+                        ) : (
+                            <p className="text-xs text-muted-foreground">Empty</p>
+                        )}
+                    </div>
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+                {guest ? <p>{guest.fullName}</p> : <p>Empty Seat</p>}
+                 <p className="text-sm text-muted-foreground">Click to assign</p>
+            </TooltipContent>
+        </Tooltip>
     )
 }
 
-function SeatingTable({ table }: { table: any }) {
+function SeatingTable({ table, onSeatSelect }: { table: any, onSeatSelect: (seat: any) => void }) {
     return (
         <div className="border rounded-lg p-4 bg-muted/20">
             <h4 className="font-semibold text-center mb-4 text-foreground">{table.name}</h4>
             <div className="flex flex-wrap gap-2 justify-center">
                 {table.seats.map((seat: any) => {
-                    const guest = getGuestById(seat.guestId);
-                    return <Seat key={seat.id} seat={seat} guest={guest} />;
+                    return <Seat key={seat.id} seat={seat} onSeatSelect={() => onSeatSelect({ ...seat, tableName: table.name })} />;
                 })}
             </div>
         </div>
@@ -66,9 +80,81 @@ function SeatingTable({ table }: { table: any }) {
 export function SeatingPlanTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
   const { featureFlags } = useFeatureFlags();
-  const [selectedLayout, setSelectedLayout] = useState<RoomLayout | undefined>(() =>
-    roomLayouts.find(rl => rl.eventId === eventId)
-  );
+  const [layout, setLayout] = useState<RoomLayout | undefined>(() => getInitialLayout(eventId));
+  const [guests] = useState(() => getInitialGuests(eventId));
+  
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [selectedSeat, setSelectedSeat] = useState<(SeatType & { tableName: string }) | null>(null);
+  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
+
+  const handleSeatSelect = (seat: SeatType & { tableName: string }) => {
+    setSelectedSeat(seat);
+    setSelectedGuestId(seat.guestId);
+    setIsPanelOpen(true);
+  };
+  
+  const handleAssignSeat = () => {
+    if (!selectedSeat || !selectedGuestId) {
+        toast({ title: "Error", description: "No seat or guest selected.", variant: "destructive" });
+        return;
+    }
+
+    // Check if guest is already seated
+    let isAlreadySeated = false;
+    layout?.tables.forEach(table => {
+        table.seats.forEach(seat => {
+            if (seat.guestId === selectedGuestId && seat.id !== selectedSeat.id) {
+                isAlreadySeated = true;
+            }
+        });
+    });
+
+    if (isAlreadySeated) {
+        toast({ title: "Assignment Failed", description: "This guest is already assigned to another seat.", variant: "destructive" });
+        return;
+    }
+    
+    // Update layout state
+    setLayout(prevLayout => {
+        if (!prevLayout) return;
+        const newTables = prevLayout.tables.map(table => ({
+            ...table,
+            seats: table.seats.map(seat => {
+                // Clear the seat if another guest was there
+                if (seat.guestId === selectedGuestId && seat.id !== selectedSeat.id) {
+                    return { ...seat, guestId: null };
+                }
+                // Assign to new seat
+                if (seat.id === selectedSeat.id) {
+                    return { ...seat, guestId: selectedGuestId };
+                }
+                return seat;
+            })
+        }));
+        return { ...prevLayout, tables: newTables };
+    });
+
+    toast({ title: "Seat Assigned", description: `Assigned seat ${selectedSeat.label}.` });
+    setIsPanelOpen(false);
+  };
+
+  const handleClearSeat = () => {
+    if (!selectedSeat) return;
+
+     setLayout(prevLayout => {
+        if (!prevLayout) return;
+        const newTables = prevLayout.tables.map(table => ({
+            ...table,
+            seats: table.seats.map(seat => 
+                seat.id === selectedSeat.id ? { ...seat, guestId: null } : seat
+            )
+        }));
+        return { ...prevLayout, tables: newTables };
+    });
+
+    toast({ title: "Seat Cleared", description: `Seat ${selectedSeat.label} is now empty.` });
+    setIsPanelOpen(false);
+  };
 
   const handleDemoClick = (action: string) => {
       toast({
@@ -77,9 +163,17 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
       })
   }
 
+  const guestOptions = guests.map(g => ({
+      value: g.id,
+      label: `${g.fullName} (${g.organization})`,
+  }));
+
+  const selectedGuestForPanel = guests.find(g => g.id === selectedGuestId);
+
   const roomAreas = ["Main Hall", "VIP Area"]; // Dummy data
 
   return (
+    <>
     <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -119,7 +213,7 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
         </div>
       </CardHeader>
       <CardContent>
-         {!featureFlags.enable3DPreview && (
+         {featureFlags.enable3DPreview === false && (
             <Alert variant="destructive" className="mb-4">
               <Info className="h-4 w-4" />
               <AlertTitle>3D Preview Disabled</AlertTitle>
@@ -130,9 +224,9 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
           )}
 
          <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
-            {selectedLayout ? (
-                selectedLayout.tables.map(table => (
-                    <SeatingTable key={table.id} table={table} />
+            {layout ? (
+                layout.tables.map(table => (
+                    <SeatingTable key={table.id} table={table} onSeatSelect={handleSeatSelect} />
                 ))
             ) : (
                 <div className="text-center text-muted-foreground py-16">
@@ -145,5 +239,63 @@ export function SeatingPlanTab({ eventId }: { eventId: string }) {
         <p className="text-xs text-muted-foreground">Click on a seat to assign or change a guest. This is a visual placeholder for the seating arrangement interface.</p>
       </CardFooter>
     </Card>
+
+    <Sheet open={isPanelOpen} onOpenChange={setIsPanelOpen}>
+        <SheetContent className="sm:max-w-md">
+            <SheetHeader>
+                <SheetTitle>Assign Seat</SheetTitle>
+            </SheetHeader>
+            <div className="py-6 space-y-6">
+                 {selectedSeat && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Seat Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-1 text-sm">
+                            <p><strong>Seat:</strong> {selectedSeat.label}</p>
+                            <p><strong>Table:</strong> {selectedSeat.tableName}</p>
+                            <p><strong>Room:</strong> Main Hall (demo)</p>
+                        </CardContent>
+                    </Card>
+                 )}
+                 <div className="space-y-2">
+                    <Label htmlFor="guest-select">Assign Guest</Label>
+                    <Combobox
+                        options={guestOptions}
+                        value={selectedGuestId}
+                        onValueChange={setSelectedGuestId}
+                        placeholder="Search for a guest..."
+                        notFoundMessage="No guest found."
+                    />
+                 </div>
+                 {selectedGuestForPanel && (
+                    <Card className="bg-muted/30">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-base">Guest Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2 text-sm">
+                           <p className="font-semibold">{selectedGuestForPanel.fullName}</p>
+                           <p className="text-muted-foreground">{selectedGuestForPanel.organization}</p>
+                           <div className="flex gap-2 pt-2">
+                                <Badge variant="outline">{selectedGuestForPanel.category}</Badge>
+                                <Badge>RSVP: {selectedGuestForPanel.rsvpStatus}</Badge>
+                           </div>
+                        </CardContent>
+                    </Card>
+                 )}
+            </div>
+            <div className="flex justify-between">
+                <Button variant="destructive" onClick={handleClearSeat} disabled={!selectedSeat?.guestId}>
+                    <X />
+                    Clear Seat
+                </Button>
+                <div className="flex gap-2">
+                    <Button variant="secondary" onClick={() => setIsPanelOpen(false)}>Cancel</Button>
+                    <Button onClick={handleAssignSeat} disabled={!selectedGuestId}>Assign Seat (demo)</Button>
+                </div>
+            </div>
+        </SheetContent>
+    </Sheet>
+    </>
   );
 }
