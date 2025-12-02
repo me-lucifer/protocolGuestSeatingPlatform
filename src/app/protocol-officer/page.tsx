@@ -99,40 +99,31 @@ function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => vo
 }
 
 
-function ManualCheckIn({ event, onBack, setGuestList }: { event: Event, onBack: () => void, setGuestList: React.Dispatch<React.SetStateAction<Guest[]>> }) {
+function ManualCheckIn({ event, onBack }: { event: Event, onBack: () => void }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [localGuests, setLocalGuests] = useState(() => allGuests.filter(g => g.eventId === event.id));
-  const { toast } = useToast();
-
-  const handleCheckIn = (guestId: string) => {
-    let guestName = '';
-    
-    // Update local state for immediate feedback
-    const updatedLocalGuests = localGuests.map((guest) => {
-      if (guest.id === guestId) {
-        guestName = guest.fullName;
-        return { ...guest, checkInStatus: 'Checked-in' as const };
-      }
-      return guest;
-    });
-    setLocalGuests(updatedLocalGuests);
-
-    // Update the "global" mock data state
-    setGuestList(prevList => prevList.map(g => 
-        g.id === guestId ? { ...g, checkInStatus: 'Checked-in' as const } : g
-    ));
-
-    toast({
-      title: 'Saved (demo only)',
-      description: `${guestName} has been checked in.`,
-    });
-  };
+  const router = useRouter();
+  
+  // Use the global list and filter by eventId
+  const localGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
 
   const filteredGuests = localGuests.filter(
     (guest) =>
       guest.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guest.organization.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const getStatusVariant = (status: Guest['checkInStatus']) => {
+    switch (status) {
+      case 'Checked-in':
+        return 'default';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const handleGuestSelect = (guestId: string) => {
+    router.push(`/protocol-officer/scan-result?guestId=${guestId}`);
+  };
 
   return (
     <Card className="border-0 shadow-none rounded-none">
@@ -160,28 +151,22 @@ function ManualCheckIn({ event, onBack, setGuestList }: { event: Event, onBack: 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Seat</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>Guest</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredGuests.map((guest) => (
-                <TableRow key={guest.id}>
-                  <TableCell className="font-medium whitespace-nowrap">
+                <TableRow key={guest.id} onClick={() => handleGuestSelect(guest.id)} className="cursor-pointer">
+                  <TableCell className="font-medium">
                     <div>{guest.fullName}</div>
                     <div className="text-xs text-muted-foreground">{guest.organization}</div>
+                    <Badge variant="outline" className="mt-1">{guest.category}</Badge>
                   </TableCell>
-                  <TableCell className="font-mono">{guest.seatAssignment || 'N/A'}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      onClick={() => handleCheckIn(guest.id)}
-                      disabled={guest.checkInStatus === 'Checked-in'}
-                    >
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      {guest.checkInStatus === 'Checked-in' ? 'Checked-in' : 'Check In'}
-                    </Button>
+                  <TableCell>
+                    <Badge variant={getStatusVariant(guest.checkInStatus)}>
+                      {guest.checkInStatus}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}
@@ -328,7 +313,7 @@ export default function ProtocolOfficerInterface() {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [view, setView] = useState<'event_selection' | 'dashboard' | 'manual_checkin' | 'qr_scanner'>('event_selection');
   
-  // This state is passed down to children to update the "global" mock data
+  // This state is just to trigger re-renders on children when data changes.
   const [guestList, setGuestList] = useState<Guest[]>(allGuests);
 
   const handleSelectEvent = (event: Event) => {
@@ -356,16 +341,18 @@ export default function ProtocolOfficerInterface() {
   if (activeEvent) {
     switch(view) {
         case 'dashboard':
-            return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} setGuestList={setGuestList} />;
+            return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
         case 'manual_checkin':
-            return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} setGuestList={setGuestList} />;
+            return <ManualCheckIn event={activeEvent} onBack={handleBackToDashboard} />;
         case 'qr_scanner':
             return <QRScanner onBack={handleBackToDashboard} />;
         default:
              setView('dashboard');
-             return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} setGuestList={setGuestList} />;
+             return <CheckInDashboard event={activeEvent} onBack={handleBackToEvents} onShowManual={handleShowManual} onStartScan={handleStartScan} />;
     }
   }
 
   return <EventSelection onSelectEvent={handleSelectEvent} />;
 }
+
+    
