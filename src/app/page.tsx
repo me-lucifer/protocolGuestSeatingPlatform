@@ -15,15 +15,15 @@ export default function Home() {
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4 md:p-8">
       <div className="w-full max-w-5xl">
         <Card className="w-full rounded-xl shadow-2xl border-primary/10">
-          <CardHeader className="text-center p-8">
+          <CardHeader className="text-center p-6 md:p-8">
             <h1 className="text-3xl font-bold tracking-tight text-primary font-headline md:text-4xl">
               Protocol Guest Seating Platform
             </h1>
-            <CardDescription className="text-lg pt-2 text-muted-foreground max-w-3xl mx-auto">
+            <CardDescription className="text-base md:text-lg pt-2 text-muted-foreground max-w-3xl mx-auto">
               Welcome to the premier solution for managing high-profile events. This platform streamlines guest management, from invitation to seating, ensuring every detail is handled with precision and grace. Select your role to begin.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-6 p-8 pt-0 md:grid-cols-2">
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 p-6 md:p-8 pt-0">
             {roles.map((role) => (
               <Link
                 href={role.href}

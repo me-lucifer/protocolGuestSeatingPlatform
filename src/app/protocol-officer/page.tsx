@@ -70,7 +70,7 @@ export default function ProtocolOfficerInterface() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="border rounded-md">
+        <div className="border rounded-md overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -84,8 +84,8 @@ export default function ProtocolOfficerInterface() {
             <TableBody>
               {filteredGuests.map((guest) => (
                 <TableRow key={guest.id}>
-                  <TableCell className="font-medium">{guest.fullName}</TableCell>
-                  <TableCell className="hidden md:table-cell">{guest.organization}</TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{guest.fullName}</TableCell>
+                  <TableCell className="hidden md:table-cell whitespace-nowrap">{guest.organization}</TableCell>
                   <TableCell className="hidden sm:table-cell">{guest.seatAssignment || 'N/A'}</TableCell>
                   <TableCell>
                     <Badge variant={guest.checkInStatus === 'Checked-in' ? 'default' : 'secondary'} className="capitalize">
@@ -98,8 +98,8 @@ export default function ProtocolOfficerInterface() {
                       onClick={() => handleCheckIn(guest.id)}
                       disabled={guest.checkInStatus === 'Checked-in'}
                     >
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Check In
+                      <CheckCircle className="mr-0 sm:mr-2 h-4 w-4" />
+                      <span className="hidden sm:inline">Check In</span>
                     </Button>
                   </TableCell>
                 </TableRow>

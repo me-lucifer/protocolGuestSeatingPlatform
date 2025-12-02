@@ -40,34 +40,36 @@ export default function ProtocolAdminEventsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Event Name</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
-              <TableHead className="hidden lg:table-cell">Venue</TableHead>
-              <TableHead className="text-center hidden sm:table-cell">Type</TableHead>
-              <TableHead className="text-center">Guests</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {events.map((event) => (
-              <TableRow key={event.id}>
-                <TableCell className="font-medium">{event.name}</TableCell>
-                <TableCell className="hidden md:table-cell">{format(new Date(event.date), 'PPP')}</TableCell>
-                <TableCell className="hidden lg:table-cell">{event.venue}</TableCell>
-                <TableCell className="text-center hidden sm:table-cell">{event.type}</TableCell>
-                <TableCell className="text-center">{event.guestCount}</TableCell>
-                <TableCell className="text-right">
-                  <Badge variant={getStatusVariant(event.status)} className="capitalize">
-                    {event.status}
-                  </Badge>
-                </TableCell>
+        <div className="w-full overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Event Name</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="hidden lg:table-cell">Venue</TableHead>
+                <TableHead className="text-center hidden sm:table-cell">Type</TableHead>
+                <TableHead className="text-center">Guests</TableHead>
+                <TableHead className="text-right">Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {events.map((event) => (
+                <TableRow key={event.id}>
+                  <TableCell className="font-medium">{event.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">{format(new Date(event.date), 'PPP')}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{event.venue}</TableCell>
+                  <TableCell className="text-center hidden sm:table-cell">{event.type}</TableCell>
+                  <TableCell className="text-center">{event.guestCount}</TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant={getStatusVariant(event.status)} className="capitalize">
+                      {event.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
