@@ -162,13 +162,19 @@ export default function GuestInviteeInvitationView() {
             {t.prototypeNote}
           </p>
         </CardContent>
-        <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
-          <Button size="lg" className="w-full sm:w-auto" onClick={handleAccept} disabled={rsvpStatus === 'Declined'}>
-            {t.confirmAttendance}
-          </Button>
+        <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="flex-1 w-full text-center">
+                <Button size="lg" className="w-full sm:w-auto" onClick={handleAccept} disabled={rsvpStatus === 'Declined'}>
+                    {t.confirmAttendance}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">{t.confirmAttendanceHelper}</p>
+            </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="lg" variant="secondary" className="w-full sm:w-auto" disabled={rsvpStatus === 'Accepted'}>{t.declineInvitation}</Button>
+              <div className="flex-1 w-full text-center">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto" disabled={rsvpStatus === 'Accepted'}>{t.declineInvitation}</Button>
+                 <p className="text-xs text-muted-foreground mt-2">{t.declineInvitationHelper}</p>
+              </div>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
