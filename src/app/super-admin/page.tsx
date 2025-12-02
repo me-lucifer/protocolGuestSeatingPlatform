@@ -15,7 +15,10 @@ import {
     Palette,
     Shield,
     ScrollText,
-    Warehouse
+    Warehouse,
+    Eye,
+    Pencil,
+    Settings,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -73,6 +76,38 @@ const navCards = [
     }
 ]
 
+const roleDefinitions = [
+    {
+        name: 'Super Admin',
+        icon: Shield,
+        permissions: [
+            { module: 'User Management', access: 'Read/Write' },
+            { module: 'System Settings', access: 'Read/Write' },
+            { module: 'Organization Management', access: 'Read/Write' },
+            { module: 'Audit Logs', access: 'Read-only' },
+        ]
+    },
+    {
+        name: 'Protocol Admin',
+        icon: Pencil,
+        permissions: [
+            { module: 'Event Management', access: 'Read/Write' },
+            { module: 'Guest Management', access: 'Read/Write' },
+            { module: 'Seating Plans', access: 'Read/Write' },
+            { module: 'Reporting', access: 'Read-only' },
+        ]
+    },
+    {
+        name: 'Protocol Officer',
+        icon: Eye,
+        permissions: [
+            { module: 'Guest Check-in', access: 'Read/Write' },
+            { module: 'Guest List Search', access: 'Read-only' },
+            { module: 'Seating Information', access: 'Read-only' },
+        ]
+    }
+]
+
 export default function SuperAdminDashboard() {
   return (
     <div className="space-y-6">
@@ -104,7 +139,7 @@ export default function SuperAdminDashboard() {
       {/* Navigation Cards */}
       <Card>
           <CardHeader>
-              <CardTitle className="section-title">Administration</CardTitle>
+              <CardTitle className="section-title">Administration Modules</CardTitle>
               <CardDescription>Access key modules for platform management.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
@@ -122,6 +157,36 @@ export default function SuperAdminDashboard() {
                         </CardHeader>
                     </Card>
                   </Link>
+              ))}
+          </CardContent>
+      </Card>
+
+      {/* Role Definitions */}
+      <Card>
+          <CardHeader>
+              <CardTitle className="section-title">Role Definitions</CardTitle>
+              <CardDescription>Informational overview of user roles and their permissions.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-3">
+              {roleDefinitions.map(role => (
+                <Card key={role.name}>
+                    <CardHeader className="flex-row items-center gap-3">
+                        <div className="p-2 bg-muted rounded-md">
+                            <role.icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <CardTitle className="text-lg">{role.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-3 text-sm">
+                            {role.permissions.map(p => (
+                                <li key={p.module} className="flex justify-between">
+                                    <span className="text-foreground">{p.module}</span>
+                                    <span className="text-muted-foreground">{p.access}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
               ))}
           </CardContent>
       </Card>
