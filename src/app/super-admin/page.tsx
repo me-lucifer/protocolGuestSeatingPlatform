@@ -71,7 +71,7 @@ const navCards = [
     {
         title: 'Audit & Logs',
         description: 'Review system activity and access logs for security.',
-        href: '#',
+        href: '/super-admin/audit',
         icon: ScrollText
     }
 ]
