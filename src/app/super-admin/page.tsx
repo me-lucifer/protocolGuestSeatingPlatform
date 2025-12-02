@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -21,9 +22,12 @@ import {
     Settings,
     BookOpen,
     Info,
+    X,
+    Lightbulb,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const metricCards = [
   {
@@ -112,6 +116,8 @@ const roleDefinitions = [
 ]
 
 export default function SuperAdminDashboard() {
+  const [showDemoTips, setShowDemoTips] = useState(true);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -123,6 +129,25 @@ export default function SuperAdminDashboard() {
         </CardHeader>
       </Card>
       
+      {showDemoTips && (
+        <Alert>
+          <Lightbulb className="h-4 w-4" />
+          <AlertTitle>Demo Tips for Super Admin</AlertTitle>
+          <AlertDescription>
+              <p>This dashboard is for platform-wide governance. Key areas to highlight:</p>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li><strong>Users & Roles:</strong> Show how new users can be created and roles assigned.</li>
+                  <li><strong>Feature Flags (in Settings):</strong> Demonstrate how features can be toggled globally.</li>
+                  <li><strong>Audit & Logs:</strong> Emphasize the importance of security and oversight.</li>
+              </ul>
+          </AlertDescription>
+          <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => setShowDemoTips(false)}>
+              <X className="h-4 w-4" />
+              <span className="sr-only">Dismiss</span>
+          </Button>
+        </Alert>
+      )}
+
       {/* Metric Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {metricCards.map((metric) => (
