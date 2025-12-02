@@ -63,11 +63,21 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
 }
 
 function ErrorResult({ title, message, icon: Icon }: { title: string; message: string; icon: React.ElementType }) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col items-center text-center">
       <Icon className="w-20 h-20 text-destructive mb-4" />
       <CardTitle className="text-2xl mb-2">{title}</CardTitle>
       <p className="text-muted-foreground">{message}</p>
+       <div className="w-full mt-6 space-y-2">
+          <Button size="lg" className="w-full" onClick={() => router.push('/protocol-officer')}>
+            Scan Again
+          </Button>
+          <Button size="lg" variant="secondary" className="w-full" onClick={() => router.push('/protocol-officer')}>
+            Find Guest Manually
+          </Button>
+      </div>
     </div>
   );
 }
