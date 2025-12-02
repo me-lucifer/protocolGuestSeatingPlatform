@@ -130,24 +130,6 @@ export default function EventDetailPage() {
   const eventGuests = useMemo(() => {
     return guests.filter((g) => g.eventId === id);
   }, [guests, id]);
-
-  useEffect(() => {
-    // Handoff Note: This is a demo-specific check to simulate an expired or invalid invitation.
-    // In production, this logic would likely be handled by a server or middleware
-    // before the page even loads, redirecting based on the event's actual status.
-    if (event?.status === 'Completed') {
-      // Logic for admin is to show archived view, no redirect needed here.
-    }
-  }, [event]);
-
-  const handleStartAssignment = (guest: Guest) => {
-    setGuestToAssign(guest);
-    setActiveTab('seating-plan');
-  };
-
-  const handleClearAssignment = () => {
-    setGuestToAssign(null);
-  };
   
   // Handoff Note: `rsvpSummary` is calculated on the client side for the demo.
   // In production, these aggregate values should be calculated on the backend
@@ -163,9 +145,27 @@ export default function EventDetailPage() {
     )
   }, [eventGuests]);
 
+  useEffect(() => {
+    // Handoff Note: This is a demo-specific check to simulate an expired or invalid invitation.
+    // In production, this logic would likely be handled by a server or middleware
+    // before the page even loads, redirecting based on the event's actual status.
+    if (event?.status === 'Completed') {
+      // Logic for admin is to show archived view, no redirect needed here.
+    }
+  }, [event]);
+
   if (loading) {
     return <EventDetailSkeleton />;
   }
+  
+  const handleStartAssignment = (guest: Guest) => {
+    setGuestToAssign(guest);
+    setActiveTab('seating-plan');
+  };
+
+  const handleClearAssignment = () => {
+    setGuestToAssign(null);
+  };
 
   if (!event) {
     return (
@@ -206,7 +206,7 @@ export default function EventDetailPage() {
                     Scenario: {event.type}
                 </Badge>
               </div>
-              <CardDescription as="div" className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   <span>{format(new Date(event.date), 'PPPP p')}</span>
@@ -215,7 +215,7 @@ export default function EventDetailPage() {
                   <MapPin className="h-4 w-4" />
                   <span>{event.venue}</span>
                 </div>
-              </CardDescription>
+              </div>
             </div>
             <div className="flex items-center gap-2 text-sm font-medium">
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -248,7 +248,7 @@ export default function EventDetailPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="guest-list">Guest List</TabsTrigger>
           <TabsTrigger value="seating-plan">Seating Plan</TabsTrigger>
-          <TabsTrigger value="invitations">Invitations &amp; RSVPs</TabsTrigger>
+          <TabsTrigger value="invitations">Invitations & RSVPs</TabsTrigger>
           <TabsTrigger value="day-of">Day-of Operations</TabsTrigger>
         </TabsList>
         
@@ -362,3 +362,5 @@ export default function EventDetailPage() {
     </div>
   );
 }
+
+    
