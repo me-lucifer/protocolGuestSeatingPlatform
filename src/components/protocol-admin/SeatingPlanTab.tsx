@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { allGuests, roomLayouts, type Guest, type RoomLayout, type Seat as SeatType, type Table as TableType } from '@/lib/data';
 import {
   Card,
@@ -395,6 +396,11 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
+                <Button asChild variant="outline">
+                  <Link href={`/protocol-admin/events/${eventId}/seating-plan/print`} target="_blank">
+                    <Printer /> Print Plan
+                  </Link>
+                </Button>
             </div>
         </div>
       </CardHeader>
