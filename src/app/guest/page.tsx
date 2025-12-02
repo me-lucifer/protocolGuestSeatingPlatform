@@ -1,4 +1,6 @@
-import { events, guests } from '@/lib/data';
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -9,11 +11,14 @@ import {
 import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, Armchair, Building } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useDemoData } from '@/contexts/DemoContext';
+import { useMemo } from 'react';
 
 export default function GuestView() {
+  const { guests, events } = useDemoData();
   // For this prototype, we'll just show the details for the first guest.
-  const guest = guests[0];
-  const event = events.find((e) => e.id === guest.eventId);
+  const guest = useMemo(() => guests[0], [guests]);
+  const event = useMemo(() => events.find((e) => e.id === guest.eventId), [events, guest]);
 
   if (!event) {
     return (

@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { guests as allGuests, events as allEvents, type Guest } from '@/lib/data';
+import { type Guest, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -45,14 +45,18 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '../ui/badge';
 import { ScrollArea } from '../ui/scroll-area';
 import { useRouter } from 'next/navigation';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
   const router = useRouter();
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const { guests: allGuests, events: allEvents, resetDemoData, setEvents } = useDemoData();
+
+  const [_, setForceUpdate] = useState(0); // Used to trigger re-renders for demo
   const [isVipFocus, setIsVipFocus] = useState(false);
   const [simulatedTime] = useState('19:25');
 
+  // This effect simulates real-time updates for the dashboard
   useEffect(() => {
     const interval = setInterval(() => {
         setForceUpdate(v => v + 1);
@@ -60,9 +64,9 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
     return () => clearInterval(interval);
   }, []);
 
-  const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [eventId, forceUpdate]);
+  const guests = useMemo(() => allGuests.filter(g => g.eventId === eventId), [allGuests, eventId]);
 
-  const event = useMemo(() => allEvents.find(e => e.id === eventId), [eventId]);
+  const event = useMemo(() => allEvents.find(e => e.id === eventId), [allEvents, eventId]);
 
   const checkInStats = useMemo(() => {
     const expected = guests.filter(g => g.rsvpStatus === 'Accepted').length;
@@ -106,25 +110,15 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   } satisfies import('@/components/ui/chart').ChartConfig;
 
   const handleResetState = () => {
-    allGuests.forEach((guest, index) => {
-      if (guest.eventId === eventId) {
-        allGuests[index].checkInStatus = 'Not Arrived';
-        allGuests[index].checkInTime = null;
-        allGuests[index].isLate = false;
-      }
-    });
-    setForceUpdate(v => v + 1);
+    resetDemoData();
     toast({
       title: 'Demo State Reset',
-      description: 'Guest check-in data for this event has been reset.',
+      description: 'All demo data has been reset to its initial state.',
     });
   };
 
   const handleCloseEvent = () => {
-    const eventIndex = allEvents.findIndex(e => e.id === eventId);
-    if (eventIndex !== -1) {
-      allEvents[eventIndex].status = 'Completed';
-    }
+    setEvents(prevEvents => prevEvents.map(e => e.id === eventId ? { ...e, status: 'Completed' } : e));
     router.push(`/protocol-admin/events/${eventId}/summary`);
   };
 

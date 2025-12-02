@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { users as initialUsers, organizations, type User, type UserRole } from '@/lib/data';
+import { useState, useMemo, useEffect } from 'react';
+import { type User, type UserRole } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -37,14 +37,20 @@ import {
 import { MoreHorizontal, UserPlus, Trash2, SlidersHorizontal } from 'lucide-react';
 import { AddUserDialog } from '@/components/super-admin/AddUserDialog';
 import { useToast } from '@/hooks/use-toast';
+import { useDemoData } from '@/contexts/DemoContext';
 
 const userRoles: UserRole[] = ['Super Admin', 'Protocol Admin', 'Protocol Officer'];
 
 export default function UsersPage() {
+  const { users: initialUsers, organizations, setUsers: setInitialUsers } = useDemoData();
   const [users, setUsers] = useState(initialUsers);
   const [roleFilter, setRoleFilter] = useState('all');
   const [orgFilter, setOrgFilter] = useState('all');
   const { toast } = useToast();
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
@@ -56,12 +62,11 @@ export default function UsersPage() {
   
   const handleAddUser = (newUser: Omit<User, 'id'>) => {
     const userWithId: User = { ...newUser, id: `usr-${Date.now()}` };
-    setUsers(prev => [...prev, userWithId]);
-    initialUsers.push(userWithId); // Also update global for session consistency
+    setInitialUsers(prev => [...prev, userWithId]);
   };
   
   const handleToggleStatus = (userId: string) => {
-    setUsers(prev => prev.map(user => {
+    setInitialUsers(prev => prev.map(user => {
         if (user.id === userId) {
             const newStatus = user.status === 'Active' ? 'Disabled' : 'Active';
             toast({
@@ -118,7 +123,7 @@ export default function UsersPage() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Organizations</SelectItem>
-                    {organizations.map(o => <SelectItem key={o.name} value={o.name}>{o.name}</SelectItem>)}
+                    {organizations.map(o => <SelectItem key={o.id} value={o.name}>{o.name}</SelectItem>)}
                 </SelectContent>
                 </Select>
             </div>

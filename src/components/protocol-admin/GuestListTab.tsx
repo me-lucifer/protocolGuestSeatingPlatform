@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { guests as allGuests, type Guest } from '@/lib/data';
+import { type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -39,24 +39,30 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ImportGuestsDialog } from './ImportGuestsDialog';
 import { AddGuestDialog } from './AddGuestDialog';
+import { useDemoData } from '@/contexts/DemoContext';
 
 const guestCategories: Guest['category'][] = ['VIP', 'Diplomatic', 'Press', 'Staff'];
 const rsvpStatuses: Guest['rsvpStatus'][] = ['Accepted', 'Declined', 'Invited', 'Not Invited'];
 
 export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAssignSeat: (guest: Guest) => void; }) {
-  const [guests, setGuests] = useState(() => allGuests.filter(g => g.eventId === eventId));
+  const { guests: allGuests, setGuests } = useDemoData();
+  const [eventGuests, setEventGuests] = useState(() => allGuests.filter(g => g.eventId === eventId));
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [rsvpFilter, setRsvpFilter] = useState('all');
 
+   useEffect(() => {
+    setEventGuests(allGuests.filter(g => g.eventId === eventId));
+  }, [allGuests, eventId]);
+
   const filteredGuests = useMemo(() => {
-    return guests.filter(guest => {
+    return eventGuests.filter(guest => {
       const matchesSearch = guest.fullName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || guest.category === categoryFilter;
       const matchesRsvp = rsvpFilter === 'all' || guest.rsvpStatus === rsvpFilter;
       return matchesSearch && matchesCategory && matchesRsvp;
     });
-  }, [guests, searchTerm, categoryFilter, rsvpFilter]);
+  }, [eventGuests, searchTerm, categoryFilter, rsvpFilter]);
 
   const handleAddGuest = (newGuest: Omit<Guest, 'id' | 'eventId'>) => {
     const newGuestWithId: Guest = {
@@ -65,8 +71,6 @@ export function GuestListTab({ eventId, onAssignSeat }: { eventId: string; onAss
       eventId: eventId,
     };
     setGuests(prev => [...prev, newGuestWithId]);
-    // Also update the global list for session consistency
-    allGuests.push(newGuestWithId);
   };
 
   const getRsvpVariant = (status: Guest['rsvpStatus']) => {

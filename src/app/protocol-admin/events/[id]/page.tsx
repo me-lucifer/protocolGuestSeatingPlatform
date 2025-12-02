@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { events, guests, type Event, type Guest } from '@/lib/data';
+import { type Event, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -25,26 +25,28 @@ import {
   Info
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { GuestListTab } from '@/components/protocol-admin/GuestListTab';
 import { SeatingPlanTab } from '@/components/protocol-admin/SeatingPlanTab';
 import { InvitationsTab } from '@/components/protocol-admin/InvitationsTab';
 import { DayOfOperationsTab } from '@/components/protocol-admin/DayOfOperationsTab';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useDemoData } from '@/contexts/DemoContext';
 
 
 export default function EventDetailPage() {
   const params = useParams();
   const { id } = params;
+  const { events, guests } = useDemoData();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [guestToAssign, setGuestToAssign] = useState<Guest | null>(null);
 
-  const event = events.find((e) => e.id === id);
+  const event = useMemo(() => events.find((e) => e.id === id), [events, id]);
 
   const eventGuests = useMemo(() => {
     return guests.filter((g) => g.eventId === id);
-  }, [id]);
+  }, [guests, id]);
 
   const handleStartAssignment = (guest: Guest) => {
     setGuestToAssign(guest);
@@ -212,8 +214,8 @@ export default function EventDetailPage() {
                         </li>
                          <li className="flex items-center gap-3">
                             <div className="relative flex h-6 w-6 items-center justify-center">
-                                <span className="absolute h-4 w-4 rounded-full bg-primary/30" />
-                                <span className="relative block h-2 w-2 rounded-full bg-primary" />
+                                <span className="absolute h-4 w-4 rounded-full bg-primary/30" aria-hidden="true" />
+                                <span className="relative block h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
                             </div>
                             <span className="font-medium text-primary">RSVPs in Progress</span>
                         </li>

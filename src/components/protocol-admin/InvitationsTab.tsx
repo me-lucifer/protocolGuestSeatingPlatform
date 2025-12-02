@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { guests as allGuests, type Guest } from '@/lib/data';
+import { useState, useMemo, useEffect } from 'react';
+import { type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -34,11 +34,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export function InvitationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
+  const { guests: allGuests } = useDemoData();
   const [guests, setGuests] = useState(() => allGuests.filter(g => g.eventId === eventId));
+
+  useEffect(() => {
+    setGuests(allGuests.filter(g => g.eventId === eventId));
+  }, [allGuests, eventId]);
 
   const rsvpSummary = useMemo(() => {
     return guests.reduce(
@@ -72,6 +78,7 @@ export function InvitationsTab({ eventId }: { eventId: string }) {
   }
 
   return (
+    <TooltipProvider>
     <Card>
       <CardHeader>
         <CardTitle className="section-title">Invitations & RSVPs</CardTitle>
@@ -199,5 +206,6 @@ export function InvitationsTab({ eventId }: { eventId: string }) {
         </div>
       </CardContent>
     </Card>
+    </TooltipProvider>
   );
 }

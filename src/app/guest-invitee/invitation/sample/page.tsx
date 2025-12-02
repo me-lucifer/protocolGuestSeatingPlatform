@@ -1,7 +1,6 @@
 
 'use client';
 
-import { events, guests } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -29,12 +28,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GuestTimeline } from '@/components/guest/GuestTimeline';
+import { useDemoData } from '@/contexts/DemoContext';
+import { useMemo } from 'react';
 
 export default function GuestInviteeInvitationView() {
   const router = useRouter();
   const { t } = useLanguage();
-  // For this prototype, we'll just show the details for the first VIP guest.
-  const guest = guests.find((g) => g.category === 'VIP');
+  const { events, guests, setGuests } = useDemoData();
+
+  const guest = useMemo(() => guests.find((g) => g.category === 'VIP'), [guests]);
+  const event = useMemo(() => events.find((e) => e.id === guest?.eventId), [events, guest]);
 
   if (!guest) {
     return (
@@ -50,8 +53,6 @@ export default function GuestInviteeInvitationView() {
       </div>
     );
   }
-
-  const event = events.find((e) => e.id === guest.eventId);
 
   if (!event) {
     return (
@@ -69,20 +70,12 @@ export default function GuestInviteeInvitationView() {
   }
 
   const handleAccept = () => {
-    const guestIndex = guests.findIndex((g) => g.id === guest.id);
-    if (guestIndex !== -1) {
-      guests[guestIndex].rsvpStatus = 'Accepted';
-    }
+    setGuests(prev => prev.map(g => g.id === guest.id ? { ...g, rsvpStatus: 'Accepted' } : g));
     router.push('/guest-invitee/invitation/confirmed');
   };
 
   const handleDecline = () => {
-    // In a real app, this would be an API call.
-    // For this prototype, we'll mutate the shared data directly.
-    const guestIndex = guests.findIndex((g) => g.id === guest.id);
-    if (guestIndex !== -1) {
-      guests[guestIndex].rsvpStatus = 'Declined';
-    }
+    setGuests(prev => prev.map(g => g.id === guest.id ? { ...g, rsvpStatus: 'Declined' } : g));
     router.push('/guest-invitee/invitation/declined');
   };
 

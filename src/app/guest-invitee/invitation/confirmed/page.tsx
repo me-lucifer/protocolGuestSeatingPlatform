@@ -1,7 +1,6 @@
 
 'use client';
 
-import { events, guests } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -18,13 +17,16 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GuestTimeline } from '@/components/guest/GuestTimeline';
+import { useDemoData } from '@/contexts/DemoContext';
+import { useMemo } from 'react';
 
 export default function RsvpConfirmedPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { events, guests } = useDemoData();
   // For this prototype, we'll just show the details for the same VIP guest.
-  const guest = guests.find((g) => g.category === 'VIP');
-  const event = events.find((e) => e.id === guest?.eventId);
+  const guest = useMemo(() => guests.find((g) => g.category === 'VIP'), [guests]);
+  const event = useMemo(() => events.find((e) => e.id === guest?.eventId), [events, guest]);
 
   if (!guest || !event) {
     return (

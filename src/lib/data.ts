@@ -66,7 +66,7 @@ export type Event = {
   guestCount: number;
 };
 
-export const events: Event[] = [
+export const initialEvents: Event[] = [
   {
     id: 'evt-001',
     name: 'Annual Diplomatic Gala 2024',
@@ -114,8 +114,7 @@ export type Guest = {
   isLate?: boolean;
 };
 
-// Use a single source for all guests to allow for easier state management in the demo
-export const allGuests: Guest[] = [
+export const initialGuests: Guest[] = [
   // Guests for Annual Diplomatic Gala 2024 (evt-001)
   {
     id: 'gst-001',
@@ -328,10 +327,6 @@ export const allGuests: Guest[] = [
   },
 ];
 
-
-// Re-export original guests for components that don't need the full list
-export const guests = allGuests;
-
 export type Seat = {
   id: string;
   label: string; // e.g. "A1", "A2"
@@ -351,7 +346,7 @@ export type RoomLayout = {
   tables: Table[];
 };
 
-export const roomLayouts: RoomLayout[] = [
+export const initialRoomLayouts: RoomLayout[] = [
     {
         id: 'layout-001',
         name: 'Main Hall',
@@ -431,7 +426,7 @@ export type User = {
     status: UserStatus;
 }
 
-export const users: User[] = [
+export const initialUsers: User[] = [
     {
         id: 'usr-001',
         name: 'Alice Wonder',
@@ -466,8 +461,46 @@ export const users: User[] = [
     },
 ];
 
-export const organizations = [
-  { name: 'State Protocol Directorate' },
-  { name: 'Ministry of Foreign Affairs' },
-  { name: 'Ministry of Innovation & Technology' },
+export type Organization = {
+  id: string;
+  name: string;
+  type: 'Core protocol' | 'Ministry';
+  eventCount: number;
+  status: 'Active' | 'Inactive';
+  shortCode: string;
+  timezone: string;
+  locale: string;
+};
+
+export const initialOrganizations: Organization[] = [
+  {
+    id: 'org-001',
+    name: 'State Protocol Directorate',
+    type: 'Core protocol',
+    eventCount: 3,
+    status: 'Active',
+    shortCode: 'SPD',
+    timezone: 'UTC-5',
+    locale: 'en-US',
+  },
+  {
+    id: 'org-002',
+    name: 'Ministry of Foreign Affairs',
+    type: 'Ministry',
+    eventCount: 0,
+    status: 'Active',
+    shortCode: 'MFA',
+    timezone: 'UTC-5',
+    locale: 'en-US',
+  },
+  {
+    id: 'org-003',
+    name: 'Ministry of Innovation & Technology',
+    type: 'Ministry',
+    eventCount: 0,
+    status: 'Inactive',
+    shortCode: 'MIT',
+    timezone: 'UTC-5',
+    locale: 'en-US',
+  },
 ];

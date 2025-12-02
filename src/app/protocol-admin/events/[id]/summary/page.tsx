@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { events, guests as allGuests, type Event, type Guest } from '@/lib/data';
+import { type Event, type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -31,14 +31,16 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export default function EventSummaryPage() {
   const params = useParams();
   const router = useRouter();
   const { id } = params;
+  const { events, guests: allGuests } = useDemoData();
 
-  const event: Event | undefined = events.find((e) => e.id === id);
-  const guests: Guest[] = allGuests.filter((g) => g.eventId === id);
+  const event: Event | undefined = useMemo(() => events.find((e) => e.id === id), [events, id]);
+  const guests: Guest[] = useMemo(() => allGuests.filter((g) => g.eventId === id), [allGuests, id]);
 
   const stats = useMemo(() => {
     if (!guests) return null;

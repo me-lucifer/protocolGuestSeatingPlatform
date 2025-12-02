@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { guests as allGuests, events as allEvents, type Guest, type Event } from '@/lib/data';
+import { type Guest, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { format } from 'date-fns';
+import { useDemoData } from '@/contexts/DemoContext';
 
 function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfirm: () => void, confirmed: boolean }) {
   const router = useRouter();
@@ -121,6 +122,7 @@ export default function ScanResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
+  const { guests: allGuests, events: allEvents, setGuests } = useDemoData();
   const guestId = searchParams.get('guestId');
   const isDuplicate = searchParams.get('duplicate') === 'true';
 
@@ -135,7 +137,7 @@ export default function ScanResultPage() {
         const foundEvent = allEvents.find(e => e.id === foundGuest.eventId);
         setEvent(foundEvent || null);
     }
-  }, [guestId]);
+  }, [guestId, allGuests, allEvents]);
 
 
   const handleConfirm = () => {
@@ -145,22 +147,28 @@ export default function ScanResultPage() {
             return;
         }
 
-        const guestIndex = allGuests.findIndex((g) => g.id === guest.id);
-        if (guestIndex !== -1) {
-            const checkInTime = new Date();
-            const eventStartTime = new Date(event.date);
-            const isLate = checkInTime > eventStartTime;
-
-            allGuests[guestIndex].checkInStatus = 'Checked-in';
-            allGuests[guestIndex].checkInTime = checkInTime.toISOString();
-            allGuests[guestIndex].isLate = isLate;
-
-            setConfirmed(true);
-            toast({
-              title: "Check-in Confirmed",
-              description: `${guest.fullName} is now checked in.`,
+        setGuests(prevGuests => {
+            return prevGuests.map(g => {
+                if (g.id === guest.id) {
+                    const checkInTime = new Date();
+                    const eventStartTime = new Date(event.date);
+                    const isLate = checkInTime > eventStartTime;
+                    return {
+                        ...g,
+                        checkInStatus: 'Checked-in',
+                        checkInTime: checkInTime.toISOString(),
+                        isLate,
+                    }
+                }
+                return g;
             });
-        }
+        });
+
+        setConfirmed(true);
+        toast({
+            title: "Check-in Confirmed",
+            description: `${guest.fullName} is now checked in.`,
+        });
     }
   }
   

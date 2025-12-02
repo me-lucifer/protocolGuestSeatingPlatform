@@ -1,4 +1,8 @@
-import { guests, events, type Guest } from '@/lib/data';
+
+'use client'
+
+import { useMemo } from 'react';
+import { type Guest } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -15,8 +19,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export default function ProtocolAdminGuestsPage() {
+  const { guests, events } = useDemoData();
+
   const getEventName = (eventId: string) => {
     return events.find((e) => e.id === eventId)?.name || 'Unknown Event';
   };
@@ -33,6 +40,8 @@ export default function ProtocolAdminGuestsPage() {
         return 'outline';
     }
   }
+
+  const sortedGuests = useMemo(() => [...guests].sort((a, b) => a.fullName.localeCompare(b.fullName)), [guests]);
 
   return (
     <Card>
@@ -56,7 +65,7 @@ export default function ProtocolAdminGuestsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {guests.map((guest) => (
+              {sortedGuests.map((guest) => (
                 <TableRow key={guest.id}>
                   <TableCell className="font-medium">{guest.fullName}</TableCell>
                   <TableCell className="hidden sm:table-cell">{guest.title}</TableCell>

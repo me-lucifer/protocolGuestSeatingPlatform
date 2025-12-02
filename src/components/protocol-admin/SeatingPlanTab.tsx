@@ -4,7 +4,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { allGuests, roomLayouts, type Guest, type RoomLayout, type Seat as SeatType, type Table as TableType } from '@/lib/data';
+import { type Guest, type RoomLayout, type Seat as SeatType, type Table as TableType } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -44,12 +44,10 @@ import {
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { Progress } from '../ui/progress';
+import { useDemoData } from '@/contexts/DemoContext';
 
-const getInitialLayouts = (eventId: string) => roomLayouts.filter(rl => rl.eventId === eventId);
-const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
-
-function Seat({ seat, onSeatSelect, isAssignmentMode }: { seat: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean }) {
-    const guest = allGuests.find(g => g.id === seat.guestId);
+function Seat({ seat, onSeatSelect, isAssignmentMode, guests }: { seat: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean, guests: Guest[] }) {
+    const guest = guests.find(g => g.id === seat.guestId);
     
     const canAssign = isAssignmentMode && !guest;
 
@@ -124,14 +122,14 @@ function Seat({ seat, onSeatSelect, isAssignmentMode }: { seat: any, onSeatSelec
     )
 }
 
-function SeatingTable({ table, onSeatSelect, isAssignmentMode }: { table: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean }) {
+function SeatingTable({ table, onSeatSelect, isAssignmentMode, guests }: { table: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean, guests: Guest[] }) {
     if (table.seats.length === 0) return null;
     return (
         <div className="border rounded-lg p-4 bg-muted/20">
             <h4 className="font-semibold text-center mb-4 text-foreground">{table.name}</h4>
             <div className="flex flex-wrap gap-2 justify-center">
                 {table.seats.map((seat: any) => {
-                    return <Seat key={seat.id} seat={seat} onSeatSelect={() => onSeatSelect({ ...seat, tableName: table.name })} isAssignmentMode={isAssignmentMode} />;
+                    return <Seat key={seat.id} seat={seat} onSeatSelect={() => onSeatSelect({ ...seat, tableName: table.name })} isAssignmentMode={isAssignmentMode} guests={guests} />;
                 })}
             </div>
         </div>
@@ -163,11 +161,12 @@ function SeatingLegend() {
 export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }: { eventId: string; guestToAssign: Guest | null; onAssignmentComplete: () => void; }) {
   const { toast } = useToast();
   const { featureFlags } = useFeatureFlags();
+  const { guests: allGuests, roomLayouts: allRoomLayouts, setGuests, setRoomLayouts } = useDemoData();
   
-  const [layouts, setLayouts] = useState<RoomLayout[]>(() => JSON.parse(JSON.stringify(getInitialLayouts(eventId))));
-  const [selectedLayoutId, setSelectedLayoutId] = useState<string>(layouts[0]?.id || '');
+  const [eventLayouts, setEventLayouts] = useState<RoomLayout[]>(() => allRoomLayouts.filter(rl => rl.eventId === eventId));
+  const [selectedLayoutId, setSelectedLayoutId] = useState<string>(eventLayouts[0]?.id || '');
   
-  const [guests, setGuests] = useState(() => getInitialGuests(eventId));
+  const [eventGuests, setEventGuests] = useState(() => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted'));
   
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [selectedSeat, setSelectedSeat] = useState<(SeatType & { tableName: string }) | null>(null);
@@ -178,7 +177,15 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
 
   const isAssignmentMode = activeGuestAssignment !== null;
 
-  const currentLayout = useMemo(() => layouts.find(l => l.id === selectedLayoutId), [layouts, selectedLayoutId]);
+  useEffect(() => {
+    setEventLayouts(allRoomLayouts.filter(rl => rl.eventId === eventId));
+    setEventGuests(allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted'));
+    if (!allRoomLayouts.find(l => l.id === selectedLayoutId)) {
+        setSelectedLayoutId(allRoomLayouts.find(l => l.eventId === eventId)?.id || '');
+    }
+  }, [allGuests, allRoomLayouts, eventId, selectedLayoutId]);
+
+  const currentLayout = useMemo(() => eventLayouts.find(l => l.id === selectedLayoutId), [eventLayouts, selectedLayoutId]);
 
   useEffect(() => {
     if (guestToAssign) {
@@ -198,14 +205,14 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   const assignGuestToSeat = (guestId: string, seat: SeatType) => {
     let isAlreadySeated = false;
     let oldSeatLabel: string | undefined;
-    layouts.forEach(layout => {
+
+    allRoomLayouts.forEach(layout => {
         layout.tables.forEach(table => {
-            table.seats.forEach(s => {
-                if (s.guestId === guestId && s.id !== seat.id) {
-                    isAlreadySeated = true;
-                    oldSeatLabel = s.label;
-                }
-            });
+            const foundSeat = table.seats.find(s => s.guestId === guestId);
+            if (foundSeat && foundSeat.id !== seat.id) {
+                isAlreadySeated = true;
+                oldSeatLabel = foundSeat.label;
+            }
         });
     });
 
@@ -218,41 +225,42 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return false;
     }
     
-    // Clear any other seats this guest might be in (should not happen with the check above, but for safety)
-     setLayouts(prevLayouts => {
-        const newLayouts = prevLayouts.map(layout => {
-            const newTables = layout.tables.map(table => ({
-                ...table,
-                seats: table.seats.map(s => {
-                    if (s.guestId === guestId) return { ...s, guestId: null };
-                    return s;
-                })
-            }));
-            return { ...layout, tables: newTables };
+    const newLayouts = allRoomLayouts.map(layout => {
+      let layoutModified = false;
+      const newTables = layout.tables.map(table => {
+        let tableModified = false;
+        const newSeats = table.seats.map(s => {
+          if (s.guestId === guestId) { // Unseat from old seat
+            tableModified = true;
+            return { ...s, guestId: null };
+          }
+          if (s.id === seat.id) { // Assign to new seat
+            tableModified = true;
+            return { ...s, guestId: guestId };
+          }
+          return s;
         });
 
-        // Now assign to the new seat
-        return newLayouts.map(layout => {
-             if (layout.id !== currentLayout?.id) return layout;
-             const newTables = layout.tables.map(table => ({
-                ...table,
-                seats: table.seats.map(s => {
-                    if (s.id === seat.id) {
-                        return { ...s, guestId: guestId };
-                    }
-                    return s;
-                })
-            }));
-            return { ...layout, tables: newTables };
-        });
+        if (tableModified) {
+          layoutModified = true;
+          return { ...table, seats: newSeats };
+        }
+        return table;
+      });
+
+      if (layoutModified) {
+        return { ...layout, tables: newTables };
+      }
+      return layout;
     });
 
-    const guestIndex = allGuests.findIndex(g => g.id === guestId);
-    if(guestIndex !== -1) {
-        allGuests[guestIndex].seatAssignment = seat.label;
-    }
-    
-    setGuests(prev => prev.map(g => g.id === guestId ? { ...g, seatAssignment: seat.label } : (g.seatAssignment === seat.label ? { ...g, seatAssignment: null } : g) ));
+    setRoomLayouts(newLayouts);
+
+    setGuests(prevGuests => prevGuests.map(g => {
+        if (g.id === guestId) return { ...g, seatAssignment: seat.label };
+        if (g.seatAssignment === seat.label) return { ...g, seatAssignment: null }; // Unassign whoever was in the new seat
+        return g;
+    }));
 
     const guest = allGuests.find(g => g.id === guestId);
     toast({ title: "Seat Assigned", description: `${guest?.fullName} has been assigned to seat ${seat.label}.` });
@@ -291,7 +299,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
 
     const guestToUnseatId = selectedSeat.guestId;
 
-     setLayouts(prevLayouts => {
+    setRoomLayouts(prevLayouts => {
         return prevLayouts.map(layout => ({
             ...layout,
             tables: layout.tables.map(table => ({
@@ -303,14 +311,9 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         }));
     });
 
-    const guest = allGuests.find(g => g.id === guestToUnseatId);
-    const guestIndex = allGuests.findIndex(g => g.id === guestToUnseatId);
-    if(guestIndex !== -1) {
-        allGuests[guestIndex].seatAssignment = null;
-    }
-
     setGuests(prev => prev.map(g => g.id === guestToUnseatId ? { ...g, seatAssignment: null } : g));
 
+    const guest = allGuests.find(g => g.id === guestToUnseatId);
     toast({ title: "Seat Cleared", description: `${guest?.fullName || 'Guest'} has been unseated from ${selectedSeat.label}.` });
     setIsPanelOpen(false);
   };
@@ -323,38 +326,40 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     });
 
     let guestIndex = 0;
-    const newLayouts = JSON.parse(JSON.stringify(layouts));
+    const newLayouts = JSON.parse(JSON.stringify(eventLayouts));
+    
+    const unseatedGuestsList = sortedGuests.filter(g => !g.seatAssignment);
+    let unseatedGuestIndex = 0;
 
-    newLayouts.forEach((layout: RoomLayout) => {
-      layout.tables.forEach((table: TableType) => {
-        table.seats.forEach(seat => seat.guestId = null);
-      });
-    });
-    
-    allGuests.filter(g => g.eventId === eventId).forEach(g => g.seatAssignment = null);
-    
-    const assignGuest = (seat: SeatType) => {
-        if (guestIndex < sortedGuests.length) {
-            const guestToSeat = sortedGuests[guestIndex];
-            seat.guestId = guestToSeat.id;
-            const guestMasterIndex = allGuests.findIndex(g => g.id === guestToSeat.id);
-            if (guestMasterIndex !== -1) allGuests[guestMasterIndex].seatAssignment = seat.label;
-            guestIndex++;
-        }
-    }
-    
-    const mainHall = newLayouts.find((l: RoomLayout) => l.name === 'Main Hall');
-    if (mainHall) {
-        const headTable = mainHall.tables.find((t: TableType) => t.name === 'Head Table');
-        if (headTable) headTable.seats.forEach(assignGuest);
-        
-        mainHall.tables.forEach((table: TableType) => {
-            if (table.name !== 'Head Table') table.seats.forEach(assignGuest);
+    const newAllLayouts = allRoomLayouts.map(l => {
+      if (l.eventId !== eventId) return l;
+      
+      const newTables = l.tables.map(t => {
+        const newSeats = t.seats.map(s => {
+          if (!s.guestId && unseatedGuestIndex < unseatedGuestsList.length) {
+            const guestToSeat = unseatedGuestsList[unseatedGuestIndex];
+            unseatedGuestIndex++;
+            return { ...s, guestId: guestToSeat.id };
+          }
+          return s;
         });
-    }
+        return { ...t, seats: newSeats };
+      });
+      return { ...l, tables: newTables };
+    });
 
-    setLayouts(newLayouts);
-    setGuests(getInitialGuests(eventId));
+    setRoomLayouts(newAllLayouts);
+
+    const seatedGuestIds = new Set(newAllLayouts.flatMap(l => l.tables.flatMap(t => t.seats.map(s => s.guestId).filter(Boolean))));
+    
+    setGuests(prev => prev.map(g => {
+        if (seatedGuestIds.has(g.id)) {
+            const seat = newAllLayouts.flatMap(l => l.tables.flatMap(t => t.seats)).find(s => s.guestId === g.id);
+            return { ...g, seatAssignment: seat?.label || g.seatAssignment };
+        }
+        return g;
+    }));
+
     toast({ title: 'Auto-arrange Complete (Demo)', description: 'Guests have been assigned to seats based on rank.' });
   }
 
@@ -387,22 +392,22 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     }).filter(table => table.seats.length > 0);
 
     return { ...currentLayout, tables: newTables };
-  }, [currentLayout, seatFilter]);
+  }, [currentLayout, seatFilter, allGuests]);
 
   const unseatedGuests = useMemo(() => {
-    return guests.filter(g => !g.seatAssignment);
-  }, [guests, layouts]);
+    return eventGuests.filter(g => !g.seatAssignment);
+  }, [eventGuests]);
 
 
-  const guestOptions = guests.map(g => ({
+  const guestOptions = eventGuests.map(g => ({
       value: g.id,
       label: `${g.fullName} (${g.organization})`,
   }));
 
-  const selectedGuestForPanel = guests.find(g => g.id === selectedGuestId);
+  const selectedGuestForPanel = eventGuests.find(g => g.id === selectedGuestId);
 
   return (
-    <>
+    <TooltipProvider>
     <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -416,7 +421,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         <SelectValue placeholder="Select a room..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {layouts.map(l => <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>)}
+                        {eventLayouts.map(l => <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>)}
                     </SelectContent>
                 </Select>
                  <Select value={seatFilter} onValueChange={(value) => setSeatFilter(value as any)}>
@@ -535,7 +540,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
             <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
                 {filteredLayout && filteredLayout.tables.length > 0 ? (
                     filteredLayout.tables.map(table => (
-                        <SeatingTable key={table.id} table={table} onSeatSelect={handleSeatSelect} isAssignmentMode={isAssignmentMode} />
+                        <SeatingTable key={table.id} table={table} onSeatSelect={handleSeatSelect} isAssignmentMode={isAssignmentMode} guests={allGuests} />
                     ))
                 ) : (
                     <div className="text-center text-muted-foreground py-16">
@@ -605,6 +610,6 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
             </div>
         </SheetContent>
     </Sheet>
-    </>
+    </TooltipProvider>
   );
 }

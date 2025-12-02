@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { events, roomLayouts, allGuests, type Event, type RoomLayout } from '@/lib/data';
+import { type Event, type RoomLayout } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -18,15 +18,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Separator } from '@/components/ui/separator';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export default function PrintableSeatingPlanPage() {
   const params = useParams();
   const eventId = params.id as string;
+  const { guests: allGuests, events, roomLayouts } = useDemoData();
 
-  const event = events.find((e) => e.id === eventId);
-  const layout = roomLayouts.find((l) => l.eventId === eventId);
+  const event = useMemo(() => events.find((e) => e.id === eventId), [events, eventId]);
+  const layout = useMemo(() => roomLayouts.find((l) => l.eventId === eventId), [roomLayouts, eventId]);
 
   useEffect(() => {
     // This is a demo; trigger print dialog automatically.

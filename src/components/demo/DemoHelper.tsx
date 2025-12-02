@@ -20,13 +20,26 @@ import {
   ChevronRight,
   Route,
   ListChecks,
+  RotateCcw,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTour } from '@/contexts/TourContext';
-import { useDemo } from '@/contexts/DemoContext';
+import { useDemo, useDemoData } from '@/contexts/DemoContext';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Separator } from '../ui/separator';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 const demoRoutes = [
   {
@@ -67,10 +80,20 @@ export function DemoHelper() {
   const [isOpen, setIsOpen] = useState(false);
   const { startTour } = useTour();
   const { isDemoMode, setIsDemoMode } = useDemo();
+  const { resetDemoData } = useDemoData();
+  const { toast } = useToast();
 
   const handleStartTour = () => {
     setIsOpen(false);
     startTour();
+  }
+
+  const handleReset = () => {
+    resetDemoData();
+    toast({
+        title: 'Demo Data Reset',
+        description: 'All prototype data has been reset to its initial state.'
+    });
   }
   
   if (!isDemoMode) {
@@ -172,7 +195,27 @@ export function DemoHelper() {
 
             <Separator className="!my-4" />
 
-             <div className="flex items-center justify-between rounded-lg border p-4">
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full">
+                        <RotateCcw /> Reset Demo Data
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action will reset all events, guests, and seating assignments to their original state. This cannot be undone within the current session.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleReset}>Yes, reset data</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+             <div className="flex items-center justify-between rounded-lg border p-4 mt-4">
                 <div>
                   <Label htmlFor="demo-mode-switch-panel" className="font-semibold">Demo Mode Active</Label>
                 </div>

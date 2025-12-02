@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { events, guests, type Event } from '@/lib/data';
+import { type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -45,12 +45,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useDemoData } from '@/contexts/DemoContext';
 
 const eventStatuses: Event['status'][] = ['Live', 'Invitations Sent', 'Completed', 'Draft'];
 const eventTypes: Event['type'][] = ['State ceremony', 'Diplomatic reception', 'Conference'];
 
 
 export default function ProtocolAdminDashboard() {
+  const { events, guests } = useDemoData();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -61,7 +63,7 @@ export default function ProtocolAdminDashboard() {
     const confirmedGuests = guests.filter(g => g.rsvpStatus === 'Accepted').length;
     const eventsToday = events.filter(e => isToday(new Date(e.date))).length;
     return { upcomingEvents, invitationsSent, confirmedGuests, eventsToday };
-  }, []);
+  }, [events, guests]);
 
   const filteredEvents = useMemo(() => {
     return events.filter(event => {
@@ -70,7 +72,7 @@ export default function ProtocolAdminDashboard() {
       const matchesType = typeFilter === 'all' || event.type === typeFilter;
       return matchesSearch && matchesStatus && matchesType;
     });
-  }, [searchTerm, statusFilter, typeFilter]);
+  }, [events, searchTerm, statusFilter, typeFilter]);
 
   const getStatusVariant = (status: Event['status']) => {
     switch (status) {

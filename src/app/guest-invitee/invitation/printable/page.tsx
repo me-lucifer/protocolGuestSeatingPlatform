@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { events, guests } from '@/lib/data';
+import { useEffect, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -14,11 +13,13 @@ import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, Shirt, QrCode } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useDemoData } from '@/contexts/DemoContext';
 
 export default function PrintableInvitationPage() {
   const { t } = useLanguage();
-  const guest = guests.find((g) => g.category === 'VIP');
-  const event = events.find((e) => e.id === guest?.eventId);
+  const { guests, events } = useDemoData();
+  const guest = useMemo(() => guests.find((g) => g.category === 'VIP'), [guests]);
+  const event = useMemo(() => events.find((e) => e.id === guest?.eventId), [events, guest]);
 
   useEffect(() => {
     // This is a demo; trigger print dialog automatically.

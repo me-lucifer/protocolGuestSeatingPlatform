@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -37,50 +37,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-
-type Organization = {
-  id: string;
-  name: string;
-  type: 'Core protocol' | 'Ministry';
-  eventCount: number;
-  status: 'Active' | 'Inactive';
-  shortCode: string;
-  timezone: string;
-  locale: string;
-};
-
-const initialOrganizations: Organization[] = [
-  {
-    id: 'org-001',
-    name: 'State Protocol Directorate',
-    type: 'Core protocol',
-    eventCount: 3,
-    status: 'Active',
-    shortCode: 'SPD',
-    timezone: 'UTC-5',
-    locale: 'en-US',
-  },
-  {
-    id: 'org-002',
-    name: 'Ministry of Foreign Affairs',
-    type: 'Ministry',
-    eventCount: 0,
-    status: 'Active',
-    shortCode: 'MFA',
-    timezone: 'UTC-5',
-    locale: 'en-US',
-  },
-  {
-    id: 'org-003',
-    name: 'Ministry of Innovation & Technology',
-    type: 'Ministry',
-    eventCount: 0,
-    status: 'Inactive',
-    shortCode: 'MIT',
-    timezone: 'UTC-5',
-    locale: 'en-US',
-  },
-];
+import { useDemoData } from '@/contexts/DemoContext';
+import type { Organization } from '@/lib/data';
 
 const timezones = ['UTC-8', 'UTC-7', 'UTC-6', 'UTC-5', 'UTC-4', 'UTC'];
 const locales = ['en-US', 'en-GB', 'fr-CA', 'fr-FR', 'es-ES'];
@@ -97,6 +55,10 @@ function EditOrganizationSheet({
   onSave: (updatedOrg: Organization) => void;
 }) {
   const [formData, setFormData] = useState(org);
+
+  useEffect(() => {
+    setFormData(org);
+  }, [org]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,10 +132,15 @@ function EditOrganizationSheet({
 }
 
 export default function OrganizationsPage() {
+  const { organizations: initialOrganizations } = useDemoData();
   const [organizations, setOrganizations] = useState(initialOrganizations);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setOrganizations(initialOrganizations);
+  }, [initialOrganizations]);
 
   const handleEditClick = (org: Organization) => {
     setSelectedOrg(org);

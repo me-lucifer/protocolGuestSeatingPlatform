@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { guests as allGuests, events as allEvents, type Guest, type Event } from '@/lib/data';
+import { type Guest, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -49,10 +49,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { useDemoData } from '@/contexts/DemoContext';
 
 
 function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => void }) {
-  const upcomingEvents = allEvents.filter(e => e.status !== 'Completed');
+  const { events } = useDemoData();
+  const upcomingEvents = events.filter(e => e.status !== 'Completed');
 
   const getStatusVariant = (status: Event['status']) => {
     switch (status) {
@@ -115,8 +117,9 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+  const { guests: allGuests } = useDemoData();
   
-  const localGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
+  const localGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [allGuests, event.id]);
 
   const filteredGuests = localGuests.filter(
     (guest) =>
@@ -202,7 +205,8 @@ function ManualCheckIn({ event, onBack, isOffline }: { event: Event, onBack: () 
 }
 
 function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event: Event, onBack: () => void, onShowManual: () => void, onStartScan: () => void}) {
-    const eventGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [event.id]);
+    const { guests: allGuests } = useDemoData();
+    const eventGuests = useMemo(() => allGuests.filter(g => g.eventId === event.id), [allGuests, event.id]);
 
     const stats = useMemo(() => {
         const expected = eventGuests.filter(g => g.rsvpStatus === 'Accepted').length;
@@ -348,6 +352,7 @@ export default function ProtocolOfficerInterface() {
   const [isOffline, setIsOffline] = useState(false);
   const [entrance, setEntrance] = useState('A');
   const { toast } = useToast();
+  const { guests } = useDemoData();
   
   // This state is just to trigger re-renders on children when data changes.
   const [_, setForceUpdate] = useState(0);
