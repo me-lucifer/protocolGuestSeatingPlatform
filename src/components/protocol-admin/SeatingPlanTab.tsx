@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, UserPlus, Filter, Users, UserCheck } from 'lucide-react';
+import { Printer, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, UserPlus, Filter, Users, UserCheck, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
@@ -389,9 +389,11 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     const assigned = allSeats.filter(seat => seat.guestId).length;
     const unassigned = total - assigned;
     const progress = total > 0 ? Math.round((assigned / total) * 100) : 0;
+    const acceptedGuestsCount = eventGuests.length;
+    const isOverCapacity = acceptedGuestsCount > total;
 
-    return { total, assigned, unassigned, progress };
-  }, [currentLayout]);
+    return { total, assigned, unassigned, progress, acceptedGuestsCount, isOverCapacity };
+  }, [currentLayout, eventGuests]);
 
   const filteredLayout = useMemo(() => {
     if (!currentLayout || seatFilter === 'all' || seatFilter === 'unseated') return currentLayout;
@@ -483,6 +485,16 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {seatingStats.isOverCapacity && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Over Capacity Warning</AlertTitle>
+              <AlertDescription>
+                Number of accepted guests ({seatingStats.acceptedGuestsCount}) exceeds seating capacity ({seatingStats.total}) in {currentLayout?.name} (demo).
+              </AlertDescription>
+            </Alert>
+          )}
+
          {isAssignmentMode && (
             <Alert className="mb-4 border-primary/50 text-primary">
                 <Hand className="h-4 w-4" />
