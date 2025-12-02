@@ -1,31 +1,58 @@
 import { format } from 'date-fns';
+import { Briefcase, CalendarCheck, CheckSquare, Fingerprint, Settings, Ticket, Users, type LucideIcon } from 'lucide-react';
 
 export type Role = {
   name: string;
   description: string;
   href: string;
+  icon: LucideIcon;
+  keyActions: string[];
 };
 
 export const roles: Role[] = [
   {
     name: 'Super Admin / IT Admin',
-    description: 'Manage platform settings, user roles, and system configurations. For platform owners.',
+    description: 'For platform owners.',
     href: '/super-admin',
+    icon: Fingerprint,
+    keyActions: [
+        'Manage platform-wide settings.',
+        'Configure user roles and permissions.',
+        'Monitor system health and logs.'
+    ]
   },
   {
     name: 'Protocol Admin / Event Manager',
-    description: 'Create and manage events, oversee guest lists, and configure seating arrangements.',
+    description: 'For event planners.',
     href: '/protocol-admin',
+    icon: Briefcase,
+    keyActions: [
+        'Create and manage official events.',
+        'Oversee and curate guest lists.',
+        'Design and finalize seating plans.'
+    ]
   },
   {
     name: 'Protocol Officer / Entrance Agent',
-    description: 'Check in guests upon arrival, view guest details, and provide on-site assistance.',
+    description: 'For on-site staff.',
     href: '/protocol-officer',
+    icon: CheckSquare,
+    keyActions: [
+        'Check in guests upon arrival.',
+        'Quickly look up guest details.',
+        'View seating and table assignments.'
+    ]
   },
   {
     name: 'Guest / Invitee',
-    description: 'View event details, confirm your attendance, and access your seating information.',
+    description: 'For attendees.',
     href: '/guest',
+    icon: Ticket,
+    keyActions: [
+        'View official event invitation.',
+        'See date, time, and location details.',
+        'Check your assigned seat.'
+    ]
   },
 ];
 

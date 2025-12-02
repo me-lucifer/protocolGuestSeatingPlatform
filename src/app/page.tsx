@@ -19,34 +19,44 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tight text-primary font-headline md:text-4xl">
               Protocol Guest Seating Platform
             </h1>
-            <CardDescription className="text-lg pt-2 text-muted-foreground">
-              Select your role to access the platform.
+            <CardDescription className="text-lg pt-2 text-muted-foreground max-w-3xl mx-auto">
+              Welcome to the premier solution for managing high-profile events. This platform streamlines guest management, from invitation to seating, ensuring every detail is handled with precision and grace. Select your role to begin.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-6 p-8 pt-0 md:grid-cols-2 lg:grid-cols-4">
+          <CardContent className="grid grid-cols-1 gap-6 p-8 pt-0 md:grid-cols-2">
             {roles.map((role) => (
               <Link
                 href={role.href}
                 key={role.name}
                 className="block group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
               >
-                <Card className="h-full transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:border-primary/30">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-primary">
-                      {role.name}
-                    </CardTitle>
+                <Card className="h-full transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:border-primary/30 flex flex-col">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="bg-primary/10 p-3 rounded-lg">
+                      <role.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-primary">
+                        {role.name}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {role.description}
+                      </CardDescription>
+                    </div>
                   </CardHeader>
-                  <CardContent className="flex flex-col h-full">
-                    <p className="text-sm text-muted-foreground flex-grow min-h-[6rem]">
-                      {role.description}
-                    </p>
+                  <CardContent className="flex flex-col flex-grow h-full">
+                    <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5 flex-grow">
+                      {role.keyActions.map((action) => (
+                        <li key={action}>{action}</li>
+                      ))}
+                    </ul>
                     <Button
                       variant="link"
-                      className="p-0 h-auto mt-4 text-primary font-semibold"
+                      className="p-0 h-auto mt-4 text-primary font-semibold self-start"
                       aria-hidden="true"
                       tabIndex={-1}
                     >
-                      Continue as this role
+                      Continue
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </CardContent>
