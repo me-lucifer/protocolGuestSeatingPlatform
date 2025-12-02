@@ -114,7 +114,8 @@ export type Guest = {
   isLate?: boolean;
 };
 
-export const guests: Guest[] = [
+// Use a single source for all guests to allow for easier state management in the demo
+export const allGuests: Guest[] = [
   // Guests for Annual Diplomatic Gala 2024 (evt-001)
   {
     id: 'gst-001',
@@ -276,6 +277,38 @@ export const guests: Guest[] = [
     email: 'p.dubois@ap.org',
     lastEmailSent: '2024-11-01',
   },
+  {
+    id: 'gst-012',
+    fullName: 'Security Lead',
+    title: 'Head of Security',
+    organization: 'Host Nation Security',
+    delegation: 'Staff',
+    category: 'Staff',
+    rankLevel: 9,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'STAFF-2',
+    eventId: 'evt-001',
+    checkInStatus: 'Checked-in',
+    checkInTime: '2024-12-15T18:00:00',
+    email: 'sec.lead@gov.host',
+    lastEmailSent: null,
+  },
+  {
+    id: 'gst-013',
+    fullName: 'Reporter 1',
+    title: 'Reporter',
+    organization: 'Times Herald',
+    delegation: 'Press Corps',
+    category: 'Press',
+    rankLevel: 10,
+    rsvpStatus: 'Accepted',
+    seatAssignment: 'PA-R1-S1',
+    eventId: 'evt-001',
+    checkInStatus: 'Not Arrived',
+    checkInTime: null,
+    email: 'r1@timesherald.com',
+    lastEmailSent: '2024-11-01',
+  },
   // Guests for International Trade Summit (evt-002)
   {
     id: 'gst-004',
@@ -296,6 +329,9 @@ export const guests: Guest[] = [
 ];
 
 
+// Re-export original guests for components that don't need the full list
+export const guests = allGuests;
+
 export type Seat = {
   id: string;
   label: string; // e.g. "A1", "A2"
@@ -310,7 +346,7 @@ export type Table = {
 
 export type RoomLayout = {
   id: string;
-  name: string;
+  name: string; // Main Hall, VIP Lounge, Press Area
   eventId: string;
   tables: Table[];
 };
@@ -318,7 +354,7 @@ export type RoomLayout = {
 export const roomLayouts: RoomLayout[] = [
     {
         id: 'layout-001',
-        name: 'Grand Ballroom Layout',
+        name: 'Main Hall',
         eventId: 'evt-001',
         tables: [
             {
@@ -346,6 +382,37 @@ export const roomLayouts: RoomLayout[] = [
                 seats: [
                     { id: 'seat-5b1', label: 'T5-B1', guestId: 'gst-008' },
                     { id: 'seat-5b2', label: 'T5-B2', guestId: 'gst-007' },
+                ]
+            }
+        ]
+    },
+    {
+        id: 'layout-002',
+        name: 'VIP Lounge',
+        eventId: 'evt-001',
+        tables: [
+            {
+                id: 'table-vl-1',
+                name: 'Lounge Area 1',
+                seats: [
+                    { id: 'seat-vl1', label: 'VL-A1', guestId: null },
+                    { id: 'seat-vl2', label: 'VL-A2', guestId: null },
+                ]
+            }
+        ]
+    },
+    {
+        id: 'layout-003',
+        name: 'Press Area',
+        eventId: 'evt-001',
+        tables: [
+            {
+                id: 'table-pa-1',
+                name: 'Riser 1',
+                seats: [
+                    { id: 'seat-pa1', label: 'PA-R1-S1', guestId: 'gst-013' },
+                    { id: 'seat-pa2', label: 'PA-R1-S2', guestId: null },
+                    { id: 'seat-pa3', label: 'PA-R1-S3', guestId: null },
                 ]
             }
         ]
