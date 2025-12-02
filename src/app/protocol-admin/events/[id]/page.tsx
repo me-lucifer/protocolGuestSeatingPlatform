@@ -149,6 +149,20 @@ export default function EventDetailPage() {
     setGuestToAssign(null);
   };
   
+  // Handoff Note: `rsvpSummary` is calculated on the client side for the demo.
+  // In production, these aggregate values should be calculated on the backend
+  // and fetched, or calculated via a performant client-side selector if using a state management library.
+  const rsvpSummary = useMemo(() => {
+    if (!eventGuests) return { Accepted: 0, Declined: 0, Invited: 0 };
+    return eventGuests.reduce(
+      (acc, guest) => {
+        acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
+        return acc;
+      },
+      { Accepted: 0, Declined: 0, Invited: 0, 'Not Invited': 0, 'Removed': 0 } as Record<Guest['rsvpStatus'], number>
+    )
+  }, [eventGuests]);
+
   if (loading) {
     return <EventDetailSkeleton />;
   }
@@ -175,20 +189,6 @@ export default function EventDetailPage() {
       default: return 'secondary';
     }
   };
-
-  // Handoff Note: `rsvpSummary` is calculated on the client side for the demo.
-  // In production, these aggregate values should be calculated on the backend
-  // and fetched, or calculated via a performant client-side selector if using a state management library.
-  const rsvpSummary = useMemo(() => {
-    if (!eventGuests) return { Accepted: 0, Declined: 0, Invited: 0 };
-    return eventGuests.reduce(
-      (acc, guest) => {
-        acc[guest.rsvpStatus] = (acc[guest.rsvpStatus] || 0) + 1;
-        return acc;
-      },
-      { Accepted: 0, Declined: 0, Invited: 0, 'Not Invited': 0, 'Removed': 0 } as Record<Guest['rsvpStatus'], number>
-    )
-  }, [eventGuests]);
 
   return (
     <div className="space-y-6">
@@ -362,5 +362,3 @@ export default function EventDetailPage() {
     </div>
   );
 }
-
-    
