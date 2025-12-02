@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -40,11 +40,16 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '../ui/badge';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
   // This state is just to trigger re-renders on children when data changes.
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [isVipFocus, setIsVipFocus] = useState(false);
+
   useEffect(() => {
     const interval = setInterval(() => {
         setForceUpdate(v => v + 1);
@@ -67,6 +72,10 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
       .filter(g => g.checkInStatus === 'Checked-in' && g.checkInTime)
       .sort((a,b) => new Date(b.checkInTime!).getTime() - new Date(a.checkInTime!).getTime())
       .slice(0, 5);
+  }, [guests]);
+
+  const vipGuests = useMemo(() => {
+    return guests.filter(g => g.category === 'VIP');
   }, [guests]);
 
   const chartData = [
@@ -98,15 +107,60 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
     });
   };
 
+  const getCheckInStatusVariant = (status: Guest['checkInStatus']) => {
+    switch (status) {
+        case 'Checked-in': return 'default';
+        default: return 'secondary';
+    }
+  }
+
   return (
     <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle className="section-title">Live Check-in Dashboard</CardTitle>
-                    <CardDescription>Monitor guest arrivals in real-time. Data refreshes for demo purposes.</CardDescription>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div>
+                            <CardTitle className="section-title">Live Check-in Dashboard</CardTitle>
+                            <CardDescription>Monitor guest arrivals in real-time. Data refreshes for demo purposes.</CardDescription>
+                        </div>
+                         <div className="flex items-center space-x-2">
+                            <Switch id="vip-focus-mode" checked={isVipFocus} onCheckedChange={setIsVipFocus} />
+                            <Label htmlFor="vip-focus-mode" className="flex items-center gap-2"><Star className="text-yellow-500" /> VIP Focus</Label>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                     {isVipFocus && (
+                        <Card className="bg-muted/30">
+                            <CardHeader>
+                                <CardTitle className="text-base flex items-center gap-2"><Star /> VIP Arrival Status</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>VIP Guest</TableHead>
+                                            <TableHead className="text-right">Status</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {vipGuests.map(vip => (
+                                            <TableRow key={vip.id}>
+                                                <TableCell className="font-medium">{vip.fullName}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <Badge variant={getCheckInStatusVariant(vip.checkInStatus)}>
+                                                        {vip.checkInStatus}
+                                                    </Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -270,3 +324,5 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
     </div>
   );
 }
+
+    

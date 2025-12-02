@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, AlertTriangle, User, Building2, Armchair, ArrowLeft } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Armchair, ArrowLeft, Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -28,6 +28,16 @@ function SuccessResult({ guest, onConfirm, confirmed }: { guest: Guest, onConfir
       <p className="text-muted-foreground">{guest.organization}</p>
       <Badge variant="outline" className="mt-4">{guest.category}</Badge>
       
+      {confirmed && guest.category === 'VIP' && (
+        <Alert className="mt-6 text-left border-yellow-400 bg-yellow-50">
+            <Bell className="h-4 w-4 text-yellow-600" />
+            <AlertTitle className="text-yellow-800">VIP Guest Checked-in (demo)</AlertTitle>
+            <AlertDescription className="text-yellow-700">
+                In a real app, this could trigger a notification to the head of protocol.
+            </AlertDescription>
+        </Alert>
+      )}
+
       <Card className="w-full mt-6 text-left">
           <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2"><Armchair /> Seating Assignment</CardTitle>
@@ -159,3 +169,5 @@ export default function ScanResultPage() {
     </div>
   );
 }
+
+    
