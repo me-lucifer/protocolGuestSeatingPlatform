@@ -60,5 +60,6 @@ export {
     BookOpen,
     Hand,
     Newspaper,
-    Square
+    Square,
+    Filter
 } from 'lucide-react';

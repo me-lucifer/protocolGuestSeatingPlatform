@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, UserPlus, Filter } from 'lucide-react';
+import { Printer, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, UserPlus, Filter, Users, UserCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { Progress } from '../ui/progress';
 
 const getInitialLayouts = (eventId: string) => roomLayouts.filter(rl => rl.eventId === eventId);
 const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
@@ -147,7 +148,7 @@ const legendItems = [
 
 function SeatingLegend() {
     return (
-        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center mb-4 text-xs">
+        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center text-xs">
             <span className="font-semibold text-muted-foreground">Legend:</span>
             {legendItems.map(item => (
                 <div key={item.label} className="flex items-center gap-2">
@@ -340,6 +341,19 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
     toast({ title: 'Auto-arrange Complete (Demo)', description: 'Guests have been assigned to seats based on rank.' });
   }
 
+  const seatingStats = useMemo(() => {
+    if (!currentLayout) {
+        return { total: 0, assigned: 0, unassigned: 0, progress: 0 };
+    }
+    const allSeats = currentLayout.tables.flatMap(table => table.seats);
+    const total = allSeats.length;
+    const assigned = allSeats.filter(seat => seat.guestId).length;
+    const unassigned = total - assigned;
+    const progress = total > 0 ? Math.round((assigned / total) * 100) : 0;
+
+    return { total, assigned, unassigned, progress };
+  }, [currentLayout]);
+
   const filteredLayout = useMemo(() => {
     if (!currentLayout || seatFilter === 'all' || seatFilter === 'unseated') return currentLayout;
 
@@ -429,7 +443,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
             </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
          {isAssignmentMode && (
             <Alert className="mb-4 border-primary/50 text-primary">
                 <Hand className="h-4 w-4" />
@@ -449,8 +463,26 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
               </AlertDescription>
             </Alert>
           )}
+
+        <Card className="bg-muted/30">
+            <CardContent className="p-4 space-y-3">
+                <div className="flex justify-between items-center text-sm font-medium">
+                    <p>Seating Progress ({currentLayout?.name})</p>
+                    <p>{seatingStats.progress}% complete</p>
+                </div>
+                <Progress value={seatingStats.progress} />
+                <div className="flex justify-between items-center pt-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2"><Users /> Total Seats: <strong>{seatingStats.total}</strong></div>
+                    <div className="flex items-center gap-2"><UserCheck /> Assigned: <strong>{seatingStats.assigned}</strong></div>
+                    <div className="flex items-center gap-2"><User /> Unassigned: <strong>{seatingStats.unassigned}</strong></div>
+                </div>
+            </CardContent>
+        </Card>
           
-        {seatFilter !== 'unseated' && <SeatingLegend />}
+        <div className="flex justify-between items-center">
+            {seatFilter !== 'unseated' && <SeatingLegend />}
+        </div>
+
 
         {seatFilter === 'unseated' ? (
             <Card>
