@@ -187,16 +187,16 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle className="section-title">Officer Tools</CardTitle>
+                    <CardTitle className="section-title">Demo Scenario Helper</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">
-                        Launch the dedicated interface for on-site staff to manage guest arrivals.
+                        <strong>Demo idea:</strong> Start here to see the admin's live view. Then, open the Protocol Officer view in a new tab to simulate guest check-ins and watch this dashboard update in real-time.
                     </p>
                     <Button asChild className="w-full">
                         <Link href="/protocol-officer" target="_blank">
                             <ExternalLink />
-                            Open Protocol Officer View
+                            Open Officer View (demo)
                         </Link>
                     </Button>
                 </CardContent>
