@@ -79,6 +79,45 @@ function LanguageToggle() {
     );
 }
 
+function GuestNav() {
+    const { t } = useLanguage();
+    const pathname = usePathname();
+
+    const getNavLabel = (labelKey: string) => {
+        if (labelKey === 'My Invitation') return t.openSampleInvitation;
+        return labelKey;
+    }
+    
+    const getNavItems = () => {
+       return [{ href: '/guest-invitee/invitation/sample', icon: Ticket, label: 'My Invitation' }];
+    }
+    
+    const finalNavItems = getNavItems();
+
+    return (
+        <>
+            <Separator className="my-2" />
+            {finalNavItems.map((item) => {
+               let isActive = pathname.startsWith('/guest-invitee/invitation');
+               
+              return (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      {getNavLabel(item.label)}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+        </>
+    );
+}
+
 
 export function PageShell({
   role,
@@ -88,15 +127,7 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const { t } = useLanguage();
-
-  const getNavLabel = (labelKey: string) => {
-    if (role === 'Guest / Invitee') {
-        if (labelKey === 'My Invitation') return t.openSampleInvitation;
-    }
-    return labelKey;
-  }
-
+  
   const currentNavItems = navItems[role] || [];
   
   const isRoleHomePage = pathname === `/super-admin` || pathname === `/protocol-admin` || pathname === `/protocol-officer` || pathname === `/guest-invitee`;
@@ -107,16 +138,6 @@ export function PageShell({
   }
   
   const adjustedPathname = getAdjustedPath(pathname);
-  
-  const getNavItems = () => {
-    if (role === 'Guest / Invitee') {
-      return [{ href: '/guest-invitee/invitation/sample', icon: Ticket, label: 'My Invitation' }];
-    }
-    return currentNavItems;
-  }
-  
-  const finalNavItems = getNavItems();
-
 
   return (
     <SidebarProvider>
@@ -135,37 +156,41 @@ export function PageShell({
               <SidebarMenuButton asChild variant="ghost">
                 <Link href="/">
                   <ArrowLeft />
-                  {role === 'Guest / Invitee' ? t.backToRoleSelection : 'Back to Roles'}
+                  {role === 'Guest / Invitee' ? <GuestBackButtonText /> : 'Back to Roles'}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <Separator className="my-2" />
-            {finalNavItems.map((item) => {
-               let isActive = false;
-               if (role === 'Protocol Admin / Event Manager') {
-                 isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
-               } else if (role === 'Super Admin / IT Admin') {
-                 isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
-               } else if (role === 'Guest / Invitee') {
-                 isActive = pathname.startsWith('/guest-invitee/invitation');
-               }
-               else {
-                 isActive = pathname.startsWith(item.href);
-               }
-              return (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive}
-                  >
-                    <Link href={item.href}>
-                      <item.icon />
-                      {getNavLabel(item.label)}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )
-            })}
+            
+            {role === 'Guest / Invitee' ? (
+                <GuestNav />
+            ) : (
+                <>
+                <Separator className="my-2" />
+                {currentNavItems.map((item) => {
+                   let isActive = false;
+                   if (role === 'Protocol Admin / Event Manager') {
+                     isActive = item.href === '/protocol-admin' ? adjustedPathname === '/protocol-admin' || pathname.startsWith('/protocol-admin/events') : pathname.startsWith(item.href);
+                   } else if (role === 'Super Admin / IT Admin') {
+                     isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
+                   } else {
+                     isActive = pathname.startsWith(item.href);
+                   }
+                  return (
+                    <SidebarMenuItem key={item.label}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                      >
+                        <Link href={item.href}>
+                          <item.icon />
+                          {item.label}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+                </>
+            )}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -201,4 +226,9 @@ export function PageShell({
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+function GuestBackButtonText() {
+    const { t } = useLanguage();
+    return <>{t.backToRoleSelection}</>;
 }
