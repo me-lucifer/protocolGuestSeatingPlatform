@@ -1,3 +1,4 @@
+
 'use client';
 
 import { events, guests } from '@/lib/data';
@@ -15,9 +16,11 @@ import Link from 'next/link';
 import { QrCode, ArrowLeft, Home, Download, Printer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RsvpConfirmedPage() {
   const { toast } = useToast();
+  const { t } = useLanguage();
   // For this prototype, we'll just show the details for the same VIP guest.
   const guest = guests.find((g) => g.category === 'VIP');
   const event = events.find((e) => e.id === guest?.eventId);
@@ -48,9 +51,9 @@ export default function RsvpConfirmedPage() {
     <div className="flex justify-center items-start">
       <Card className="max-w-2xl w-full text-center shadow-lg">
         <CardHeader className="p-6">
-          <CardTitle className="page-title">Attendance Confirmed</CardTitle>
+          <CardTitle className="page-title">{t.rsvpConfirmedTitle}</CardTitle>
           <CardDescription>
-            Your RSVP for the {event.name} has been accepted.
+            {t.rsvpAcceptedFor.replace('{eventName}', event.name)}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -58,25 +61,25 @@ export default function RsvpConfirmedPage() {
             <div className="w-48 h-48 mb-4 bg-background flex items-center justify-center rounded-md border shadow-inner">
                <div className="flex flex-col items-center text-muted-foreground">
                 <QrCode className="h-16 w-16" />
-                <p className="mt-2 text-xs font-semibold">QR Code (demo)</p>
+                <p className="mt-2 text-xs font-semibold">{t.qrCodeDemo}</p>
               </div>
             </div>
             <p className="font-semibold text-lg text-foreground">{guest.fullName}</p>
             <p className="text-muted-foreground">{guest.organization}</p>
             <Separator className="my-4" />
-            <Badge variant="default" className="text-base">Accepted</Badge>
+            <Badge variant="default" className="text-base">{t.rsvpStatus}</Badge>
             <p className="mt-4 text-muted-foreground">
-              Please present this code at the event entrance for check-in.
+              {t.presentAtEntrance}
             </p>
             <div className="flex flex-col sm:flex-row gap-2 mt-6 w-full">
               <Button onClick={handleDownload} variant="outline" className="w-full">
                 <Download />
-                Download QR (demo)
+                {t.downloadQR}
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link href="/guest-invitee/invitation/printable" target="_blank">
                     <Printer />
-                    Print Invitation (demo)
+                    {t.printInvitation}
                 </Link>
               </Button>
             </div>
@@ -86,13 +89,13 @@ export default function RsvpConfirmedPage() {
           <Button asChild variant="outline">
             <Link href="/guest-invitee/invitation/sample">
               <ArrowLeft />
-              View Invitation Again
+              {t.viewInvitationAgain}
             </Link>
           </Button>
           <Button asChild>
             <Link href="/">
               <Home />
-              Back to Role Selection
+              {t.backToRoleSelection}
             </Link>
           </Button>
         </CardFooter>

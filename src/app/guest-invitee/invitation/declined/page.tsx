@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -12,24 +13,27 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Home, Mail, XCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RsvpDeclinedPage() {
+    const { t } = useLanguage();
+
   return (
     <div className="flex justify-center items-start">
       <Card className="max-w-2xl w-full text-center shadow-lg">
         <CardHeader className="p-6 items-center">
             <XCircle className="h-16 w-16 text-destructive mb-4" />
-          <CardTitle className="page-title">Invitation Declined</CardTitle>
+          <CardTitle className="page-title">{t.rsvpDeclinedTitle}</CardTitle>
           <CardDescription>
-            Your response has been recorded.
+            {t.responseRecorded}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           <div className="bg-muted/30 p-6 rounded-lg flex flex-col items-center justify-center">
-            <p className="font-semibold text-lg text-foreground">We are sorry you cannot make it.</p>
-            <Badge variant="destructive" className="text-base my-4">Declined</Badge>
+            <p className="font-semibold text-lg text-foreground">{t.sorryYouCannotMakeIt}</p>
+            <Badge variant="destructive" className="text-base my-4">{t.decline}</Badge>
             <p className="mt-2 text-muted-foreground">
-              If this was a mistake, or if your availability changes, please contact the Protocol Office directly.
+              {t.ifMistakeContactProtocol}
             </p>
           </div>
         </CardContent>
@@ -37,13 +41,13 @@ export default function RsvpDeclinedPage() {
           <Button asChild variant="outline">
             <Link href="mailto:protocol-office@example.com">
               <Mail />
-              Contact Protocol
+              {t.contactProtocol}
             </Link>
           </Button>
           <Button asChild>
             <Link href="/">
               <Home />
-              Back to Role Selection
+              {t.backToRoleSelection}
             </Link>
           </Button>
         </CardFooter>

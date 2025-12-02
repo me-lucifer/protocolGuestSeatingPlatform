@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -28,6 +29,8 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Breadcrumbs } from './Breadcrumbs';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '../ui/button';
 
 
 type NavItem = {
@@ -51,6 +54,32 @@ const navItems: { [key: string]: NavItem[] } = {
   'Guest / Invitee': [{ href: '/guest-invitee', icon: Ticket, label: 'My Invitation' }],
 };
 
+function LanguageToggle() {
+    const { language, setLanguage } = useLanguage();
+
+    return (
+        <div className="flex items-center gap-1">
+            <Button
+                variant={language === 'en' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setLanguage('en')}
+                className="px-2"
+            >
+                EN
+            </Button>
+            <Button
+                variant={language === 'fr' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setLanguage('fr')}
+                className="px-2"
+            >
+                FR
+            </Button>
+        </div>
+    );
+}
+
+
 export function PageShell({
   role,
   children,
@@ -59,6 +88,14 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const getNavLabel = (labelKey: string) => {
+    if (role === 'Guest / Invitee') {
+        if (labelKey === 'My Invitation') return t.openSampleInvitation;
+    }
+    return labelKey;
+  }
 
   const currentNavItems = navItems[role] || [];
   
@@ -98,7 +135,7 @@ export function PageShell({
               <SidebarMenuButton asChild variant="ghost">
                 <Link href="/">
                   <ArrowLeft />
-                  Back to Roles
+                  {role === 'Guest / Invitee' ? t.backToRoleSelection : 'Back to Roles'}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -110,7 +147,7 @@ export function PageShell({
                } else if (role === 'Super Admin / IT Admin') {
                  isActive = item.href === '/super-admin' ? (pathname === '/super-admin' || isRoleHomePage) : pathname.startsWith(item.href);
                } else if (role === 'Guest / Invitee') {
-                 isActive = pathname.startsWith(item.href);
+                 isActive = pathname.startsWith('/guest-invitee/invitation');
                }
                else {
                  isActive = pathname.startsWith(item.href);
@@ -123,7 +160,7 @@ export function PageShell({
                   >
                     <Link href={item.href}>
                       <item.icon />
-                      {item.label}
+                      {getNavLabel(item.label)}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -144,6 +181,7 @@ export function PageShell({
              <Breadcrumbs />
           </div>
           <div className="flex items-center gap-4 ml-auto">
+            {role === 'Guest / Invitee' && <LanguageToggle />}
             <Badge variant="outline" className="hidden sm:flex text-sm">
               {role}
             </Badge>

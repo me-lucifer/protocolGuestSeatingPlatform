@@ -1,3 +1,4 @@
+
 'use client';
 
 import { events, guests } from '@/lib/data';
@@ -26,9 +27,11 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function GuestInviteeInvitationView() {
   const router = useRouter();
+  const { t } = useLanguage();
   // For this prototype, we'll just show the details for the first VIP guest.
   const guest = guests.find((g) => g.category === 'VIP');
 
@@ -54,7 +57,7 @@ export default function GuestInviteeInvitationView() {
       <div className="flex justify-center items-start p-4">
         <Card className="max-w-2xl w-full">
           <CardHeader>
-            <CardTitle>Error</_CardTitle>
+            <CardTitle>Error</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Event details could not be found for this guest.</p>
@@ -92,29 +95,28 @@ export default function GuestInviteeInvitationView() {
             {event.name}
           </CardTitle>
           <CardDescription>
-            You are cordially invited to attend.
+            {t.cordiallyInvited}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           {rsvpStatus !== 'Invited' && (
             <Alert variant={rsvpStatus === 'Declined' ? 'destructive' : 'default'} className="mb-6">
               <Info className="h-4 w-4" />
-              <AlertTitle>You have already responded</AlertTitle>
+              <AlertTitle>{t.alreadyResponded}</AlertTitle>
               <AlertDescription>
                 {rsvpStatus === 'Accepted'
-                  ? 'Your attendance has been confirmed.'
-                  : 'You have declined this invitation.'}
+                  ? t.attendanceConfirmed
+                  : t.invitationDeclined}
               </AlertDescription>
             </Alert>
           )}
 
           <div className="mb-6">
             <p className="font-semibold text-lg text-foreground">
-              Dear {guest.title} {guest.fullName.split(' ').slice(-1)},
+              {t.dear} {guest.title} {guest.fullName.split(' ').slice(-1)},
             </p>
             <p className="mt-2 text-muted-foreground">
-              It is with great pleasure that we invite you to the {event.name},
-              a gathering of distinguished leaders and diplomats to celebrate international cooperation and shared progress. Your presence would greatly honor the occasion.
+              {t.invitationBody.replace('{eventName}', event.name)}
             </p>
           </div>
 
@@ -122,62 +124,62 @@ export default function GuestInviteeInvitationView() {
             <div className="flex items-start">
               <Calendar className="h-5 w-5 mr-4 mt-1 text-primary shrink-0" />
               <div>
-                <p className="font-semibold text-foreground">Date</p>
+                <p className="font-semibold text-foreground">{t.date}</p>
                 <p>{format(new Date(event.date), 'eeee, MMMM do, yyyy')}</p>
               </div>
             </div>
             <div className="flex items-start">
               <Clock className="h-5 w-5 mr-4 mt-1 text-primary shrink-0" />
               <div>
-                <p className="font-semibold text-foreground">Time</p>
+                <p className="font-semibold text-foreground">{t.time}</p>
                 <p>{format(new Date(event.date), 'p')}</p>
               </div>
             </div>
             <div className="flex items-start">
               <MapPin className="h-5 w-5 mr-4 mt-1 text-primary shrink-0" />
               <div>
-                <p className="font-semibold text-foreground">Venue</p>
+                <p className="font-semibold text-foreground">{t.venue}</p>
                 <p>{event.venue}</p>
               </div>
             </div>
             <div className="flex items-start">
               <Shirt className="h-5 w-5 mr-4 mt-1 text-primary shrink-0" />
               <div>
-                <p className="font-semibold text-foreground">Dress Code</p>
-                <p>Black Tie</p>
+                <p className="font-semibold text-foreground">{t.dressCode}</p>
+                <p>{t.dressCodeValue}</p>
               </div>
             </div>
           </div>
            {rsvpStatus === 'Declined' && (
              <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground">If your availability has changed, please contact the Protocol Office.</p>
+                <p className="text-sm text-muted-foreground">{t.contactProtocolIfChanged}</p>
                 <Button variant="link" asChild className="mt-1">
-                    <Link href="mailto:protocol-office@example.com"><Mail /> Contact Protocol</Link>
+                    <Link href="mailto:protocol-office@example.com"><Mail /> {t.contactProtocol}</Link>
                 </Button>
             </div>
            )}
           <p className="text-xs text-muted-foreground mt-6 text-center">
-            This is a prototype for demonstration purposes. Your response will be reflected in this demo session.
+            {t.prototypeNote}
           </p>
         </CardContent>
         <CardFooter className="p-6 bg-muted/30 rounded-b-lg flex flex-col sm:flex-row justify-center gap-4">
           <Button size="lg" className="w-full sm:w-auto" onClick={handleAccept} disabled={rsvpStatus === 'Declined'}>
-            Confirm Attendance
+            {t.confirmAttendance}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="lg" variant="secondary" className="w-full sm:w-auto" disabled={rsvpStatus === 'Accepted'}>Decline Invitation</Button>
+              <Button size="lg" variant="secondary" className="w-full sm:w-auto" disabled={rsvpStatus === 'Accepted'}>{t.declineInvitation}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Decline Invitation</AlertDialogTitle>
+                <AlertDialogTitle>{t.declineModalTitle}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to decline the invitation? This action will be reflected in the prototype session.
+                  {t.declineModalBody}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDecline}>Decline</AlertDialogAction>
+                <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDecline}>{t.decline}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
