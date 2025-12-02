@@ -14,9 +14,9 @@ import Link from 'next/link';
 import { Home, AlertCircle, Ticket } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 
-export default function InvitationErrorPage() {
+function InvitationErrorContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
     const reason = searchParams.get('reason');
@@ -46,8 +46,7 @@ export default function InvitationErrorPage() {
 
 
   return (
-    <div className="flex justify-center items-start">
-      <Card className="max-w-2xl w-full text-center shadow-lg">
+    <Card className="max-w-2xl w-full text-center shadow-lg">
         <CardHeader className="p-6 items-center">
             <AlertCircle className="h-16 w-16 text-destructive mb-4" />
           <CardTitle className="page-title">{title}</CardTitle>
@@ -77,6 +76,16 @@ export default function InvitationErrorPage() {
             </Button>
         </CardFooter>
       </Card>
+  );
+}
+
+
+export default function InvitationErrorPage() {
+  return (
+    <div className="flex justify-center items-start">
+      <Suspense fallback={<div>Loading...</div>}>
+        <InvitationErrorContent />
+      </Suspense>
     </div>
   );
 }
