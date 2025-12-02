@@ -21,13 +21,13 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star, Clock, FileText, XCircle, HelpCircle } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star, Clock, FileText, XCircle, HelpCircle, CheckCircle } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +51,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const router = useRouter();
   const [forceUpdate, setForceUpdate] = useState(0);
   const [isVipFocus, setIsVipFocus] = useState(false);
+  const [simulatedTime] = useState('19:25');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -144,10 +145,16 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                             <CardTitle className="section-title">Live Check-in Dashboard</CardTitle>
                             <CardDescription>Monitor guest arrivals in real-time. Data refreshes for demo purposes.</CardDescription>
                         </div>
-                         <div className="flex items-center space-x-2">
-                            <Switch id="vip-focus-mode" checked={isVipFocus} onCheckedChange={setIsVipFocus} />
-                            <Label htmlFor="vip-focus-mode" className="flex items-center gap-2"><Star className="text-yellow-500" /> VIP Focus</Label>
-                        </div>
+                         <div className="flex items-center gap-4">
+                            <div className="text-right">
+                                <p className="font-bold text-lg">{simulatedTime}</p>
+                                <p className="text-xs text-muted-foreground">Simulated Clock</p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch id="vip-focus-mode" checked={isVipFocus} onCheckedChange={setIsVipFocus} />
+                                <Label htmlFor="vip-focus-mode" className="flex items-center gap-2"><Star className="text-yellow-500" /> VIP Focus</Label>
+                            </div>
+                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -221,7 +228,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
 
                      <div className="h-48">
                       <ChartContainer config={chartConfig}>
-                        <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: -20, right: 20 }}>
+                        <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 0, right: 20 }}>
                            <YAxis
                             dataKey="name"
                             type="category"
@@ -232,7 +239,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                           <XAxis dataKey="expected" type="number" hide />
                           <ChartTooltip
                             cursor={false}
-                            content={<ChartTooltipContent indicator="line" />}
+                            content={<ChartTooltipContent indicator="line" hideLabel />}
                           />
                           <Bar
                             dataKey="checkedIn"
@@ -261,7 +268,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
                         <Clock />
                         Late Arrivals (demo)
                     </CardTitle>
-                    <CardDescription>Guests who checked in after the event start time.</CardDescription>
+                    <CardDescription>Guests who checked in after the {event ? `event start time of ${new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'event start time'}.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold mb-2">{checkInStats.lateArrivals}</div>
