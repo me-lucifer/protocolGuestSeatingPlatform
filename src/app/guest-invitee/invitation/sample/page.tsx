@@ -29,7 +29,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GuestTimeline } from '@/components/guest/GuestTimeline';
 import { useDemoData } from '@/contexts/DemoContext';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 
 export default function GuestInviteeInvitationView() {
   const router = useRouter();
@@ -38,6 +38,15 @@ export default function GuestInviteeInvitationView() {
 
   const guest = useMemo(() => guests.find((g) => g.category === 'VIP'), [guests]);
   const event = useMemo(() => events.find((e) => e.id === guest?.eventId), [events, guest]);
+
+  useEffect(() => {
+    // Handoff Note: This is a demo-specific check to simulate an expired invitation.
+    // In production, this logic would likely be handled by a server or middleware
+    // before the page even loads, redirecting based on the event's actual status.
+    if (event?.status === 'Completed') {
+      router.replace('/guest-invitee/invitation/error?reason=expired');
+    }
+  }, [event, router]);
 
   if (!guest) {
     return (
@@ -54,19 +63,9 @@ export default function GuestInviteeInvitationView() {
     );
   }
 
-  if (!event) {
-    return (
-      <div className="flex justify-center items-start p-4">
-        <Card className="max-w-2xl w-full">
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Event details could not be found for this guest.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (!event || event.status === 'Completed') {
+    // This check prevents rendering while the redirect is happening.
+    return null;
   }
 
   const handleAccept = () => {

@@ -35,6 +35,7 @@ export {
     MoreHorizontal,
     Pencil,
     ClipboardCheck,
+    Archive,
     UserPlus,
     Upload,
     Trash2,

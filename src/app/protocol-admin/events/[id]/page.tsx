@@ -23,7 +23,8 @@ import {
   Users,
   ClipboardCheck,
   Info,
-  Ticket
+  Ticket,
+  Archive,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useMemo, useState, useEffect } from 'react';
@@ -140,13 +141,23 @@ export default function EventDetailPage() {
         </CardHeader>
       </Card>
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertTitle>Event Management Hub</AlertTitle>
-        <AlertDescription>
-           Use the tabs to manage this event: <strong>Overview</strong> for stats, <strong>Guest List</strong> for attendees, <strong>Seating Plan</strong> for arrangement, <strong>Invitations</strong> for RSVPs, and <strong>Day-of Operations</strong> for live monitoring.
-        </AlertDescription>
-      </Alert>
+      {event.status === 'Completed' ? (
+         <Alert>
+            <Archive className="h-4 w-4" />
+            <AlertTitle>This event is archived</AlertTitle>
+            <AlertDescription>
+                Modifications are disabled (demo). You can view the final details and reports.
+            </AlertDescription>
+        </Alert>
+      ) : (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Event Management Hub</AlertTitle>
+          <AlertDescription>
+            Use the tabs to manage this event: <strong>Overview</strong> for stats, <strong>Guest List</strong> for attendees, <strong>Seating Plan</strong> for arrangement, <strong>Invitations</strong> for RSVPs, and <strong>Day-of Operations</strong> for live monitoring.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
