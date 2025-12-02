@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { guests as allGuests, type Guest } from '@/lib/data';
+import { guests as allGuests, events as allEvents, type Guest, type Event } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -125,16 +125,21 @@ export default function ScanResultPage() {
   const isDuplicate = searchParams.get('duplicate') === 'true';
 
   const [guest, setGuest] = useState<Guest | null | undefined>(undefined);
+  const [event, setEvent] = useState<Event | null | undefined>(undefined);
   const [confirmed, setConfirmed] = useState(false);
 
   useEffect(() => {
     const foundGuest = allGuests.find(g => g.id === guestId);
     setGuest(foundGuest || null);
+    if (foundGuest) {
+        const foundEvent = allEvents.find(e => e.id === foundGuest.eventId);
+        setEvent(foundEvent || null);
+    }
   }, [guestId]);
 
 
   const handleConfirm = () => {
-    if (guest) {
+    if (guest && event) {
         if (guest.checkInStatus === 'Checked-in') {
             router.push(`/protocol-officer/scan-result?guestId=${guest.id}&duplicate=true`);
             return;
@@ -142,8 +147,14 @@ export default function ScanResultPage() {
 
         const guestIndex = allGuests.findIndex((g) => g.id === guest.id);
         if (guestIndex !== -1) {
+            const checkInTime = new Date();
+            const eventStartTime = new Date(event.date);
+            const isLate = checkInTime > eventStartTime;
+
             allGuests[guestIndex].checkInStatus = 'Checked-in';
-            allGuests[guestIndex].checkInTime = new Date().toISOString();
+            allGuests[guestIndex].checkInTime = checkInTime.toISOString();
+            allGuests[guestIndex].isLate = isLate;
+
             setConfirmed(true);
             toast({
               title: "Check-in Confirmed",

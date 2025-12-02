@@ -110,6 +110,7 @@ export type Guest = {
   checkInTime: string | null;
   email: string;
   lastEmailSent: string | null;
+  isLate?: boolean;
 };
 
 export const guests: Guest[] = [

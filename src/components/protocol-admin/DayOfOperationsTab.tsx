@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star } from 'lucide-react';
+import { UserCheck, Users, UserX, ExternalLink, RotateCcw, MonitorSmartphone, Star, Clock } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,6 +43,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '../ui/badge';
+import { ScrollArea } from '../ui/scroll-area';
 
 export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const { toast } = useToast();
@@ -62,9 +63,10 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
   const checkInStats = useMemo(() => {
     const expected = guests.filter(g => g.rsvpStatus === 'Accepted').length;
     const checkedIn = guests.filter(g => g.checkInStatus === 'Checked-in').length;
+    const lateArrivals = guests.filter(g => g.isLate).length;
     const absent = expected - checkedIn;
     const progress = expected > 0 ? (checkedIn / expected) * 100 : 0;
-    return { expected, checkedIn, absent, progress };
+    return { expected, checkedIn, absent, progress, lateArrivals };
   }, [guests]);
   
   const recentCheckIns = useMemo(() => {
@@ -72,6 +74,10 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
       .filter(g => g.checkInStatus === 'Checked-in' && g.checkInTime)
       .sort((a,b) => new Date(b.checkInTime!).getTime() - new Date(a.checkInTime!).getTime())
       .slice(0, 5);
+  }, [guests]);
+
+  const lateGuests = useMemo(() => {
+      return guests.filter(g => g.isLate);
   }, [guests]);
 
   const vipGuests = useMemo(() => {
@@ -98,6 +104,7 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
       if (guest.eventId === eventId) {
         allGuests[index].checkInStatus = 'Not Arrived';
         allGuests[index].checkInTime = null;
+        allGuests[index].isLate = false;
       }
     });
     setForceUpdate(v => v + 1);
@@ -235,6 +242,27 @@ export function DayOfOperationsTab({ eventId }: { eventId: string }) {
         </div>
 
         <div className="space-y-6">
+             <Card>
+                <CardHeader>
+                    <CardTitle className="section-title flex items-center gap-2">
+                        <Clock />
+                        Late Arrivals (demo)
+                    </CardTitle>
+                    <CardDescription>Guests who checked in after the event start time.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold mb-2">{checkInStats.lateArrivals}</div>
+                    {lateGuests.length > 0 && (
+                         <ScrollArea className="h-24">
+                            <ul className="text-sm space-y-1 text-muted-foreground">
+                                {lateGuests.map(guest => (
+                                    <li key={guest.id}>{guest.fullName}</li>
+                                ))}
+                            </ul>
+                        </ScrollArea>
+                    )}
+                </CardContent>
+            </Card>
             <Card>
                 <CardHeader>
                     <CardTitle className="section-title">Recent Check-ins</CardTitle>
