@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -19,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Printer, RotateCcw, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, Square } from 'lucide-react';
+import { Printer, RotateCcw, Wand2, User, Info, X, Hand, Star, Newspaper, Briefcase, Square, UserPlus, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
@@ -40,6 +41,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '../ui/scroll-area';
+import { Separator } from '../ui/separator';
 
 const getInitialLayout = (eventId: string) => roomLayouts.find(rl => rl.eventId === eventId);
 const getInitialGuests = (eventId: string) => allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
@@ -114,6 +117,7 @@ function Seat({ seat, onSeatSelect, isAssignmentMode }: { seat: any, onSeatSelec
 }
 
 function SeatingTable({ table, onSeatSelect, isAssignmentMode }: { table: any, onSeatSelect: (seat: any) => void, isAssignmentMode: boolean }) {
+    if (table.seats.length === 0) return null;
     return (
         <div className="border rounded-lg p-4 bg-muted/20">
             <h4 className="font-semibold text-center mb-4 text-foreground">{table.name}</h4>
@@ -148,28 +152,37 @@ function SeatingLegend() {
     )
 }
 
-
 export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }: { eventId: string; guestToAssign: Guest | null; onAssignmentComplete: () => void; }) {
   const { toast } = useToast();
   const { featureFlags } = useFeatureFlags();
   const [layout, setLayout] = useState<RoomLayout | undefined>(() => JSON.parse(JSON.stringify(getInitialLayout(eventId))));
-  const [guests] = useState(() => getInitialGuests(eventId));
+  const [guests, setGuests] = useState(() => getInitialGuests(eventId));
   
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [selectedSeat, setSelectedSeat] = useState<(SeatType & { tableName: string }) | null>(null);
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
 
-  const isAssignmentMode = guestToAssign !== null;
+  const [activeGuestAssignment, setActiveGuestAssignment] = useState<Guest | null>(null);
+  const [seatFilter, setSeatFilter] = useState<'all' | 'empty' | 'vip' | 'unseated'>('all');
+
+  const isAssignmentMode = activeGuestAssignment !== null;
 
   useEffect(() => {
-    // If we enter assignment mode, close the panel if it's open
-    if (isAssignmentMode) {
-      setIsPanelOpen(false);
+    if (guestToAssign) {
+        setActiveGuestAssignment(guestToAssign);
+        setSeatFilter('empty'); // Automatically filter for empty seats
     }
-  }, [isAssignmentMode]);
+  }, [guestToAssign]);
+
+  const cancelAssignmentMode = () => {
+    setActiveGuestAssignment(null);
+    onAssignmentComplete(); // Notify parent
+    if (seatFilter === 'empty') {
+      setSeatFilter('all'); // Revert filter if it was auto-set
+    }
+  };
 
   const assignGuestToSeat = (guestId: string, seat: SeatType) => {
-     // Check if guest is already seated
     let isAlreadySeated = false;
     layout?.tables.forEach(table => {
         table.seats.forEach(s => {
@@ -184,17 +197,14 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return false;
     }
     
-    // Update layout state
     setLayout(prevLayout => {
         if (!prevLayout) return;
         const newTables = prevLayout.tables.map(table => ({
             ...table,
             seats: table.seats.map(s => {
-                // Clear the seat if another guest was there
                 if (s.guestId === guestId && s.id !== seat.id) {
                     return { ...s, guestId: null };
                 }
-                // Assign to new seat
                 if (s.id === seat.id) {
                     return { ...s, guestId: guestId };
                 }
@@ -204,17 +214,18 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return { ...prevLayout, tables: newTables };
     });
 
-    // Update the master data for cross-component consistency
     const guestIndex = allGuests.findIndex(g => g.id === guestId);
     if(guestIndex !== -1) {
         allGuests[guestIndex].seatAssignment = seat.label;
     }
+    
+    // Update local guests state
+    setGuests(prev => prev.map(g => g.id === guestId ? { ...g, seatAssignment: seat.label } : g));
 
     const guest = allGuests.find(g => g.id === guestId);
     toast({ title: "Seat Assigned", description: `${guest?.fullName} has been assigned to seat ${seat.label}.` });
     return true;
   };
-
 
   const handleSeatSelect = (seat: SeatType & { tableName: string }) => {
     if (isAssignmentMode) {
@@ -222,8 +233,8 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
             toast({ title: "Seat Occupied", description: "This seat is already taken. Choose an empty seat.", variant: "destructive"});
             return;
         }
-        if (assignGuestToSeat(guestToAssign.id, seat)) {
-            onAssignmentComplete();
+        if (activeGuestAssignment && assignGuestToSeat(activeGuestAssignment.id, seat)) {
+            cancelAssignmentMode();
         }
     } else {
         setSelectedSeat(seat);
@@ -244,7 +255,9 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   };
 
   const handleClearSeat = () => {
-    if (!selectedSeat) return;
+    if (!selectedSeat || !selectedSeat.guestId) return;
+
+    const guestToUnseatId = selectedSeat.guestId;
 
      setLayout(prevLayout => {
         if (!prevLayout) return;
@@ -257,43 +270,35 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         return { ...prevLayout, tables: newTables };
     });
 
-    const guest = allGuests.find(g => g.id === selectedSeat.guestId);
-    const guestIndex = allGuests.findIndex(g => g.id === selectedSeat.guestId);
+    const guest = allGuests.find(g => g.id === guestToUnseatId);
+    const guestIndex = allGuests.findIndex(g => g.id === guestToUnseatId);
     if(guestIndex !== -1) {
         allGuests[guestIndex].seatAssignment = null;
     }
 
+    setGuests(prev => prev.map(g => g.id === guestToUnseatId ? { ...g, seatAssignment: null } : g));
+
     toast({ title: "Seat Cleared", description: `${guest?.fullName || 'Guest'} has been unseated from ${selectedSeat.label}.` });
     setIsPanelOpen(false);
   };
-
-  const handleDemoClick = (action: string) => {
-      toast({
-          title: 'Action Simulated',
-          description: `In a real app, this would ${action}.`,
-      })
-  }
 
   const handleAutoArrange = () => {
     if (!layout) return;
 
     const acceptedGuests = allGuests.filter(g => g.eventId === eventId && g.rsvpStatus === 'Accepted');
     
-    // Sort by rank, then alphabetically
     const sortedGuests = [...acceptedGuests].sort((a, b) => {
-        if (a.rankLevel !== b.rankLevel) {
-            return a.rankLevel - b.rankLevel;
-        }
+        if (a.rankLevel !== b.rankLevel) return a.rankLevel - b.rankLevel;
         return a.fullName.localeCompare(b.fullName);
     });
 
     let guestIndex = 0;
-    const newLayout = JSON.parse(JSON.stringify(layout)); // Deep clone
+    const newLayout = JSON.parse(JSON.stringify(layout));
 
-    // Unseat everyone first
     newLayout.tables.forEach((table: TableType) => {
         table.seats.forEach(seat => seat.guestId = null);
     });
+    allGuests.filter(g => g.eventId === eventId).forEach(g => g.seatAssignment = null);
     
     const assignGuest = (seat: SeatType) => {
         if (guestIndex < sortedGuests.length) {
@@ -305,26 +310,40 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
         }
     }
 
-    // Assign to Head Table first
     const headTable = newLayout.tables.find((t: TableType) => t.name === 'Head Table');
-    if (headTable) {
-        headTable.seats.forEach(assignGuest);
-    }
+    if (headTable) headTable.seats.forEach(assignGuest);
     
-    // Assign to other tables
     newLayout.tables.forEach((table: TableType) => {
-        if (table.name !== 'Head Table') {
-            table.seats.forEach(assignGuest);
-        }
+        if (table.name !== 'Head Table') table.seats.forEach(assignGuest);
     });
 
     setLayout(newLayout);
-
-    toast({
-        title: 'Auto-arrange Complete (Demo)',
-        description: 'Guests have been assigned to seats based on rank.',
-    });
+    setGuests(getInitialGuests(eventId));
+    toast({ title: 'Auto-arrange Complete (Demo)', description: 'Guests have been assigned to seats based on rank.' });
   }
+
+  const filteredLayout = useMemo(() => {
+    if (!layout || seatFilter === 'all' || seatFilter === 'unseated') return layout;
+
+    const newTables = layout.tables.map(table => {
+        const filteredSeats = table.seats.filter(seat => {
+            if (seatFilter === 'empty') return !seat.guestId;
+            if (seatFilter === 'vip') {
+                const guest = allGuests.find(g => g.id === seat.guestId);
+                return guest?.category === 'VIP';
+            }
+            return true;
+        });
+        return { ...table, seats: filteredSeats };
+    }).filter(table => table.seats.length > 0);
+
+    return { ...layout, tables: newTables };
+  }, [layout, seatFilter]);
+
+  const unseatedGuests = useMemo(() => {
+    return guests.filter(g => !g.seatAssignment);
+  }, [guests, layout]);
+
 
   const guestOptions = guests.map(g => ({
       value: g.id,
@@ -332,8 +351,6 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
   }));
 
   const selectedGuestForPanel = guests.find(g => g.id === selectedGuestId);
-
-  const roomAreas = ["Main Hall", "VIP Area"]; // Dummy data
 
   return (
     <>
@@ -345,35 +362,31 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                 <CardDescription>Arrange guest seating for this event.</CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
-                 <Select defaultValue={roomAreas[0]}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select room/area" />
+                 <Select value={seatFilter} onValueChange={(value) => setSeatFilter(value as any)}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Filter seats..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {roomAreas.map(area => <SelectItem key={area} value={area}>{area}</SelectItem>)}
+                        <SelectItem value="all">All Seats</SelectItem>
+                        <SelectItem value="empty">Empty Seats</SelectItem>
+                        <SelectItem value="vip">VIP Seats</SelectItem>
+                        <SelectItem value="unseated">Unseated Guests</SelectItem>
                     </SelectContent>
                 </Select>
                 <AlertDialog>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <AlertDialogTrigger asChild>
-                                <Button variant="secondary">
-                                    <Wand2 />
-                                    Auto-arrange (demo)
-                                </Button>
+                                <Button variant="secondary"><Wand2 /> Auto-arrange</Button>
                             </AlertDialogTrigger>
                         </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Automatically assign seats based on guest rank and delegation.</p>
-                        </TooltipContent>
+                        <TooltipContent><p>Automatically assign seats based on guest rank.</p></TooltipContent>
                     </Tooltip>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Confirm Auto-arrange</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will automatically assign guests to seats based on a simplified ranking. Highest-ranked guests will be placed at the Head Table first.
-                                <br/><br/>
-                                This is a prototype action. Existing assignments will be overridden.
+                                This will automatically assign guests to seats based on a simplified ranking. This is a prototype action. Existing assignments will be overridden.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -382,14 +395,6 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
-                 <Button variant="outline" onClick={() => handleDemoClick('reset the seating plan')}>
-                    <RotateCcw />
-                    Reset
-                </Button>
-                <Button variant="outline" onClick={() => handleDemoClick('open a printable seating chart')}>
-                    <Printer />
-                    Print (demo)
-                </Button>
             </div>
         </div>
       </CardHeader>
@@ -399,9 +404,9 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                 <Hand className="h-4 w-4" />
                 <AlertTitle>Assignment Mode</AlertTitle>
                 <AlertDescription>
-                    You are assigning a seat for <strong>{guestToAssign.fullName}</strong>. Click an available empty seat below.
+                    Assigning a seat for <strong>{activeGuestAssignment?.fullName}</strong>. Click an available empty seat below.
                 </AlertDescription>
-                 <Button variant="ghost" size="sm" className="mt-2 text-primary" onClick={onAssignmentComplete}>Cancel Assignment</Button>
+                 <Button variant="ghost" size="sm" className="mt-2 text-primary" onClick={cancelAssignmentMode}><X className="mr-2 h-4 w-4" />Cancel Assignment</Button>
             </Alert>
          )}
          {featureFlags.enable3DPreview === false && (
@@ -414,19 +419,51 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
             </Alert>
           )}
           
-        <SeatingLegend />
+        {seatFilter !== 'unseated' && <SeatingLegend />}
 
-         <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
-            {layout ? (
-                layout.tables.map(table => (
-                    <SeatingTable key={table.id} table={table} onSeatSelect={handleSeatSelect} isAssignmentMode={isAssignmentMode} />
-                ))
-            ) : (
-                <div className="text-center text-muted-foreground py-16">
-                    <p>No seating layout has been created for this event yet.</p>
-                </div>
-            )}
-        </div>
+        {seatFilter === 'unseated' ? (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Unseated Guests</CardTitle>
+                    <CardDescription>{unseatedGuests.length} accepted guests still need a seat.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-96">
+                        <div className="space-y-3 pr-4">
+                            {unseatedGuests.map(guest => (
+                                <Card key={guest.id} className="p-3">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium">{guest.fullName}</p>
+                                            <p className="text-sm text-muted-foreground">{guest.organization}</p>
+                                            <Badge variant="outline" className="mt-1">{guest.category}</Badge>
+                                        </div>
+                                        <Button size="sm" onClick={() => {
+                                            setActiveGuestAssignment(guest);
+                                            setSeatFilter('empty');
+                                        }}>
+                                            <UserPlus /> Assign Seat
+                                        </Button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+        ) : (
+            <div className="bg-background border rounded-lg p-4 sm:p-6 lg:p-8 space-y-8">
+                {filteredLayout && filteredLayout.tables.length > 0 ? (
+                    filteredLayout.tables.map(table => (
+                        <SeatingTable key={table.id} table={table} onSeatSelect={handleSeatSelect} isAssignmentMode={isAssignmentMode} />
+                    ))
+                ) : (
+                    <div className="text-center text-muted-foreground py-16">
+                        <p>No seats match the current filter.</p>
+                    </div>
+                )}
+            </div>
+        )}
       </CardContent>
       <CardFooter>
         <p className="text-xs text-muted-foreground">Click on a seat to assign or change a guest. This is a visual placeholder for the seating arrangement interface.</p>
@@ -447,7 +484,6 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                         <CardContent className="space-y-1 text-sm">
                             <p><strong>Seat:</strong> {selectedSeat.label}</p>
                             <p><strong>Table:</strong> {selectedSeat.tableName}</p>
-                            <p><strong>Room:</strong> Main Hall (demo)</p>
                         </CardContent>
                     </Card>
                  )}
@@ -484,7 +520,7 @@ export function SeatingPlanTab({ eventId, guestToAssign, onAssignmentComplete }:
                 </Button>
                 <div className="flex gap-2">
                     <Button variant="secondary" onClick={() => setIsPanelOpen(false)}>Cancel</Button>
-                    <Button onClick={handleAssignSeatFromPanel} disabled={!selectedGuestId}>Assign Seat (demo)</Button>
+                    <Button onClick={handleAssignSeatFromPanel} disabled={!selectedGuestId}>Assign Seat</Button>
                 </div>
             </div>
         </SheetContent>
