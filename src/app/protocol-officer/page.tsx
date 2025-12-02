@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical, DoorOpen, Shuffle } from 'lucide-react';
+import { Search, MapPin, ArrowLeft, QrCode, UserSearch, Star, Clock, WifiOff, MoreVertical, DoorOpen, Shuffle, Info, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import {
@@ -50,6 +50,7 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useDemoData } from '@/contexts/DemoContext';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 function EventSelection({ onSelectEvent }: { onSelectEvent: (event: Event) => void }) {
@@ -309,6 +310,7 @@ function CheckInDashboard({ event, onBack, onShowManual, onStartScan }: { event:
 function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
+  const [showBanner, setShowBanner] = useState(true);
 
   const handleSimulateScan = (guestId: string) => {
     // Handoff Note: This function simulates a successful QR code scan.
@@ -333,6 +335,19 @@ function QRScanner({ onBack, isOffline }: { onBack: () => void, isOffline: boole
         <CardTitle className="text-xl font-bold tracking-tight">Scan QR Code</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col items-center justify-center">
+        {showBanner && (
+             <Alert className="mb-6 relative">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Browser & Camera Required</AlertTitle>
+                <AlertDescription>
+                    For optimal QR scanning, a modern browser and camera access are required. This is a simulated scan.
+                </AlertDescription>
+                <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => setShowBanner(false)}>
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Dismiss</span>
+                </Button>
+            </Alert>
+        )}
         <div className="w-64 h-64 bg-muted border-4 border-dashed rounded-lg flex items-center justify-center animate-pulse">
            <QrCode className="h-16 w-16 text-muted-foreground" />
         </div>
@@ -482,3 +497,5 @@ export default function ProtocolOfficerInterface() {
 }
 
     
+
+      
